@@ -1,0 +1,6 @@
+services:
+  appacademy:
+    image: ${DOCKER_REGISTRY-}appacademy
+    build:
+      context: .
+      dockerfile: AppAcademy/Dockerfile
