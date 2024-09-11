@@ -4,6 +4,7 @@ using AppAcademy.Infrastucture.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppAcademy.Infrastucture.Migrations
 {
     [DbContext(typeof(AppAcademyDbContext))]
-    partial class AppAcademyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240911205813_MigrationWithModels")]
+    partial class MigrationWithModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -117,14 +120,9 @@ namespace AppAcademy.Infrastucture.Migrations
                     b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("RolId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("UserId");
 
                     b.HasIndex("EstadoUserId");
-
-                    b.HasIndex("RolId");
 
                     b.ToTable("Users");
                 });
@@ -680,13 +678,7 @@ namespace AppAcademy.Infrastucture.Migrations
                         .WithMany("Users")
                         .HasForeignKey("EstadoUserId");
 
-                    b.HasOne("AppAcademy.Domain.Auth.Rol", "Rol")
-                        .WithMany("Users")
-                        .HasForeignKey("RolId");
-
                     b.Navigation("EstadoUser");
-
-                    b.Navigation("Rol");
                 });
 
             modelBuilder.Entity("AppAcademy.Domain.Corte", b =>
@@ -897,11 +889,6 @@ namespace AppAcademy.Infrastucture.Migrations
                 });
 
             modelBuilder.Entity("AppAcademy.Domain.Auth.EstadoUser", b =>
-                {
-                    b.Navigation("Users");
-                });
-
-            modelBuilder.Entity("AppAcademy.Domain.Auth.Rol", b =>
                 {
                     b.Navigation("Users");
                 });

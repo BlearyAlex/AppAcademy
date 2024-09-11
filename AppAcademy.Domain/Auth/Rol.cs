@@ -8,5 +8,6 @@
 
         // Relaciones
         public List<Permiso> Permisos { get; set; } = [];
+        public List<User> Users { get; set; } = [];
     }
 }

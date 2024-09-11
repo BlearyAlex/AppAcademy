@@ -14,7 +14,6 @@ namespace AppAcademy.Domain
 
         // Relaciones
         public User? User { get; set; }
-        public Ubicacion? UbicacionOrigen { get; set; }
-        public Ubicacion? UbicacionDestino { get; set; }
+        public Ubicacion? Origen { get; set; }
     }
 }

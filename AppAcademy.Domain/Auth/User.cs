@@ -11,6 +11,8 @@
 
         // Relaciones
         public EstadoUser? EstadoUser { get; set; }
+        public Rol? Rol { get; set; }
+
         public List<HistorialInventario> HistorialInventarios { get; set; } = [];
         public List<Salida> Salidas { get; set; } = [];
         public List<HistorialAcceso> HistorialAccesos { get; set; } = [];

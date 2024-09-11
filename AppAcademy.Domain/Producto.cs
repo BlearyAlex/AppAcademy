@@ -2,6 +2,7 @@
 {
     public class Producto
     {
+        public string ProductoId { get; set; } = Guid.NewGuid().ToString();
         public string? Nombre { get; set; }
         public string? CodigoBarras { get; set; }
         public string? Descripcion { get; set; }

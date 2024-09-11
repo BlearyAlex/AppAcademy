@@ -7,7 +7,6 @@
         public string? Direccion { get; set; }
 
         // Relaciones
-        public List<Entrada> EntradasOrigen { get; set; } = [];
-        public List<Entrada> EntradasDestino { get; set; } = [];
+        public List<Entrada> Entradas { get; set; } = [];
     }
 }
