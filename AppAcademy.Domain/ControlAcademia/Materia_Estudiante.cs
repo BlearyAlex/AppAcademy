@@ -4,7 +4,7 @@ namespace AppAcademy.Domain.ControlAcademia
 {
     public class Materia_Estudiante
     {
-        public string MateriaEstudianteId { get; set; } = Guid.NewGuid().ToString();
+        public string Materia_EstudianteId { get; set; } = Guid.NewGuid().ToString();
         public int Faltas { get; set; } = 0;
 
         // Relaciones

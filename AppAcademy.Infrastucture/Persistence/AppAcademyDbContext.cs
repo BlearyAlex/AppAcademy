@@ -1,4 +1,5 @@
 ﻿using AppAcademy.Domain.Auth;
+using AppAcademy.Domain.ControlAcademia;
 using AppAcademy.Domain.PuntoDeVenta;
 using Microsoft.EntityFrameworkCore;
 
@@ -37,5 +38,12 @@ namespace AppAcademy.Infrastucture.Persistence
         public DbSet<Salida> Salidas { get; set; }
         public DbSet<Ubicacion> Ubicaciones { get; set; }
         public DbSet<Venta> Ventas { get; set; }
+
+        // Control Academia
+        public DbSet<Colegiatura> Colegiaturas { get; set; }
+        public DbSet<Estudiante> Estudiantes { get; set;}
+        public DbSet<Materia> Materias { get; set; }
+        public DbSet<MaterialAdeudo> MaterialAdeudos { get; set; }
+        public DbSet<Materia_Estudiante> MateriaEstudiantes { get; set; }
     }
 }

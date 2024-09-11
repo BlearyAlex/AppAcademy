@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Common\" />
-    <Folder Include="ControlAcademia\" />
   </ItemGroup>
 
 </Project>
