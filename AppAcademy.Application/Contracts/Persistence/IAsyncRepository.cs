@@ -12,6 +12,6 @@ namespace AppAcademy.Application.Contracts.Persistence
         Task<T> GetById(string id);
         Task<T> AddAsync(T entity);
         Task<T> UpdateAsync(T entity);
-        Task<T> DeleteAsync(string id);
+        Task<bool> DeleteAsync(T entity);
     }
 }
