@@ -1,4 +1,7 @@
-﻿namespace AppAcademy.Domain.Auth
+﻿using AppAcademy.Domain.ControlAcademia;
+using AppAcademy.Domain.PuntoDeVenta;
+
+namespace AppAcademy.Domain.Auth
 {
     public class User
     {
@@ -19,5 +22,11 @@
         public List<Entrada> Entradas { get; set; } = [];
         public List<Venta> Ventas { get; set; } = [];
         public List<Devolucion> Devoluciones { get; set; } = [];
+
+        public List<Estudiante> Estudiantes { get; set; } = [];
+        public List<Materia> Materias { get; set; } = [];
+        public List<Colegiatura> Colegiaturas { get; set; } = [];
+        public List<MaterialAdeudo> MaterialAdeudos { get; set; } = [];
+        public List<Materia_Estudiante> MateriasEstudiantes { get; set; } =[];
     }
 }

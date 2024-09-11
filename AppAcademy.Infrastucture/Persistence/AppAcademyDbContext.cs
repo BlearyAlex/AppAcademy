@@ -1,5 +1,5 @@
-﻿using AppAcademy.Domain;
-using AppAcademy.Domain.Auth;
+﻿using AppAcademy.Domain.Auth;
+using AppAcademy.Domain.PuntoDeVenta;
 using Microsoft.EntityFrameworkCore;
 
 namespace AppAcademy.Infrastucture.Persistence

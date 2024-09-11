@@ -1,10 +1,11 @@
-﻿namespace AppAcademy.Domain
+﻿namespace AppAcademy.Domain.PuntoDeVenta
 {
-    public class DetallePago
+    public class DetalleVenta
     {
-        public string DetallePagoId { get; set; } = Guid.NewGuid().ToString();
+        public string DetalleVentaId { get; set; } = Guid.NewGuid().ToString();
         public TipoPago Tipo { get; set; }
         public decimal Monto { get; set; }
+        public int DescuentoProducto { get; set; }
 
         // Enum para los tipos de pago
         public enum TipoPago
@@ -17,5 +18,7 @@
 
         // Relaciones
         public Venta? Venta { get; set; }
+        public Producto? Producto { get; set; }
+
     }
 }

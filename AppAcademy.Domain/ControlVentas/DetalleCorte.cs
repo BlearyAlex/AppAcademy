@@ -1,4 +1,4 @@
-﻿namespace AppAcademy.Domain
+﻿namespace AppAcademy.Domain.PuntoDeVenta
 {
     public class DetalleCorte
     {

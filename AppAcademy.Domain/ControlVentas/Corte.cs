@@ -1,6 +1,6 @@
 ﻿using AppAcademy.Domain.Auth;
 
-namespace AppAcademy.Domain
+namespace AppAcademy.Domain.PuntoDeVenta
 {
     public class Corte
     {
