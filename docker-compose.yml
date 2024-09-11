@@ -1,6 +1,13 @@
+version: '3.8'
+
 services:
   appacademy:
-    image: ${DOCKER_REGISTRY-}appacademy
     build:
       context: .
       dockerfile: AppAcademy/Dockerfile
+    image: ${DOCKER_REGISTRY-}appacademy
+    env_file:
+      - .env
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=${SQLSERVER_HOST},${SQLSERVER_PORT};Database=${SQLSERVER_DATABASE};User Id=${SQLSERVER_USER};Password=${SQLSERVER_PASSWORD};
+ 
