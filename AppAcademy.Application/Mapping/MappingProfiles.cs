@@ -1,9 +1,7 @@
-﻿using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using AppAcademy.Application.Features.Productos.Commands.CreateProducto;
+using AppAcademy.Application.Features.Productos.Queries.GetAllProductos;
+using AppAcademy.Domain.PuntoDeVenta;
+using AutoMapper;
 
 namespace AppAcademy.Application.Mapping
 {
@@ -11,7 +9,11 @@ namespace AppAcademy.Application.Mapping
     {
         public MappingProfiles()
         {
-            
+            // Commands
+            CreateMap<CreateProductoCommand, Producto>();
+
+            // Queries
+            CreateMap<Producto, GetAllProductosVm>();
         }
     }
 }

@@ -15,7 +15,7 @@ namespace AppAcademy.Infrastucture
                 options.UseSqlServer(configuration.GetConnectionString("SqlConnection")));
 
             services.AddScoped(typeof(IAsyncRepository<>), typeof(AsyncRepository<>));
-            //services.AddScoped<IProductoRepository, ProductoRepository>();
+            services.AddScoped<IProductoRepository, ProductoRepository>();
 
             return services;
         }
