@@ -21,8 +21,8 @@ namespace AppAcademy.Application.Features.Productos.Commands.CreateProducto
 
         public async Task<string> Handle(CreateProductoCommand request, CancellationToken cancellationToken)
         {
-            var prodcutoEntity = _mapper.Map<Producto>(request);
-            var newProdcuto = await _productoRepository.AddAsync(prodcutoEntity);
+            var productoEntity = _mapper.Map<Producto>(request);
+            var newProdcuto = await _productoRepository.AddAsync(productoEntity);
 
             _logger.LogInformation($"Producto {newProdcuto.ProductoId} fue creado exitosamente");
 

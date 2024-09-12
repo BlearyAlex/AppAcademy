@@ -22,17 +22,17 @@ namespace AppAcademy.Application.Features.Productos.Commands.UpdateProducto
 
         public async Task Handle(UpdateProductoCommand request, CancellationToken cancellationToken)
         {
-            var productoUpdate = await _productoRepository.GetById(request.ProductoId);
+            var findProducto = await _productoRepository.GetById(request.ProductoId);
 
-            if(productoUpdate == null)
+            if(findProducto == null)
             {
                 _logger.LogError($"No se encontro el id del producto {request.ProductoId}");
                 throw new NotFoundException(nameof(Producto), request.ProductoId);
             }
 
-            _mapper.Map(request, productoUpdate, typeof(UpdateProductoCommand), typeof(Producto));
+            _mapper.Map(request, findProducto);
 
-            await _productoRepository.UpdateAsync(productoUpdate);
+            await _productoRepository.UpdateAsync(findProducto);
 
             _logger.LogInformation($"La operacion fue exitosa {request.ProductoId}");
         }
