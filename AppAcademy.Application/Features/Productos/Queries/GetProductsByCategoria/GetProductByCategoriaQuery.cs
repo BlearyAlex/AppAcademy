@@ -2,11 +2,11 @@
 
 namespace AppAcademy.Application.Features.Productos.Queries.GetProductsByName
 {
-    public class GetProductByCategoriaListQuery : IRequest<List<GetProductByCategoriaListQuery>>
+    public class GetProductByCategoriaQuery : IRequest<List<GetProductsByCategoriaVm>>
     {
         public string _Categoria { get; set; }
 
-        public GetProductByCategoriaListQuery(string categoria)
+        public GetProductByCategoriaQuery(string categoria)
         {
             _Categoria = categoria;
         }

@@ -13,11 +13,11 @@ namespace AppAcademy.Application.Features.Productos.Commands.UpdateProducto
         public decimal Precio { get; set; }
         public decimal DescuentoBase { get; set; }
         public int Impuesto { get; set; }
-        public Estado EstadoProducto { get; set; }
+        public UpdateProductoEstado EstadoProducto { get; set; }
         public int StockMinimo { get; set; }
         public int StockMaximo { get; set; }
 
-        public enum Estado
+        public enum UpdateProductoEstado
         {
             Alta,
             Baja
