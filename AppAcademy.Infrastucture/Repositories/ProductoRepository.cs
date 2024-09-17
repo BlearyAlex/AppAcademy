@@ -18,5 +18,12 @@ namespace AppAcademy.Infrastucture.Repositories
                                                      .ToListAsync();
             return products;
         }
+
+        public async Task<List<Producto>> GetProductsByName(string producto)
+        {
+            var products = await _dbContext.Productos.Where(p => p.Nombre ==  producto)
+                                                     .ToListAsync();
+            return products;
+        }
     }
 }

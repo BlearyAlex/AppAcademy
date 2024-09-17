@@ -1,4 +1,6 @@
-﻿namespace AppAcademy.Domain.PuntoDeVenta
+﻿using AppAcademy.Domain.Enum;
+
+namespace AppAcademy.Domain.PuntoDeVenta
 {
     public class Producto
     {
@@ -11,15 +13,10 @@
         public decimal Precio { get; set; }
         public decimal DescuentoBase { get; set; }
         public int Impuesto { get; set; }
-        public Estado EstadoProducto { get; set; }
+        public ProductoEstado EstadoProducto { get; set; }
         public int StockMinimo { get; set; }
         public int StockMaximo { get; set; }
 
-        public enum Estado
-        {
-            Alta,
-            Baja
-        }
 
         // Relaciones
         public List<HistorialInventario> HistorialInventarios { get; set; } = [];
@@ -30,8 +27,13 @@
         public List<HistorialPrecio> HistorialPrecios { get; set; } = [];
         public List<Promocion> Promociones { get; set; } = [];
 
+        public string? CategoriaId { get; set; }
         public Categoria? Categoria { get; set; }
+
+        public string? MarcaId { get; set; }
         public Marca? Marca { get; set; }
+
+        public string? ProveedorId { get; set; }
         public Proveedor? Proveedor { get; set; }
     }
 }

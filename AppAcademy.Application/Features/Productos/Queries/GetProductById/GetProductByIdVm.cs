@@ -1,4 +1,6 @@
-﻿namespace AppAcademy.Application.Features.Productos.Queries.GetProductById
+﻿using AppAcademy.Domain.Enum;
+
+namespace AppAcademy.Application.Features.Productos.Queries.GetProductById
 {
     public class GetProductByIdVm
     {
@@ -10,14 +12,8 @@
         public decimal Precio { get; set; }
         public decimal DescuentoBase { get; set; }
         public int Impuesto { get; set; }
-        public Estado EstadoProducto { get; set; }
+        public ProductoEstado EstadoProducto { get; set; }
         public int StockMinimo { get; set; }
         public int StockMaximo { get; set; }
-
-        public enum Estado
-        {
-            Alta,
-            Baja
-        }
     }
 }

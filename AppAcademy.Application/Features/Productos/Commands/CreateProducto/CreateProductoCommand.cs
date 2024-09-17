@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using AppAcademy.Domain.Enum;
+using MediatR;
 
 namespace AppAcademy.Application.Features.Productos.Commands.CreateProducto
 {
@@ -12,14 +13,13 @@ namespace AppAcademy.Application.Features.Productos.Commands.CreateProducto
         public decimal Precio { get; set; } = 0;
         public decimal DescuentoBase { get; set; } = 0;
         public int Impuesto { get; set; } = 16;
-        public CreateProductoEstado EstadoProducto { get; set; } = CreateProductoEstado.Alta;
+        public ProductoEstado EstadoProducto { get; set; } = ProductoEstado.Alta;
         public int StockMinimo { get; set; } = 0;
         public int StockMaximo { get; set; } = 10;
 
-        public enum CreateProductoEstado
-        {
-            Alta,
-            Baja
-        }
+        // Relación con otras entidades
+        public string? CategoriaId { get; set; }
+        public string? MarcaId { get; set; }
+        public string? ProveedorId { get; set; }
     }
 }

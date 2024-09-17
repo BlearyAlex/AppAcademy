@@ -16,6 +16,8 @@ namespace AppAcademy.Infrastucture
 
             services.AddScoped(typeof(IAsyncRepository<>), typeof(AsyncRepository<>));
             services.AddScoped<IProductoRepository, ProductoRepository>();
+            services.AddScoped<ICategoriaRepository, CategoriaRepository>();
+            services.AddScoped<IProveedorRepository, ProveedorRepository>();
 
             return services;
         }
