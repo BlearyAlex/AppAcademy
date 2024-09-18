@@ -1,10 +1,15 @@
 ﻿using AppAcademy.Domain.Auth;
+using AppAcademy.Domain.PuntoDeVenta;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace AppAcademy.Domain.PuntoDeVenta
+namespace AppAcademy.Application.Features.Cortes.Queries.GetCorte
 {
-    public class Corte
+    public class GetCorteVm
     {
-        public string CorteId { get; set; } = Guid.NewGuid().ToString();
         public DateTime FechaCorte { get; set; }
         public decimal TotalEfectivo { get; set; }
         public decimal TotalTarjeta { get; set; }

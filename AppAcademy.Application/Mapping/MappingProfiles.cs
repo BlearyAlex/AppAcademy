@@ -2,6 +2,10 @@
 using AppAcademy.Application.Features.Categorias.Commands.UpdateCategoria;
 using AppAcademy.Application.Features.Categorias.Queries.GetAllCategoria;
 using AppAcademy.Application.Features.Categorias.Queries.GetCategoriaById;
+using AppAcademy.Application.Features.Clientes.Commands.CreateCliente;
+using AppAcademy.Application.Features.Clientes.Commands.UpdateCliente;
+using AppAcademy.Application.Features.Clientes.Queries.GetAllCliente;
+using AppAcademy.Application.Features.Clientes.Queries.GetClienteById;
 using AppAcademy.Application.Features.Productos.Commands.CreateProducto;
 using AppAcademy.Application.Features.Productos.Commands.UpdateProducto;
 using AppAcademy.Application.Features.Productos.Queries.GetAllProductos;
@@ -51,6 +55,7 @@ namespace AppAcademy.Application.Mapping
             #endregion
 
             #region Proveedores
+
             // Commands
             CreateMap<CreateProveedorCommand, Proveedor>();
             CreateMap<UpdateProveedorCommand, Proveedor>();
@@ -58,6 +63,17 @@ namespace AppAcademy.Application.Mapping
             // Queries
             CreateMap<Proveedor, GetAllProveedoresVm>();
             CreateMap<Proveedor, GetProveedorByIdVm>();
+            #endregion
+
+            #region Clientes
+
+            // Commands
+            CreateMap<CreateClienteCommand, Cliente>();
+            CreateMap<UpdateClienteCommand, Cliente>();
+
+            // Queries
+            CreateMap<Cliente, GetAllClientesVm>();
+            CreateMap<Cliente, GetClienteVm>();
             #endregion
         }
     }

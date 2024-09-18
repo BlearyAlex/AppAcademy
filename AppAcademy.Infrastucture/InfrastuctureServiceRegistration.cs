@@ -18,6 +18,8 @@ namespace AppAcademy.Infrastucture
             services.AddScoped<IProductoRepository, ProductoRepository>();
             services.AddScoped<ICategoriaRepository, CategoriaRepository>();
             services.AddScoped<IProveedorRepository, ProveedorRepository>();
+            services.AddScoped<IClienteRepository, ClienteRepository>();
+            services.AddScoped<ICorteRepository, CorteRepository>();
 
             return services;
         }

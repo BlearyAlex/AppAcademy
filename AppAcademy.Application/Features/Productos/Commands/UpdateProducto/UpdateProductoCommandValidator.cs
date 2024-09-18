@@ -35,10 +35,6 @@ namespace AppAcademy.Application.Features.Productos.Commands.UpdateProducto
             RuleFor(p => p.StockMinimo)
                 .GreaterThanOrEqualTo(0)
                 .WithMessage("El Stock Mínimo no puede ser menor que 0.");
-
-            RuleFor(p => p.StockMaximo)
-                .GreaterThanOrEqualTo(0)
-                .WithMessage("El Stock Máximo no puede ser menor que 0.");
         }
     }
 }

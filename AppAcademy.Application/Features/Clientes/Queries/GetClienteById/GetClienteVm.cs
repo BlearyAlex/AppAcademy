@@ -1,15 +1,11 @@
-﻿namespace AppAcademy.Domain.PuntoDeVenta
+﻿namespace AppAcademy.Application.Features.Clientes.Queries.GetClienteById
 {
-    public class Cliente
+    public class GetClienteVm
     {
-        public string ClienteId { get; set; } = Guid.NewGuid().ToString();
         public string? NombreCompleto { get; set; }
         public string? Email { get; set; }
         public string? Telefono { get; set; }
         public string? Direccion { get; set; }
         public DateTime FechaRegistro { get; set; }
-
-        // Relaciones
-        public List<Venta> Ventas { get; set; } = [];
     }
 }
