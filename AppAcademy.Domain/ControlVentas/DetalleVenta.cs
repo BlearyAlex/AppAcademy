@@ -1,4 +1,6 @@
-﻿namespace AppAcademy.Domain.PuntoDeVenta
+﻿using AppAcademy.Domain.Enum;
+
+namespace AppAcademy.Domain.PuntoDeVenta
 {
     public class DetalleVenta
     {
@@ -7,14 +9,6 @@
         public decimal Monto { get; set; }
         public int DescuentoProducto { get; set; }
 
-        // Enum para los tipos de pago
-        public enum TipoPago
-        {
-            Efectivo,
-            TarjetaDeCredito,
-            Transferencia,
-            Otro
-        }
 
         // Relaciones
         public Venta? Venta { get; set; }

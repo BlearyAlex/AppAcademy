@@ -7,7 +7,10 @@
         public decimal Monto { get; set; }
 
         // Relaciones
+        public string? CorteId { get; set; }
         public Corte? Corte { get; set; }
+
+        public string VentaId { get; set; }
         public Venta? Venta { get; set; }
     }
 }

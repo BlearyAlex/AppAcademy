@@ -1,10 +1,4 @@
-﻿using AppAcademy.Domain.Auth;
-using AppAcademy.Domain.PuntoDeVenta;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using AppAcademy.Domain.PuntoDeVenta;
 
 namespace AppAcademy.Application.Features.Cortes.Queries.GetAllCortes
 {
@@ -16,10 +10,6 @@ namespace AppAcademy.Application.Features.Cortes.Queries.GetAllCortes
         public decimal TotalVales { get; set; }
         public decimal TotalDevoluciones { get; set; }
         public string? Comentarios { get; set; }
-
-        // Relaciones
-        public string? UserId { get; set; }
-        public User? User { get; set; }
 
         public List<DetalleCorte> DetalleCortes { get; set; } = [];
     }

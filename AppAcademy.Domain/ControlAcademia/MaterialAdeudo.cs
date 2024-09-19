@@ -1,4 +1,5 @@
 ﻿using AppAcademy.Domain.Auth;
+using AppAcademy.Domain.Enum;
 
 namespace AppAcademy.Domain.ControlAcademia
 {
@@ -7,14 +8,8 @@ namespace AppAcademy.Domain.ControlAcademia
         public string MaterialAdeudoId { get; set; } = Guid.NewGuid().ToString();
         public string? Descripcion { get; set; }
         public decimal Monto { get; set; }
-        public Estado EstadoMaterial { get; set; }
+        public ColegiaturaEstado EstadoMaterial { get; set; }
 
-        public enum Estado
-        {
-            Pagado,
-            Pendiente,
-            Atrasado
-        }
 
         // Relaciones
         public Estudiante? Estudiante { get; set; }

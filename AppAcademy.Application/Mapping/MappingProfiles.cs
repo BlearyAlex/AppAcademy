@@ -6,6 +6,10 @@ using AppAcademy.Application.Features.Clientes.Commands.CreateCliente;
 using AppAcademy.Application.Features.Clientes.Commands.UpdateCliente;
 using AppAcademy.Application.Features.Clientes.Queries.GetAllCliente;
 using AppAcademy.Application.Features.Clientes.Queries.GetClienteById;
+using AppAcademy.Application.Features.Cortes.Commands.CreateCorte;
+using AppAcademy.Application.Features.Cortes.Commands.UpdateCorte;
+using AppAcademy.Application.Features.Cortes.Queries.GetAllCortes;
+using AppAcademy.Application.Features.Cortes.Queries.GetCorte;
 using AppAcademy.Application.Features.Productos.Commands.CreateProducto;
 using AppAcademy.Application.Features.Productos.Commands.UpdateProducto;
 using AppAcademy.Application.Features.Productos.Queries.GetAllProductos;
@@ -74,6 +78,20 @@ namespace AppAcademy.Application.Mapping
             // Queries
             CreateMap<Cliente, GetAllClientesVm>();
             CreateMap<Cliente, GetClienteVm>();
+            #endregion
+
+            #region Cortes
+            // Commands
+            CreateMap<CreateCorteCommand, Corte>()
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId));
+            CreateMap<UpdateCorteCommand, Corte>();
+
+            // Queries
+            CreateMap<Corte, GetAllCortesVm>();
+            CreateMap<Corte, GetCorteVm>();
+            #endregion
+
+            #region DetalleCorte
             #endregion
         }
     }

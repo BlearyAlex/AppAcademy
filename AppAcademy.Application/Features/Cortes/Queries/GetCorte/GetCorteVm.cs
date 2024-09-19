@@ -17,10 +17,6 @@ namespace AppAcademy.Application.Features.Cortes.Queries.GetCorte
         public decimal TotalDevoluciones { get; set; }
         public string? Comentarios { get; set; }
 
-        // Relaciones
-        public string? UserId { get; set; }
-        public User? User { get; set; }
-
         public List<DetalleCorte> DetalleCortes { get; set; } = [];
     }
 }
