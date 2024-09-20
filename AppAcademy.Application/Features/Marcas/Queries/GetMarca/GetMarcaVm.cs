@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AppAcademy.Application.Features.Marcas.Queries.GetMarca
 {
-    internal class GetMarcaVm
+    public class GetMarcaVm
     {
     }
 }

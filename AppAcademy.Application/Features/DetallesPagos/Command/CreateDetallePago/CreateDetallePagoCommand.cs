@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using AppAcademy.Domain.Enum;
+using MediatR;
 
 namespace AppAcademy.Application.Features.DetallesPagos.Command.CreateDetallePago
 {
-    internal class CreateDetallePagoCommand
+    public class CreateDetallePagoCommand : IRequest<string>
     {
+        public TipoPago Tipo { get; set; }
+        public decimal Monto { get; set; }
+
+        public string? VentaId { get; set; }
     }
 }

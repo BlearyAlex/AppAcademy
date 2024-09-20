@@ -1,12 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using AppAcademy.Application.Contracts.Persistence;
+using AutoMapper;
+using MediatR;
 
 namespace AppAcademy.Application.Features.Ventas.Queries.GetAllVentas
 {
-    internal class GetAllVentasListQueryHandler
+    public class GetAllVentasListQueryHandler : IRequestHandler<GetAllVentasListQuery, List<GetAllVentasVm>>
     {
+        private readonly IVentaRepository _repository;
+        private readonly IMapper _mapper;
+
+        public GetAllVentasListQueryHandler(IVentaRepository repository, IMapper mapper)
+        {
+            _repository = repository;
+            _mapper = mapper;
+        }
+
+        public async Task<List<GetAllVentasVm>> Handle(GetAllVentasListQuery request, CancellationToken cancellationToken)
+        {
+            var ventaList = await _repository.GetAllAsync();
+
+            return _mapper.Map<List<GetAllVentasVm>>(ventaList);
+        }
     }
 }

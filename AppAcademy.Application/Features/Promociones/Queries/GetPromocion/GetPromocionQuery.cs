@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MediatR;
 
 namespace AppAcademy.Application.Features.Promociones.Queries.GetPromocion
 {
-    internal class GetPromocionQuery
+    public class GetPromocionQuery : IRequest<GetPromocionVm>
     {
+        public string _PromocionId { get; set; }
+
+        public GetPromocionQuery(string promocionId)
+        {
+            _PromocionId = promocionId;
+        }
     }
 }

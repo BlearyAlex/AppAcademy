@@ -10,6 +10,7 @@ namespace AppAcademy.Domain.PuntoDeVenta
         public string? Comentarios { get; set; }
 
         // Relaciones
+        public string? UserId { get; set; }
         public User? User { get; set; }
     }
 }

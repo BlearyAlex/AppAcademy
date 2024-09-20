@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MediatR;
 
 namespace AppAcademy.Application.Features.Ventas.Command.CreateVenta
 {
-    internal class CreateVentaCommand
+    public class CreateVentaCommand : IRequest<string>
     {
+        public DateTime FechaCompra { get; set; }
+
+        // Relaciones
+        public string? ClienteId { get; set; }
+        public string? UserId { get; set; }
     }
 }

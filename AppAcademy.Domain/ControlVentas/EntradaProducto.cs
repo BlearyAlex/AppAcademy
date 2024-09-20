@@ -7,7 +7,10 @@
         public decimal Costo { get; set; }
 
         // Relaciones
+        public string? EntradaId { get; set; }
         public Entrada? Entrada { get; set; }
+
+        public string? MyProperty { get; set; }
         public Producto? Producto { get; set; }
     }
 }

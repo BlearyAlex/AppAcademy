@@ -10,8 +10,13 @@ namespace AppAcademy.Domain.PuntoDeVenta
         public DateTime FechaDevolucion { get; set; }
 
         // Relaciones
+        public string? VentaId { get; set; }
         public Venta? Venta { get; set; }
+
+        public string? ProductoId { get; set; }
         public Producto? Producto { get; set; }
+
+        public string? UserId { get; set; }
         public User? User { get; set; }
     }
 }

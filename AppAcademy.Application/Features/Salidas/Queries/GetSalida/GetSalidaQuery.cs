@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MediatR;
 
 namespace AppAcademy.Application.Features.Salidas.Queries.GetSalida
 {
-    internal class GetSalidaQuery
+    public class GetSalidaQuery : IRequest<GetSalidaVm>
     {
+        public string _SalidaId { get; set; }
+        public GetSalidaQuery(string salidaId)
+        {
+            _SalidaId = salidaId;
+        }
     }
 }

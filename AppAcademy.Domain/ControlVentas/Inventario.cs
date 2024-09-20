@@ -10,6 +10,7 @@
         public DateTime FechaExpiracion { get; set; }
 
         // Relaciones
+        public string? ProductoId { get; set; }
         public Producto? Producto { get; set; }
     }
 }

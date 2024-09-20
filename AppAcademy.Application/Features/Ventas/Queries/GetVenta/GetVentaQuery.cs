@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MediatR;
 
 namespace AppAcademy.Application.Features.Ventas.Queries.GetVenta
 {
-    internal class GetVentaQuery
+    public class GetVentaQuery : IRequest<GetVentaVm>
     {
+        public string _VentaId { get; set; }
+        public GetVentaQuery(string ventaId)
+        {
+            _VentaId = ventaId;
+        }
     }
 }

@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AppAcademy.Application.Features.Ubicaciones.Queries.GetAllUbicaciones
+﻿namespace AppAcademy.Application.Features.Ubicaciones.Queries.GetAllUbicaciones
 {
-    internal class GetAllUbicacionesVm
+    public class GetAllUbicacionesVm
     {
+        public string? Nombre { get; set; }
+        public string? Direccion { get; set; }
     }
 }

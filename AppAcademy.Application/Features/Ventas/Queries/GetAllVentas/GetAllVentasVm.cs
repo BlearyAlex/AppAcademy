@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AppAcademy.Application.Features.Ventas.Queries.GetAllVentas
+﻿namespace AppAcademy.Application.Features.Ventas.Queries.GetAllVentas
 {
-    internal class GetAllVentasVm
+    public class GetAllVentasVm
     {
+        public DateTime FechaCompra { get; set; }
+        public string? ClienteId { get; set; }
+        public string? UserId { get; set; }
     }
 }

@@ -8,7 +8,10 @@ namespace AppAcademy.Domain.PuntoDeVenta
         public DateTime FechaCompra { get; set; }
 
         // Relaciones
+        public string? ClienteId { get; set; }
         public Cliente? Cliente { get; set; }
+
+        public string? UserId { get; set; }
         public User? User { get; set; }
 
         public List<DetalleCorte> DetalleCortes { get; set; } = [];

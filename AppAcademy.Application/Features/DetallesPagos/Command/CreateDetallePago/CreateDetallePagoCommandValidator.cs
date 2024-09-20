@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
 
 namespace AppAcademy.Application.Features.DetallesPagos.Command.CreateDetallePago
 {
-    internal class CreateDetallePagoCommandValidator
+    public class CreateDetallePagoCommandValidator : AbstractValidator<CreateDetallePagoCommand>
     {
+        public CreateDetallePagoCommandValidator()
+        {
+            RuleFor(c => c.Monto)
+                .GreaterThanOrEqualTo(0)
+                .WithMessage("El total del monto debe ser mayor o igual a 0.");
+        }
     }
 }

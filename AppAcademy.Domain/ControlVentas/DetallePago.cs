@@ -10,6 +10,7 @@ namespace AppAcademy.Domain.PuntoDeVenta
 
 
         // Relaciones
+        public string? VentaId { get; set; }
         public Venta? Venta { get; set; }
     }
 }

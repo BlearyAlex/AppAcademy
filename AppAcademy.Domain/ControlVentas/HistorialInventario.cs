@@ -11,7 +11,10 @@ namespace AppAcademy.Domain.PuntoDeVenta
         public string? Motivo { get; set; }
 
         // Relaciones
+        public string? UserId { get; set; }
         public User? User { get; set; }
+
+        public string? ProductoId { get; set; }
         public Producto? Producto { get; set; }
     }
 }

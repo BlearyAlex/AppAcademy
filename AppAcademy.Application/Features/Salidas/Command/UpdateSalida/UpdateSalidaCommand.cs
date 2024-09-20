@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MediatR;
 
 namespace AppAcademy.Application.Features.Salidas.Command.UpdateSalida
 {
-    internal class UpdateSalidaCommand
+    public class UpdateSalidaCommand : IRequest
     {
+        public string SalidaId { get; set; }
+        public DateTime FechaSalida { get; set; }
+        public int TotalProductosSalida { get; set; }
+        public string? Comentarios { get; set; }
     }
 }

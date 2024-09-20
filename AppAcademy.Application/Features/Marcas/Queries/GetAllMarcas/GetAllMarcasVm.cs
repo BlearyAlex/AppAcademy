@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AppAcademy.Domain.PuntoDeVenta;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,11 @@ using System.Threading.Tasks;
 
 namespace AppAcademy.Application.Features.Marcas.Queries.GetAllMarcas
 {
-    internal class GetAllMarcasVm
+    public class GetAllMarcasVm
     {
+        public string? Nombre { get; set; }
+
+        // Relaciones
+        public List<Producto> Productos { get; set; } = [];
     }
 }

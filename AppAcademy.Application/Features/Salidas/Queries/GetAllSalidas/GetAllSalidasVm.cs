@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AppAcademy.Application.Features.Salidas.Queries.GetAllSalidas
+﻿namespace AppAcademy.Application.Features.Salidas.Queries.GetAllSalidas
 {
-    internal class GetAllSalidasVm
+    public class GetAllSalidasVm
     {
+        public DateTime FechaSalida { get; set; }
+        public int TotalProductosSalida { get; set; }
+        public string? Comentarios { get; set; }
+
+        // Relaciones
+        public string? UserId { get; set; }
     }
 }

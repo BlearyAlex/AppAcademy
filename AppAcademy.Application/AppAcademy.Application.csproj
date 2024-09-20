@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Ventas\" />
-    <Folder Include="Features\Ubicaciones\" />
-    <Folder Include="Features\Salidas\" />
-    <Folder Include="Features\Promociones\" />
     <Folder Include="Models\" />
   </ItemGroup>
 

@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MediatR;
 
 namespace AppAcademy.Application.Features.Ubicaciones.Command.UpdateUbicacion
 {
-    internal class UpdateUbicacionCommand
+    public class UpdateUbicacionCommand : IRequest
     {
+        public string UbicacionId { get; set; } 
+        public string? Nombre { get; set; }
+        public string? Direccion { get; set; }
     }
 }
