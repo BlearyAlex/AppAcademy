@@ -9,7 +9,7 @@ namespace AppAcademy.Application.Features.DetallesCortes.Command.UpdateDetalleCo
         public TipoPago TipoPago { get; set; }
         public decimal Monto { get; set; }
 
-        public string? Corte { get; set; }
-        public string? Venta { get; set; }
+        public string? CorteId { get; set; }
+        public string? VentaId { get; set; }
     }
 }

@@ -10,7 +10,7 @@ namespace AppAcademy.Application.Features.EntradasProductos.Command.UpdateEntrad
 
         // Relaciones
         public string? EntradaId { get; set; }
-        public string? MyProperty { get; set; }
+        public string? ProductoId { get; set; }
 
     }
 }

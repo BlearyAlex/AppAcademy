@@ -25,6 +25,7 @@ using AppAcademy.Application.Features.Devoluciones.Queries.GetDevolucion;
 using AppAcademy.Application.Features.Entradas.Command.CreateEntrada;
 using AppAcademy.Application.Features.Entradas.Command.UpdateEntrada;
 using AppAcademy.Application.Features.Entradas.Queries.GetAllEntradas;
+using AppAcademy.Application.Features.EntradasProductos.Command.CreateEntrada;
 using AppAcademy.Application.Features.EntradasProductos.Command.UpdateEntrada;
 using AppAcademy.Application.Features.EntradasProductos.Queries.GetAllEntradas;
 using AppAcademy.Application.Features.EntradasProductos.Queries.GetEntrada;
@@ -89,9 +90,12 @@ namespace AppAcademy.Application.Mapping
             CreateMap<Producto, GetAllProductosVm>()
                 .ForMember(dest => dest.EstadoProducto, opt => opt
                 .MapFrom(src => src.EstadoProducto.ToString()));
-            CreateMap<Producto, GetProductsByCategoriaVm>();
-            CreateMap<Producto, GetProductByIdVm>();
-            CreateMap<Producto, GetProductsByNameVm>();
+            CreateMap<Producto, GetProductsByCategoriaVm>()
+                .ForMember(dest => dest.EstadoProducto, opt => opt.MapFrom(src => src.EstadoProducto.ToString()));
+            CreateMap<Producto, GetProductByIdVm>()
+                .ForMember(dest => dest.EstadoProducto, opt => opt.MapFrom(src => src.EstadoProducto.ToString()));
+            CreateMap<Producto, GetProductsByNameVm>()
+                .ForMember(dest => dest.EstadoProducto, opt => opt.MapFrom(src => src.EstadoProducto.ToString()));
             #endregion
 
             #region Categorias
@@ -138,57 +142,80 @@ namespace AppAcademy.Application.Mapping
             #endregion
 
             #region DetalleCorte
-            CreateMap<CreateDetalleCorteCommand, DetalleCorte>();
-            CreateMap<UpdateDetalleCorteCommand, DetalleCorte>();
+            CreateMap<CreateDetalleCorteCommand, DetalleCorte>()
+                .ForMember(dest => dest.CorteId, opt => opt.MapFrom(src => src.CorteId))
+                .ForMember(dest => dest.VentaId, opt => opt.MapFrom(src => src.VentaId));
+            CreateMap<UpdateDetalleCorteCommand, DetalleCorte>()
+                 .ForMember(dest => dest.CorteId, opt => opt.MapFrom(src => src.CorteId))
+                 .ForMember(dest => dest.VentaId, opt => opt.MapFrom(src => src.VentaId));
 
             CreateMap<DetalleCorte, GetAllDetallesCortesVm>();
             CreateMap<DetalleCorte, GetDetalleCorteVm>();
             #endregion
 
             #region DetallesPagos
-            CreateMap<CreateDetallePagoCommand, DetallePago>();
-            CreateMap<UpdateDetallePagoCommand, DetallePago>();
+            CreateMap<CreateDetallePagoCommand, DetallePago>()
+                .ForMember(dest => dest.VentaId, opt => opt.MapFrom(src => src.VentaId));
+            CreateMap<UpdateDetallePagoCommand, DetallePago>()
+                .ForMember(dest => dest.VentaId, opt => opt.MapFrom(src => src.VentaId));
 
             CreateMap<DetallePago, GetAllDetallesPagosVm>();
             CreateMap<DetallePago, GetDetallePagoVm>();
             #endregion
 
             #region Devoluciones
-            CreateMap<CreateDevolucionCommand, Devolucion>();
-            CreateMap<UpdateDevolucionCommand, Devolucion>();
+            CreateMap<CreateDevolucionCommand, Devolucion>()
+                .ForMember(dest => dest.VentaId, opt => opt.MapFrom(src => src.VentaId))
+                .ForMember(dest => dest.ProductoId, opt => opt.MapFrom(src => src.ProductoId))
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId));
+            CreateMap<UpdateDevolucionCommand, Devolucion>()
+                .ForMember(dest => dest.VentaId, opt => opt.MapFrom(src => src.VentaId))
+                .ForMember(dest => dest.ProductoId, opt => opt.MapFrom(src => src.ProductoId));
 
             CreateMap<Devolucion, GetAllDevolucionesVm>();
             CreateMap<Devolucion, GetDevolucionVm>();
             #endregion
 
             #region Entradas
-            CreateMap<CreateEntradaCommand, Entrada>();
-            CreateMap<UpdateEntradaCommand, Entrada>();
+            CreateMap<CreateEntradaCommand, Entrada>()
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
+                .ForMember(dest => dest.OrigenId, opt => opt.MapFrom(src => src.OrigenId));
+            CreateMap<UpdateEntradaCommand, Entrada>()
+                .ForMember(dest => dest.OrigenId, opt => opt.MapFrom(src => src.OrigenId));
 
             CreateMap<Entrada, GetAllEntradasVm>();
             CreateMap<Entrada, GetEntradaProductoVm>();
             #endregion
 
             #region EntradasProductos
-            CreateMap<CreateEntradaCommand, EntradaProducto>();
-            CreateMap<UpdateEntradaProductoCommand, EntradaProducto>();
+            CreateMap<CreateEntradaProductoCommand, EntradaProducto>()
+                .ForMember(dest => dest.EntradaId, opt => opt.MapFrom(src => src.EntradaId))
+                .ForMember(dest => dest.ProductoId, opt => opt.MapFrom(src => src.ProductoId));
+            CreateMap<UpdateEntradaProductoCommand, EntradaProducto>()
+                .ForMember(dest => dest.EntradaId, opt => opt.MapFrom(src => src.EntradaId))
+                .ForMember(dest => dest.ProductoId, opt => opt.MapFrom(src => src.ProductoId));
 
             CreateMap<EntradaProducto, GetAllEntradasProductosVm>();
             CreateMap<EntradaProducto, GetEntradaProductoVm>();
             #endregion
 
             #region HistorialInventario
-            CreateMap<CreateHistorialInventarioCommand, HistorialInventario>();
-            CreateMap<UpdateHistorialInventarioCommand, HistorialInventario>();
+            CreateMap<CreateHistorialInventarioCommand, HistorialInventario>()
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
+                .ForMember(dest => dest.ProductoId, opt => opt.MapFrom(src => src.ProductoId));
+            CreateMap<UpdateHistorialInventarioCommand, HistorialInventario>()
+                .ForMember(dest => dest.ProductoId, opt => opt.MapFrom(src => src.ProductoId));
 
             CreateMap<HistorialInventario, GetAllHistorialInventarioVm>();
             CreateMap<HistorialInventario, GetHistorialInventarioVm>();
             #endregion
 
             #region Inventarios
-            CreateMap<CreateInventarioCommand, Inventario>();
-            CreateMap<UpdateInventarioCommand, Inventario>();
-            
+            CreateMap<CreateInventarioCommand, Inventario>()
+                .ForMember(dest => dest.ProductoId, opt => opt.MapFrom(src => src.ProductoId));
+            CreateMap<UpdateInventarioCommand, Inventario>()
+                .ForMember(dest => dest.ProductoId, opt => opt.MapFrom(src => src.ProductoId));
+
             CreateMap<Inventario, GetAllInventariosVm>();
             CreateMap<Inventario, GetInventarioVm>();
             #endregion
@@ -210,7 +237,8 @@ namespace AppAcademy.Application.Mapping
             #endregion
 
             #region Salidas
-            CreateMap<CreateSalidaCommand, Salida>();
+            CreateMap<CreateSalidaCommand, Salida>()
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId));
             CreateMap<UpdateSalidaCommand, Salida>();
 
             CreateMap<Salida, GetAllSalidasVm>();
@@ -226,8 +254,11 @@ namespace AppAcademy.Application.Mapping
             #endregion
 
             #region Ventas
-            CreateMap<CreateVentaCommand, Venta>();
-            CreateMap<UpdateVentaCommand, Venta>();
+            CreateMap<CreateVentaCommand, Venta>()
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
+                .ForMember(dest => dest.ClienteId, opt => opt.MapFrom(src => src.ClienteId));
+            CreateMap<UpdateVentaCommand, Venta>()
+                .ForMember(dest => dest.ClienteId, opt => opt.MapFrom(src => src.ClienteId));
 
             CreateMap<Venta, GetAllVentasVm>();
             CreateMap<Venta, GetVentaVm>();

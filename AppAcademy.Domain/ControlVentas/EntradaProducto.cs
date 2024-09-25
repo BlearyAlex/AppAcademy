@@ -10,7 +10,7 @@
         public string? EntradaId { get; set; }
         public Entrada? Entrada { get; set; }
 
-        public string? MyProperty { get; set; }
+        public string? ProductoId { get; set; }
         public Producto? Producto { get; set; }
     }
 }

@@ -9,6 +9,6 @@ namespace AppAcademy.Application.Features.EntradasProductos.Command.CreateEntrad
 
         // Relaciones
         public string? EntradaId { get; set; }
-        public string? MyProperty { get; set; }
+        public string? ProductoId { get; set; }
     }
 }
