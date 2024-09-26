@@ -6,9 +6,10 @@ namespace AppAcademy.Domain.Auth
     public class User
     {
         public string UserId { get; set; } = Guid.NewGuid().ToString();
-        public string? NombreCompleto { get; set; }
+        public string? UserName { get; set; }
         public string? Email { get; set; }
-        public string? Password { get; set; }
+        public byte[] PasswordHash { get; set; }
+        public byte[] PasswordSalt { get; set; }
         public DateTime FechaCreacion { get; set; }
         public DateTime FechaUltimoAcceso { get; set; }
 
