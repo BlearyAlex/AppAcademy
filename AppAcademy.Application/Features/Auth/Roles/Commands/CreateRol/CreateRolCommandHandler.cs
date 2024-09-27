@@ -1,5 +1,6 @@
 ﻿using AppAcademy.Application.Contracts.Persistence.Auth;
 using AppAcademy.Application.DTOs;
+using AppAcademy.Domain.Auth;
 using MediatR;
 
 namespace AppAcademy.Application.Features.Auth.Roles.Commands.CreateRol
@@ -15,13 +16,13 @@ namespace AppAcademy.Application.Features.Auth.Roles.Commands.CreateRol
 
         public async Task Handle(CreateRolCommand request, CancellationToken cancellationToken)
         {
-            var rolDto = new RolDto
+            var rol = new RolDto
             {
                 NameRol = request.NameRol,
                 Permisos = request.Permisos,
             };
 
-            await _rolesRepository.CreateRolWithPermissions(rolDto);
+            await _rolesRepository.CreateRolWithPermissions(rol);
         }
     }
 }

@@ -34,13 +34,18 @@ namespace AppAcademy.Infrastucture.Repositories.Auth
         {
             var newRol = new Rol
             {
-                NameRol = rolDto.NameRol
+                NameRol = rolDto.NameRol,
+                Permisos = new List<Permiso>()
             };
 
             await _dbContext.Roles.AddAsync(newRol);
             await _dbContext.SaveChangesAsync();
 
-            await AssignPermissionsToRole(newRol.RolId, rolDto.Permisos);
+            // Asignar permisos solo si la lista no es nula o vacía
+            if (rolDto.Permisos != null && rolDto.Permisos.Count > 0)
+            {
+                await AssignPermissionsToRole(newRol.RolId, rolDto.Permisos);
+            }
         }
     }
 }
