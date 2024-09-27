@@ -1,10 +1,13 @@
 ﻿using AppAcademy.Application.Contracts.Persistence;
 using AppAcademy.Application.Contracts.Persistence.Auth;
+using AppAcademy.Application.Filters;
 using AppAcademy.Infrastucture.BackgroundServices;
 using AppAcademy.Infrastucture.Persistence;
 using AppAcademy.Infrastucture.Repositories;
 using AppAcademy.Infrastucture.Repositories.Auth;
+using AppAcademy.Infrastucture.Seed;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,11 +46,25 @@ namespace AppAcademy.Infrastucture
                     };
                 });
 
+            #region PermissionHandler
+            services.AddAuthorization(config =>
+            {
+                config.AddPolicy("ManageProducts", policy =>
+                policy.Requirements.Add(new PermissionAttribute("ManageProducts")));
+            });
+
+
+            services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
+            #endregion
+
+            #region RefreshTokenBackgroundService
             // Configurar servicios en segundo plano
             services.AddHostedService<RefreshTokenCleanupService>();
+            #endregion
 
             #region Auth
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IRolesRepository, RolesRepository>();
             #endregion
 
             #region ControlVentas
@@ -69,6 +86,11 @@ namespace AppAcademy.Infrastucture
             services.AddScoped<ISalidaRepository, SalidaRepository>();
             services.AddScoped<IUbicacionRepository, UbicacionRepository>();
             services.AddScoped<IVentaRepository, VentaRepository>();
+            #endregion
+
+            #region SeedData
+            // Agregar SeedData para inicializar datos
+            services.AddTransient<SeedData>();
             #endregion
 
             return services;

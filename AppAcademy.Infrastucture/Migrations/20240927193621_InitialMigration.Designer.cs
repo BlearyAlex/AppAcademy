@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppAcademy.Infrastucture.Migrations
 {
     [DbContext(typeof(AppAcademyDbContext))]
-    [Migration("20240925162331_ModifiedFields")]
-    partial class ModifiedFields
+    [Migration("20240927193621_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,19 +24,6 @@ namespace AppAcademy.Infrastucture.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("AppAcademy.Domain.Auth.EstadoUser", b =>
-                {
-                    b.Property<string>("EstadoUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("UserEstado")
-                        .HasColumnType("int");
-
-                    b.HasKey("EstadoUserId");
-
-                    b.ToTable("EstadoUsers");
-                });
 
             modelBuilder.Entity("AppAcademy.Domain.Auth.HistorialAcceso", b =>
                 {
@@ -81,6 +68,36 @@ namespace AppAcademy.Infrastucture.Migrations
                     b.ToTable("Permisos");
                 });
 
+            modelBuilder.Entity("AppAcademy.Domain.Auth.RefreshToken", b =>
+                {
+                    b.Property<string>("RefreshTokenId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("Revoked")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("RefreshTokenId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
+                });
+
             modelBuilder.Entity("AppAcademy.Domain.Auth.Rol", b =>
                 {
                     b.Property<string>("RolId")
@@ -105,8 +122,8 @@ namespace AppAcademy.Infrastucture.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("EstadoUserId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("EstadoUser")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("datetime2");
@@ -114,18 +131,21 @@ namespace AppAcademy.Infrastucture.Migrations
                     b.Property<DateTime>("FechaUltimoAcceso")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("NombreCompleto")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<byte[]>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
 
-                    b.Property<string>("Password")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<byte[]>("PasswordSalt")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("RolId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("UserId");
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("EstadoUserId");
+                    b.HasKey("UserId");
 
                     b.HasIndex("RolId");
 
@@ -818,17 +838,20 @@ namespace AppAcademy.Infrastucture.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("AppAcademy.Domain.Auth.RefreshToken", b =>
+                {
+                    b.HasOne("AppAcademy.Domain.Auth.User", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("AppAcademy.Domain.Auth.User", b =>
                 {
-                    b.HasOne("AppAcademy.Domain.Auth.EstadoUser", "EstadoUser")
-                        .WithMany("Users")
-                        .HasForeignKey("EstadoUserId");
-
                     b.HasOne("AppAcademy.Domain.Auth.Rol", "Rol")
                         .WithMany("Users")
                         .HasForeignKey("RolId");
-
-                    b.Navigation("EstadoUser");
 
                     b.Navigation("Rol");
                 });
@@ -1111,11 +1134,6 @@ namespace AppAcademy.Infrastucture.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("AppAcademy.Domain.Auth.EstadoUser", b =>
-                {
-                    b.Navigation("Users");
-                });
-
             modelBuilder.Entity("AppAcademy.Domain.Auth.Rol", b =>
                 {
                     b.Navigation("Users");
@@ -1140,6 +1158,8 @@ namespace AppAcademy.Infrastucture.Migrations
                     b.Navigation("Materias");
 
                     b.Navigation("MateriasEstudiantes");
+
+                    b.Navigation("RefreshTokens");
 
                     b.Navigation("Salidas");
 

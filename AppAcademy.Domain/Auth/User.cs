@@ -1,4 +1,5 @@
 ﻿using AppAcademy.Domain.ControlAcademia;
+using AppAcademy.Domain.Enum;
 using AppAcademy.Domain.PuntoDeVenta;
 
 namespace AppAcademy.Domain.Auth
@@ -10,13 +11,11 @@ namespace AppAcademy.Domain.Auth
         public string? Email { get; set; }
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
+        public UserEstado EstadoUser { get; set; }
         public DateTime FechaCreacion { get; set; }
         public DateTime FechaUltimoAcceso { get; set; }
 
         // Relaciones
-        public string? EstadoUserId { get; set; }
-        public EstadoUser? EstadoUser { get; set; }
-
         public string? RolId { get; set; }
         public Rol? Rol { get; set; }
 

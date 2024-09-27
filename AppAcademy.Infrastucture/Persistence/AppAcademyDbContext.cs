@@ -12,7 +12,6 @@ namespace AppAcademy.Infrastucture.Persistence
         }
 
         // Auth
-        public DbSet<EstadoUser> EstadoUsers { get; set; }
         public DbSet<HistorialAcceso> HistorialAccesos { get; set; }
         public DbSet<Permiso> Permisos { get; set; }
         public DbSet<Rol> Roles {  get; set; }

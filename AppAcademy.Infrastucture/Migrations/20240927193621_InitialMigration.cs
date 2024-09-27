@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AppAcademy.Infrastucture.Migrations
 {
     /// <inheritdoc />
-    public partial class MigrationWithModels : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -30,25 +30,13 @@ namespace AppAcademy.Infrastucture.Migrations
                     ClienteId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     NombreCompleto = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Telefono = table.Column<int>(type: "int", nullable: false),
+                    Telefono = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Direccion = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     FechaRegistro = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Clientes", x => x.ClienteId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "EstadoUsers",
-                columns: table => new
-                {
-                    EstadoUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    UserEstado = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_EstadoUsers", x => x.EstadoUserId);
                 });
 
             migrationBuilder.CreateTable(
@@ -131,28 +119,6 @@ namespace AppAcademy.Infrastucture.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Users",
-                columns: table => new
-                {
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    NombreCompleto = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FechaCreacion = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    FechaUltimoAcceso = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EstadoUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Users", x => x.UserId);
-                    table.ForeignKey(
-                        name: "FK_Users_EstadoUsers_EstadoUserId",
-                        column: x => x.EstadoUserId,
-                        principalTable: "EstadoUsers",
-                        principalColumn: "EstadoUserId");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Productos",
                 columns: table => new
                 {
@@ -162,12 +128,12 @@ namespace AppAcademy.Infrastucture.Migrations
                     Descripcion = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Imagen = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Costo = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Utilidad = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Precio = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     DescuentoBase = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Impuesto = table.Column<int>(type: "int", nullable: false),
                     EstadoProducto = table.Column<int>(type: "int", nullable: false),
                     StockMinimo = table.Column<int>(type: "int", nullable: false),
-                    StockMaximo = table.Column<int>(type: "int", nullable: false),
                     CategoriaId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     MarcaId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     ProveedorId = table.Column<string>(type: "nvarchar(450)", nullable: true)
@@ -217,147 +183,27 @@ namespace AppAcademy.Infrastucture.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Cortes",
+                name: "Users",
                 columns: table => new
                 {
-                    CorteId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FechaCorte = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TotalEfectivo = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    TotalTarjeta = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    TotalVales = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    TotalDevoluciones = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Comentarios = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PasswordHash = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
+                    PasswordSalt = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
+                    EstadoUser = table.Column<int>(type: "int", nullable: false),
+                    FechaCreacion = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FechaUltimoAcceso = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    RolId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Cortes", x => x.CorteId);
+                    table.PrimaryKey("PK_Users", x => x.UserId);
                     table.ForeignKey(
-                        name: "FK_Cortes_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "UserId");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Entradas",
-                columns: table => new
-                {
-                    EntradaId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TotalProductosEntrada = table.Column<int>(type: "int", nullable: false),
-                    FechaDeEntrega = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    NumeroFactura = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    VencimientoPago = table.Column<int>(type: "int", nullable: false),
-                    Folio = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Bruto = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    OrigenUbicacionId = table.Column<string>(type: "nvarchar(450)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Entradas", x => x.EntradaId);
-                    table.ForeignKey(
-                        name: "FK_Entradas_Ubicaciones_OrigenUbicacionId",
-                        column: x => x.OrigenUbicacionId,
-                        principalTable: "Ubicaciones",
-                        principalColumn: "UbicacionId");
-                    table.ForeignKey(
-                        name: "FK_Entradas_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "UserId");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "HistorialAccesos",
-                columns: table => new
-                {
-                    HistorialAccesoId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FechaAcceso = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DireccionIp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Dispositivo = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TipoAcceso = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_HistorialAccesos", x => x.HistorialAccesoId);
-                    table.ForeignKey(
-                        name: "FK_HistorialAccesos_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "UserId");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Salidas",
-                columns: table => new
-                {
-                    SalidaId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FechaSalida = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TotalProductosSalida = table.Column<int>(type: "int", nullable: false),
-                    Comentarios = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Salidas", x => x.SalidaId);
-                    table.ForeignKey(
-                        name: "FK_Salidas_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "UserId");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Ventas",
-                columns: table => new
-                {
-                    ventaId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FechaCompra = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ClienteId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Ventas", x => x.ventaId);
-                    table.ForeignKey(
-                        name: "FK_Ventas_Clientes_ClienteId",
-                        column: x => x.ClienteId,
-                        principalTable: "Clientes",
-                        principalColumn: "ClienteId");
-                    table.ForeignKey(
-                        name: "FK_Ventas_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "UserId");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "HistorialInventarios",
-                columns: table => new
-                {
-                    HistorialInventarioId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CantidadAnterior = table.Column<int>(type: "int", nullable: false),
-                    CantidadNueva = table.Column<int>(type: "int", nullable: false),
-                    FechaCambio = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Motivo = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    ProductoId = table.Column<string>(type: "nvarchar(450)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_HistorialInventarios", x => x.HistorialInventarioId);
-                    table.ForeignKey(
-                        name: "FK_HistorialInventarios_Productos_ProductoId",
-                        column: x => x.ProductoId,
-                        principalTable: "Productos",
-                        principalColumn: "ProductoId");
-                    table.ForeignKey(
-                        name: "FK_HistorialInventarios_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "UserId");
+                        name: "FK_Users_Roles_RolId",
+                        column: x => x.RolId,
+                        principalTable: "Roles",
+                        principalColumn: "RolId");
                 });
 
             migrationBuilder.CreateTable(
@@ -428,6 +274,214 @@ namespace AppAcademy.Infrastucture.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Cortes",
+                columns: table => new
+                {
+                    CorteId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FechaCorte = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TotalEfectivo = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TotalTarjeta = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TotalVales = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TotalDevoluciones = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Comentarios = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Cortes", x => x.CorteId);
+                    table.ForeignKey(
+                        name: "FK_Cortes_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Entradas",
+                columns: table => new
+                {
+                    EntradaId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TotalProductosEntrada = table.Column<int>(type: "int", nullable: false),
+                    FechaDeEntrega = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    NumeroFactura = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    VencimientoPago = table.Column<int>(type: "int", nullable: false),
+                    Folio = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Bruto = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    OrigenId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Entradas", x => x.EntradaId);
+                    table.ForeignKey(
+                        name: "FK_Entradas_Ubicaciones_OrigenId",
+                        column: x => x.OrigenId,
+                        principalTable: "Ubicaciones",
+                        principalColumn: "UbicacionId");
+                    table.ForeignKey(
+                        name: "FK_Entradas_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Estudiantes",
+                columns: table => new
+                {
+                    EstudianteId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Nombre = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Apellido = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Correo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Telefono = table.Column<int>(type: "int", nullable: false),
+                    Direccion = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FechaNacimiento = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Estudiantes", x => x.EstudianteId);
+                    table.ForeignKey(
+                        name: "FK_Estudiantes_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "HistorialAccesos",
+                columns: table => new
+                {
+                    HistorialAccesoId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FechaAcceso = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DireccionIp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Dispositivo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TipoAcceso = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_HistorialAccesos", x => x.HistorialAccesoId);
+                    table.ForeignKey(
+                        name: "FK_HistorialAccesos_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "HistorialInventarios",
+                columns: table => new
+                {
+                    HistorialInventarioId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CantidadAnterior = table.Column<int>(type: "int", nullable: false),
+                    CantidadNueva = table.Column<int>(type: "int", nullable: false),
+                    FechaCambio = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Motivo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    ProductoId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_HistorialInventarios", x => x.HistorialInventarioId);
+                    table.ForeignKey(
+                        name: "FK_HistorialInventarios_Productos_ProductoId",
+                        column: x => x.ProductoId,
+                        principalTable: "Productos",
+                        principalColumn: "ProductoId");
+                    table.ForeignKey(
+                        name: "FK_HistorialInventarios_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Materias",
+                columns: table => new
+                {
+                    MateriaId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Nombre = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Descripcion = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Materias", x => x.MateriaId);
+                    table.ForeignKey(
+                        name: "FK_Materias_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RefreshTokens",
+                columns: table => new
+                {
+                    RefreshTokenId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Token = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ExpiryDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsRevoked = table.Column<bool>(type: "bit", nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Revoked = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefreshTokens", x => x.RefreshTokenId);
+                    table.ForeignKey(
+                        name: "FK_RefreshTokens_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Salidas",
+                columns: table => new
+                {
+                    SalidaId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FechaSalida = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TotalProductosSalida = table.Column<int>(type: "int", nullable: false),
+                    Comentarios = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Salidas", x => x.SalidaId);
+                    table.ForeignKey(
+                        name: "FK_Salidas_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Ventas",
+                columns: table => new
+                {
+                    ventaId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FechaCompra = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ClienteId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ventas", x => x.ventaId);
+                    table.ForeignKey(
+                        name: "FK_Ventas_Clientes_ClienteId",
+                        column: x => x.ClienteId,
+                        principalTable: "Clientes",
+                        principalColumn: "ClienteId");
+                    table.ForeignKey(
+                        name: "FK_Ventas_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "EntradaProductos",
                 columns: table => new
                 {
@@ -453,6 +507,88 @@ namespace AppAcademy.Infrastucture.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Colegiaturas",
+                columns: table => new
+                {
+                    ColegiaturaId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Monto = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    EstadoColegiatura = table.Column<int>(type: "int", nullable: false),
+                    EstudianteId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Colegiaturas", x => x.ColegiaturaId);
+                    table.ForeignKey(
+                        name: "FK_Colegiaturas_Estudiantes_EstudianteId",
+                        column: x => x.EstudianteId,
+                        principalTable: "Estudiantes",
+                        principalColumn: "EstudianteId");
+                    table.ForeignKey(
+                        name: "FK_Colegiaturas_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MaterialAdeudos",
+                columns: table => new
+                {
+                    MaterialAdeudoId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Descripcion = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Monto = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    EstadoMaterial = table.Column<int>(type: "int", nullable: false),
+                    EstudianteId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MaterialAdeudos", x => x.MaterialAdeudoId);
+                    table.ForeignKey(
+                        name: "FK_MaterialAdeudos_Estudiantes_EstudianteId",
+                        column: x => x.EstudianteId,
+                        principalTable: "Estudiantes",
+                        principalColumn: "EstudianteId");
+                    table.ForeignKey(
+                        name: "FK_MaterialAdeudos_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MateriaEstudiantes",
+                columns: table => new
+                {
+                    Materia_EstudianteId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Faltas = table.Column<int>(type: "int", nullable: false),
+                    EstudianteId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    MateriaId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MateriaEstudiantes", x => x.Materia_EstudianteId);
+                    table.ForeignKey(
+                        name: "FK_MateriaEstudiantes_Estudiantes_EstudianteId",
+                        column: x => x.EstudianteId,
+                        principalTable: "Estudiantes",
+                        principalColumn: "EstudianteId");
+                    table.ForeignKey(
+                        name: "FK_MateriaEstudiantes_Materias_MateriaId",
+                        column: x => x.MateriaId,
+                        principalTable: "Materias",
+                        principalColumn: "MateriaId");
+                    table.ForeignKey(
+                        name: "FK_MateriaEstudiantes_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "DetalleCortes",
                 columns: table => new
                 {
@@ -460,7 +596,7 @@ namespace AppAcademy.Infrastucture.Migrations
                     TipoPago = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Monto = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     CorteId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    ventaId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    VentaId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -471,10 +607,11 @@ namespace AppAcademy.Infrastucture.Migrations
                         principalTable: "Cortes",
                         principalColumn: "CorteId");
                     table.ForeignKey(
-                        name: "FK_DetalleCortes_Ventas_ventaId",
-                        column: x => x.ventaId,
+                        name: "FK_DetalleCortes_Ventas_VentaId",
+                        column: x => x.VentaId,
                         principalTable: "Ventas",
-                        principalColumn: "ventaId");
+                        principalColumn: "ventaId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -484,14 +621,14 @@ namespace AppAcademy.Infrastucture.Migrations
                     DetallePagoId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Tipo = table.Column<int>(type: "int", nullable: false),
                     Monto = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    ventaId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    VentaId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DetallePagos", x => x.DetallePagoId);
                     table.ForeignKey(
-                        name: "FK_DetallePagos_Ventas_ventaId",
-                        column: x => x.ventaId,
+                        name: "FK_DetallePagos_Ventas_VentaId",
+                        column: x => x.VentaId,
                         principalTable: "Ventas",
                         principalColumn: "ventaId");
                 });
@@ -530,7 +667,7 @@ namespace AppAcademy.Infrastucture.Migrations
                     Cantidad = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Motivo = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     FechaDevolucion = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ventaId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    VentaId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     ProductoId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
@@ -548,11 +685,21 @@ namespace AppAcademy.Infrastucture.Migrations
                         principalTable: "Users",
                         principalColumn: "UserId");
                     table.ForeignKey(
-                        name: "FK_Devoluciones_Ventas_ventaId",
-                        column: x => x.ventaId,
+                        name: "FK_Devoluciones_Ventas_VentaId",
+                        column: x => x.VentaId,
                         principalTable: "Ventas",
                         principalColumn: "ventaId");
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Colegiaturas_EstudianteId",
+                table: "Colegiaturas",
+                column: "EstudianteId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Colegiaturas_UserId",
+                table: "Colegiaturas",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Cortes_UserId",
@@ -565,14 +712,14 @@ namespace AppAcademy.Infrastucture.Migrations
                 column: "CorteId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DetalleCortes_ventaId",
+                name: "IX_DetalleCortes_VentaId",
                 table: "DetalleCortes",
-                column: "ventaId");
+                column: "VentaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DetallePagos_ventaId",
+                name: "IX_DetallePagos_VentaId",
                 table: "DetallePagos",
-                column: "ventaId");
+                column: "VentaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DetalleVentas_ProductoId",
@@ -595,9 +742,9 @@ namespace AppAcademy.Infrastucture.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Devoluciones_ventaId",
+                name: "IX_Devoluciones_VentaId",
                 table: "Devoluciones",
-                column: "ventaId");
+                column: "VentaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_EntradaProductos_EntradaId",
@@ -610,13 +757,18 @@ namespace AppAcademy.Infrastucture.Migrations
                 column: "ProductoId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Entradas_OrigenUbicacionId",
+                name: "IX_Entradas_OrigenId",
                 table: "Entradas",
-                column: "OrigenUbicacionId");
+                column: "OrigenId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Entradas_UserId",
                 table: "Entradas",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Estudiantes_UserId",
+                table: "Estudiantes",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -645,6 +797,36 @@ namespace AppAcademy.Infrastucture.Migrations
                 column: "ProductoId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_MateriaEstudiantes_EstudianteId",
+                table: "MateriaEstudiantes",
+                column: "EstudianteId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MateriaEstudiantes_MateriaId",
+                table: "MateriaEstudiantes",
+                column: "MateriaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MateriaEstudiantes_UserId",
+                table: "MateriaEstudiantes",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MaterialAdeudos_EstudianteId",
+                table: "MaterialAdeudos",
+                column: "EstudianteId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MaterialAdeudos_UserId",
+                table: "MaterialAdeudos",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Materias_UserId",
+                table: "Materias",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PermisoRol_RolesRolId",
                 table: "PermisoRol",
                 column: "RolesRolId");
@@ -670,14 +852,19 @@ namespace AppAcademy.Infrastucture.Migrations
                 column: "ProveedorId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_RefreshTokens_UserId",
+                table: "RefreshTokens",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Salidas_UserId",
                 table: "Salidas",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_EstadoUserId",
+                name: "IX_Users_RolId",
                 table: "Users",
-                column: "EstadoUserId");
+                column: "RolId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Ventas_ClienteId",
@@ -693,6 +880,9 @@ namespace AppAcademy.Infrastucture.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Colegiaturas");
+
             migrationBuilder.DropTable(
                 name: "DetalleCortes");
 
@@ -721,10 +911,19 @@ namespace AppAcademy.Infrastucture.Migrations
                 name: "Inventarios");
 
             migrationBuilder.DropTable(
+                name: "MateriaEstudiantes");
+
+            migrationBuilder.DropTable(
+                name: "MaterialAdeudos");
+
+            migrationBuilder.DropTable(
                 name: "PermisoRol");
 
             migrationBuilder.DropTable(
                 name: "ProductoPromocion");
+
+            migrationBuilder.DropTable(
+                name: "RefreshTokens");
 
             migrationBuilder.DropTable(
                 name: "Salidas");
@@ -739,10 +938,13 @@ namespace AppAcademy.Infrastucture.Migrations
                 name: "Entradas");
 
             migrationBuilder.DropTable(
-                name: "Permisos");
+                name: "Materias");
 
             migrationBuilder.DropTable(
-                name: "Roles");
+                name: "Estudiantes");
+
+            migrationBuilder.DropTable(
+                name: "Permisos");
 
             migrationBuilder.DropTable(
                 name: "Productos");
@@ -769,7 +971,7 @@ namespace AppAcademy.Infrastucture.Migrations
                 name: "Proveedores");
 
             migrationBuilder.DropTable(
-                name: "EstadoUsers");
+                name: "Roles");
         }
     }
 }

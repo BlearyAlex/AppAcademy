@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AppAcademy.Controllers
 {
+    [Authorize(Policy = "ManageProducts")]
     [Route("api/v1/[controller]")]
     [ApiController]
     public class ProductoController : ControllerBase

@@ -22,19 +22,6 @@ namespace AppAcademy.Infrastucture.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("AppAcademy.Domain.Auth.EstadoUser", b =>
-                {
-                    b.Property<string>("EstadoUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("UserEstado")
-                        .HasColumnType("int");
-
-                    b.HasKey("EstadoUserId");
-
-                    b.ToTable("EstadoUsers");
-                });
-
             modelBuilder.Entity("AppAcademy.Domain.Auth.HistorialAcceso", b =>
                 {
                     b.Property<string>("HistorialAccesoId")
@@ -132,8 +119,8 @@ namespace AppAcademy.Infrastucture.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("EstadoUserId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("EstadoUser")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("datetime2");
@@ -156,8 +143,6 @@ namespace AppAcademy.Infrastucture.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId");
-
-                    b.HasIndex("EstadoUserId");
 
                     b.HasIndex("RolId");
 
@@ -861,15 +846,9 @@ namespace AppAcademy.Infrastucture.Migrations
 
             modelBuilder.Entity("AppAcademy.Domain.Auth.User", b =>
                 {
-                    b.HasOne("AppAcademy.Domain.Auth.EstadoUser", "EstadoUser")
-                        .WithMany("Users")
-                        .HasForeignKey("EstadoUserId");
-
                     b.HasOne("AppAcademy.Domain.Auth.Rol", "Rol")
                         .WithMany("Users")
                         .HasForeignKey("RolId");
-
-                    b.Navigation("EstadoUser");
 
                     b.Navigation("Rol");
                 });
@@ -1150,11 +1129,6 @@ namespace AppAcademy.Infrastucture.Migrations
                         .HasForeignKey("PromocionesPromocionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("AppAcademy.Domain.Auth.EstadoUser", b =>
-                {
-                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("AppAcademy.Domain.Auth.Rol", b =>
