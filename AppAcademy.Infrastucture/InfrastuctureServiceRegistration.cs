@@ -1,5 +1,6 @@
 ﻿using AppAcademy.Application.Contracts.Persistence;
 using AppAcademy.Application.Contracts.Persistence.Auth;
+using AppAcademy.Infrastucture.BackgroundServices;
 using AppAcademy.Infrastucture.Persistence;
 using AppAcademy.Infrastucture.Repositories;
 using AppAcademy.Infrastucture.Repositories.Auth;
@@ -42,10 +43,14 @@ namespace AppAcademy.Infrastucture
                     };
                 });
 
+            // Configurar servicios en segundo plano
+            services.AddHostedService<RefreshTokenCleanupService>();
+
             #region Auth
             services.AddScoped<IUserRepository, UserRepository>();
             #endregion
 
+            #region ControlVentas
             services.AddScoped(typeof(IAsyncRepository<>), typeof(AsyncRepository<>));
             services.AddScoped<IProductoRepository, ProductoRepository>();
             services.AddScoped<ICategoriaRepository, CategoriaRepository>();
@@ -64,6 +69,7 @@ namespace AppAcademy.Infrastucture
             services.AddScoped<ISalidaRepository, SalidaRepository>();
             services.AddScoped<IUbicacionRepository, UbicacionRepository>();
             services.AddScoped<IVentaRepository, VentaRepository>();
+            #endregion
 
             return services;
         }
