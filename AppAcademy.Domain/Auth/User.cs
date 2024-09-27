@@ -14,8 +14,13 @@ namespace AppAcademy.Domain.Auth
         public DateTime FechaUltimoAcceso { get; set; }
 
         // Relaciones
+        public string? EstadoUserId { get; set; }
         public EstadoUser? EstadoUser { get; set; }
+
+        public string? RolId { get; set; }
         public Rol? Rol { get; set; }
+
+        public List<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 
         public List<HistorialInventario> HistorialInventarios { get; set; } = [];
         public List<Salida> Salidas { get; set; } = [];

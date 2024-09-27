@@ -1,5 +1,8 @@
-﻿using AppAcademy.Application.Features.Auth.Users.Commands.CreateUser;
+﻿using AppAcademy.Application.DTOs;
+using AppAcademy.Application.Features.Auth.Users.Commands.CreateUser;
 using AppAcademy.Application.Features.Auth.Users.Commands.LoginUser;
+using AppAcademy.Application.Features.Auth.Users.Commands.RefreshTokenUser;
+using AppAcademy.Domain.Auth;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -68,8 +71,22 @@ namespace AppAcademy.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error {ex.Message}");
+                return StatusCode(500, $"Internal server error {ex.InnerException}");
             }
+        }
+
+        [HttpPost]
+        [Route("refresh-token")]
+        public async Task<ActionResult<UserDto>> RefreshToken([FromBody] RefreshTokenUserCommand command)
+        {
+            var result = await _mediator.Send(command);
+
+            if (result == null)
+            {
+                return Unauthorized();
+            }
+
+            return Ok(result);
         }
     }
 }

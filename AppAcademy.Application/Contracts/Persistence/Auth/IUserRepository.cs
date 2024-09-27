@@ -10,5 +10,8 @@ namespace AppAcademy.Application.Contracts.Persistence.Auth
         public string CrearToken(User user);
         Task<UserDto> RegisterUser(CreateUserCommand createUserCommand);
         Task<UserDto> Login(LoginUserCommand loginUserCommand);
+        Task AssignRoleToUser(string userId, string nameRol);
+        Task<RefreshToken> CreateRefreshToken(User user);
+        Task<UserDto> RefreshTokenAsync(string refreshToken);
     }
 }

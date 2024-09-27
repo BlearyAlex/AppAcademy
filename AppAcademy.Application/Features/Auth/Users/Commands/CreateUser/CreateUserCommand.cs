@@ -7,6 +7,7 @@ namespace AppAcademy.Application.Features.Auth.Users.Commands.CreateUser
     {
         public string? UserName { get; set; }
         public string? Email { get; set; }
+        public string? NameRol { get; set; }
         public string? Password { get; set; }
     }
 }

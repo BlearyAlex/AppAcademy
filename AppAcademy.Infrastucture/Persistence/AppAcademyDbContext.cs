@@ -17,6 +17,7 @@ namespace AppAcademy.Infrastucture.Persistence
         public DbSet<Permiso> Permisos { get; set; }
         public DbSet<Rol> Roles {  get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
         
         // Punto Venta
         public DbSet<Categoria> Categorias { get; set; }

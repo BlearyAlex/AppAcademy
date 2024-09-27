@@ -36,7 +36,9 @@ namespace AppAcademy.Infrastucture
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
                         ValidateIssuer = false,
-                        ValidateAudience = false
+                        ValidateAudience = false,
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero // Deshabilitar tolerancia en la expiración (por defecto es de 5 minutos)
                     };
                 });
 
