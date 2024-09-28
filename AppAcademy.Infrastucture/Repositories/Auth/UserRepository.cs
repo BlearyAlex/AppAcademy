@@ -28,20 +28,42 @@ namespace AppAcademy.Infrastucture.Repositories.Auth
         #region CrearToken
         public string CrearToken(User user)
         {
+            // Obtener los permisos del rol del usuario
+            var rolePermissions = _dbContext.Roles
+                .Include(r => r.Permisos) // Incluye los permisos asociados al rol
+                .Where(r => r.RolId == user.RolId)
+                .SelectMany(r => r.Permisos.Select(p => p.NamePermiso))
+                .ToList();
+
+
             var claims = new List<Claim>()
-           {
+            {
                new Claim(JwtRegisteredClaimNames.NameId, user.UserName),
-               //new Claim(ClaimTypes.Role, user.Rol.NameRol)
-           };
+               new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString())
+            };
+
+            // Añadir cada permiso como un claim
+            foreach (var permission in rolePermissions)
+            {
+                claims.Add(new Claim("Permission", permission));
+            }
+
+            // Crear las credenciales de firma
             var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
+
+            // Descripción del token
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.AddSeconds(20),
                 SigningCredentials = creds
             };
+
+            // Generar el token
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
+
+            // Devolver el token como cadena
             return tokenHandler.WriteToken(token);
         }
         #endregion
@@ -59,6 +81,7 @@ namespace AppAcademy.Infrastucture.Repositories.Auth
             {
                 Email = createUserCommand.Email,
                 UserName = createUserCommand.UserName,
+                RolId = createUserCommand.NameRol,
                 PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(createUserCommand.Password)),
                 PasswordSalt = hmac.Key,
                 FechaCreacion = DateTime.Now

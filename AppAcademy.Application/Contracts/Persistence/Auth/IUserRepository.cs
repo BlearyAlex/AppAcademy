@@ -5,7 +5,7 @@ using AppAcademy.Domain.Auth;
 
 namespace AppAcademy.Application.Contracts.Persistence.Auth
 {
-    public interface IUserRepository
+    public interface IUserRepository : IAsyncRepository<User>
     {
         public string CrearToken(User user);
         Task<UserDto> RegisterUser(CreateUserCommand createUserCommand);

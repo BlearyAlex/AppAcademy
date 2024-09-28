@@ -49,8 +49,8 @@ namespace AppAcademy.Infrastucture
             #region PermissionHandler
             services.AddAuthorization(config =>
             {
-                config.AddPolicy("Crear Producto", policy =>
-                policy.Requirements.Add(new PermissionAttribute("Crear Producto")));
+                config.AddPolicy("ManageProveedores", policy =>
+                policy.Requirements.Add(new PermissionAttribute("ManageProveedores")));
             });
 
 

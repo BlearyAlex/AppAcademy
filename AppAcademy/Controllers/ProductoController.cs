@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AppAcademy.Controllers
 {
-    [Authorize(Policy = "ManageProducts")]
+    [Authorize(Policy = "ManageProveedores")]
     [Route("api/v1/[controller]")]
     [ApiController]
     public class ProductoController : ControllerBase
@@ -34,7 +34,7 @@ namespace AppAcademy.Controllers
 
                 if (products == null || !products.Any())
                 {
-                    return NotFound("No se encontraron categorías.");
+                    return NotFound("No se encontraron productos.");
                 }
 
                 return Ok(products);
