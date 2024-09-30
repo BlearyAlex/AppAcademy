@@ -1,43 +1,39 @@
 ﻿using AppAcademy.Application.Features.Categorias.Commands.CreateCategoria;
 using AppAcademy.Application.Features.Categorias.Commands.DeleteCategoria;
 using AppAcademy.Application.Features.Categorias.Commands.UpdateCategoria;
+using AppAcademy.Application.Features.Categorias.Queries.GetAllCategoria;
 using AppAcademy.Application.Features.Categorias.Queries.GetCategoriaById;
-using AppAcademy.Application.Features.Proveedores.Commands.CreateProveedor;
-using AppAcademy.Application.Features.Proveedores.Commands.DeleteProveedor;
-using AppAcademy.Application.Features.Proveedores.Commands.UpdateProveedor;
-using AppAcademy.Application.Features.Proveedores.Queries.GetAllProveedor;
-using AppAcademy.Application.Features.Proveedores.Queries.GetProveedorById;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AppAcademy.Controllers
+namespace AppAcademy.Controllers.ControlVentasController
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class ProveedorController : ControllerBase
+    public class CategoriaController : ControllerBase
     {
         private readonly IMediator _mediator;
 
-        public ProveedorController(IMediator mediator)
+        public CategoriaController(IMediator mediator)
         {
             _mediator = mediator;
         }
 
         #region GetAll
-        [HttpGet("GetAllProveedores")]
-        public async Task<ActionResult<IEnumerable<GetAllProveedoresVm>>> GetAllProvedores()
+        [HttpGet("GetAllCategorias")]
+        public async Task<ActionResult<IEnumerable<GetAllCategoriasVm>>> GetAllCategorias()
         {
             try
             {
-                var query = new GetAllProveedoresListQuery();
-                var proveedores = await _mediator.Send(query);
+                var query = new GetAllCategoriasListQuery();
+                var categorias = await _mediator.Send(query);
 
-                if(proveedores == null || !proveedores.Any())
+                if (categorias == null || !categorias.Any())
                 {
-                    return NotFound("No se encontraron proveedores.");
+                    return NotFound("No se encontraron categorías.");
                 }
 
-                return Ok(proveedores);
+                return Ok(categorias);
             }
             catch (Exception ex)
             {
@@ -46,26 +42,26 @@ namespace AppAcademy.Controllers
         }
         #endregion
 
-        #region GetProveedorById
-        [HttpGet("GetProveedorById/{id}")]
-        public async Task<ActionResult<GetProveedorByIdVm>> GetProveedorById(string id)
+        #region GetCategoriaById
+        [HttpGet("GetCategoriaById/{id}")]
+        public async Task<ActionResult<GetCategoriaByIdVm>> GetCategoriaById(string id)
         {
             try
             {
-                var command = new GetProveedorByIdQuery(id);
+                var command = new GetCategoriaByIdQuery(id);
 
-                var proveedor = await _mediator.Send(command);
+                var categoria = await _mediator.Send(command);
 
-                if (proveedor == null)
+                if (categoria == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(proveedor);
+                return Ok(categoria);
             }
             catch (KeyNotFoundException)
             {
-                return NotFound($"Proveedor con ID {id} no encontrada.");
+                return NotFound($"Categoría con ID {id} no encontrada.");
             }
             catch (Exception ex)
             {
@@ -74,9 +70,9 @@ namespace AppAcademy.Controllers
         }
         #endregion
 
-        #region CreateProveedor
-        [HttpPost("CreateProveedor")]
-        public async Task<ActionResult<string>> CreateProveedor([FromBody] CreateProveedorCommand command)
+        #region CreateCategoria
+        [HttpPost("CreateCategoria")]
+        public async Task<ActionResult<string>> CreateCategoria([FromBody] CreateCategoriaCommand command)
         {
             try
             {
@@ -89,9 +85,9 @@ namespace AppAcademy.Controllers
         }
         #endregion
 
-        #region UpdateProveedor
-        [HttpPut("UpdateProveedor")]
-        public async Task<ActionResult> UpdateProveedor([FromBody] UpdateProveedorCommand command)
+        #region UpdateCategoria
+        [HttpPut("UpdateCategoria")]
+        public async Task<ActionResult> UpdateCategoria([FromBody] UpdateCategoriaCommand command)
         {
             try
             {
@@ -106,15 +102,15 @@ namespace AppAcademy.Controllers
         }
         #endregion
 
-        #region DeleteProveedor
-        [HttpDelete("DeleteProveedor/{id}")]
-        public async Task<ActionResult> DeleteProveedor(string id)
+        #region DeleteCategoria
+        [HttpDelete("DeleteCategoria/{id}")]
+        public async Task<ActionResult> DeleteProduct(string id)
         {
             try
             {
-                var command = new DeleteProveedorCommand
+                var command = new DeleteCategoriaCommand
                 {
-                    ProveedorId = id
+                    CategoriaId = id
                 };
 
                 await _mediator.Send(command);
@@ -123,7 +119,7 @@ namespace AppAcademy.Controllers
             }
             catch (KeyNotFoundException)
             {
-                return NotFound($"Proveedor con ID {id} no encontrada.");
+                return NotFound($"Categoría con ID {id} no encontrada.");
             }
             catch (Exception ex)
             {

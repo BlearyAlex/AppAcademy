@@ -7,7 +7,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AppAcademy.Controllers
+namespace AppAcademy.Controllers.AuthControllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
@@ -46,7 +46,7 @@ namespace AppAcademy.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, "Internal server error"); 
+                return StatusCode(500, "Internal server error");
             }
         }
 

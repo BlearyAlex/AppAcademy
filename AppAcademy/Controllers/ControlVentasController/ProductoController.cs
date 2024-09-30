@@ -8,9 +8,9 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AppAcademy.Controllers
+namespace AppAcademy.Controllers.ControlVentasController
 {
-    [Authorize(Policy = "ManageProveedores")]
+    //[Authorize(Policy = "ManageProveedores")]
     [Route("api/v1/[controller]")]
     [ApiController]
     public class ProductoController : ControllerBase
@@ -23,7 +23,6 @@ namespace AppAcademy.Controllers
         }
 
         #region GetAll
-        [Authorize]
         [HttpGet("GetAllProductos")]
         public async Task<ActionResult<IEnumerable<GetAllProductosVm>>> GetAllProducts()
         {
@@ -86,7 +85,7 @@ namespace AppAcademy.Controllers
 
                 if (products == null || !products.Any())
                 {
-                    
+
                     return NotFound();
                 }
 

@@ -5,7 +5,7 @@ using AppAcademy.Application.Features.Auth.Roles.Commands.EditRol;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AppAcademy.Controllers
+namespace AppAcademy.Controllers.AuthControllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]

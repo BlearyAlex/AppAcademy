@@ -6,7 +6,7 @@ using AppAcademy.Application.Features.Clientes.Queries.GetClienteById;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AppAcademy.Controllers
+namespace AppAcademy.Controllers.ControlVentasController
 {
     [Route("api/v1/[controller]")]
     [ApiController]

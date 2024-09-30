@@ -5,38 +5,44 @@ using AppAcademy.Application.Features.DetallesPagos.Command.DeleteDetallePago;
 using AppAcademy.Application.Features.DetallesPagos.Command.UpdateDetallePago;
 using AppAcademy.Application.Features.DetallesPagos.Queries.GetAllDetallesPagos;
 using AppAcademy.Application.Features.DetallesPagos.Queries.GetDetallePago;
+using AppAcademy.Application.Features.Devoluciones.Command.CreateDevolucion;
+using AppAcademy.Application.Features.Devoluciones.Command.DeleteDevolucion;
+using AppAcademy.Application.Features.Devoluciones.Command.UpdateDevolucion;
+using AppAcademy.Application.Features.Devoluciones.Queries.GetAllDevoluciones;
+using AppAcademy.Application.Features.Devoluciones.Queries.GetDevolucion;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AppAcademy.Controllers
+namespace AppAcademy.Controllers.ControlVentasController
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class DetallePagoController : ControllerBase
+    public class DevolucionController : ControllerBase
     {
         private readonly IMediator _mediator;
 
-        public DetallePagoController(IMediator mediator)
+        public DevolucionController(IMediator mediator)
         {
             _mediator = mediator;
         }
 
+
         #region GetAll
-        [HttpGet("GetAllDetallesPagos")]
-        public async Task<ActionResult<IEnumerable<GetAllDetallesPagosVm>>> GetAllDetallesPagos()
+        [HttpGet("GetAllDevoluciones")]
+        public async Task<ActionResult<IEnumerable<GetAllDevolucionesVm>>> GetAllDevoluciones()
         {
             try
             {
-                var query = new GetAllDetallesPagosListQuery();
-                var detallesPagos = await _mediator.Send(query);
+                var query = new GetAllDevolucionesListQuery();
+                var devoluciones = await _mediator.Send(query);
 
-                if (detallesPagos == null || !detallesPagos.Any())
+                if (devoluciones == null || !devoluciones.Any())
                 {
-                    return NotFound("No se encontraron detalles pagos.");
+                    return NotFound("No se encontraron devoluciones.");
                 }
 
-                return Ok(detallesPagos);
+                return Ok(devoluciones);
             }
             catch (Exception ex)
             {
@@ -45,26 +51,26 @@ namespace AppAcademy.Controllers
         }
         #endregion
 
-        #region GetDetallePagoById
-        [HttpGet("GetDetallePagoById/{id}")]
-        public async Task<ActionResult<GetDetallePagoVm>> GetDetallePagoById(string id)
+        #region GetDevolucionById
+        [HttpGet("GetDevolucionById/{id}")]
+        public async Task<ActionResult<GetDevolucionVm>> GetDevolucionById(string id)
         {
             try
             {
-                var command = new GetDetallePagoQuery(id);
+                var command = new GetDevolucionQuery(id);
 
-                var detallePago = await _mediator.Send(command);
+                var devolucion = await _mediator.Send(command);
 
-                if (detallePago == null)
+                if (devolucion == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(detallePago);
+                return Ok(devolucion);
             }
             catch (KeyNotFoundException)
             {
-                return NotFound($"Detalle Pago con ID {id} no encontrada.");
+                return NotFound($"Devolucion con ID {id} no encontrada.");
             }
             catch (Exception ex)
             {
@@ -73,9 +79,9 @@ namespace AppAcademy.Controllers
         }
         #endregion
 
-        #region CreateDetallePago
-        [HttpPost("CreateDetallePago")]
-        public async Task<ActionResult<string>> CreateDetallePago([FromBody] CreateDetallePagoCommand command)
+        #region CreateDevolucion
+        [HttpPost("CreateDevolucion")]
+        public async Task<ActionResult<string>> CreateDevolucion([FromBody] CreateDevolucionCommand command)
         {
             try
             {
@@ -88,9 +94,9 @@ namespace AppAcademy.Controllers
         }
         #endregion
 
-        #region UpdateDetallePago
-        [HttpPut("UpdateDetallePago")]
-        public async Task<ActionResult> UpdateDetallePago([FromBody] UpdateDetallePagoCommand command)
+        #region UpdateDevolucion
+        [HttpPut("UpdateDevolucion")]
+        public async Task<ActionResult> UpdateDevolucion([FromBody] UpdateDevolucionCommand command)
         {
             try
             {
@@ -105,15 +111,15 @@ namespace AppAcademy.Controllers
         }
         #endregion
 
-        #region DeleteDetallePago
-        [HttpDelete("DeleteDetallePago/{id}")]
-        public async Task<ActionResult> DeleteDetallePago(string id)
+        #region DeleteDevolucion
+        [HttpDelete("DeleteDevolucion/{id}")]
+        public async Task<ActionResult> DeleteDevolucion(string id)
         {
             try
             {
-                var command = new DeleteDetallePagoCommand
+                var command = new DeleteDevolucionCommand
                 {
-                    DetallePagoId = id
+                    DevolucionId = id
                 };
 
                 await _mediator.Send(command);
@@ -122,7 +128,7 @@ namespace AppAcademy.Controllers
             }
             catch (KeyNotFoundException)
             {
-                return NotFound($"Detalle Pago con ID {id} no encontrada.");
+                return NotFound($"Devolucion con ID {id} no encontrada.");
             }
             catch (Exception ex)
             {

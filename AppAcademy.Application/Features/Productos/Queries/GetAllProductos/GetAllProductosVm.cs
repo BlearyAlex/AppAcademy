@@ -4,6 +4,7 @@ namespace AppAcademy.Application.Features.Productos.Queries.GetAllProductos
 {
     public class GetAllProductosVm
     {
+        public string ProductoId { get; set; }
         public string Nombre { get; set; }
         public string CodigoBarras { get; set; }
         public string Descripcion { get; set; }
@@ -13,7 +14,7 @@ namespace AppAcademy.Application.Features.Productos.Queries.GetAllProductos
         public decimal Precio { get; set; }
         public decimal DescuentoBase { get; set; }
         public int Impuesto { get; set; }
-        public ProductoEstado EstadoProducto { get; set; }
+        public string EstadoProducto { get; set; }
         public int StockMinimo { get; set; }
     }
 }

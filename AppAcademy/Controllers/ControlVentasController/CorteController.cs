@@ -12,7 +12,7 @@ using AppAcademy.Application.Features.DetallesCortes.Queries.GetDetalleCorte;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AppAcademy.Controllers
+namespace AppAcademy.Controllers.ControlVentasController
 {
     [Route("api/v1/[controller]")]
     [ApiController]
