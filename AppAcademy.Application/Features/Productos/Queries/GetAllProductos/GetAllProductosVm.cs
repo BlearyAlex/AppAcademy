@@ -16,5 +16,10 @@ namespace AppAcademy.Application.Features.Productos.Queries.GetAllProductos
         public int Impuesto { get; set; }
         public string EstadoProducto { get; set; }
         public int StockMinimo { get; set; }
+
+        // Relación con otras entidades
+        public string? CategoriaId { get; set; }
+        public string? MarcaId { get; set; }
+        public string? ProveedorId { get; set; }
     }
 }

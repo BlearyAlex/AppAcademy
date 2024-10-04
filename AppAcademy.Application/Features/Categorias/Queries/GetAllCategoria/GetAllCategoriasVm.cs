@@ -3,5 +3,6 @@
     public class GetAllCategoriasVm
     {
         public string? Nombre { get; set; }
+        public string? CategoriaId { get; set; }
     }
 }

@@ -10,6 +10,7 @@ namespace AppAcademy.Application.Features.Marcas.Queries.GetAllMarcas
     public class GetAllMarcasVm
     {
         public string? Nombre { get; set; }
+        public string? MarcaId { get; set; }
 
         // Relaciones
         public List<Producto> Productos { get; set; } = [];
