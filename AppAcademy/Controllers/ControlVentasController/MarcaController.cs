@@ -85,7 +85,7 @@ namespace AppAcademy.Controllers.ControlVentasController
         #endregion
 
         #region UpdateMarca
-        [HttpPut("UpdateCategoria")]
+        [HttpPut("UpdateMarca")]
         public async Task<ActionResult> UpdateMarca([FromBody] UpdateMarcaCommand command)
         {
             try
