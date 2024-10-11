@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AppAcademy.Application.Features.Entradas.Command.UpdateEntrada
+namespace AppAcademy.Application.Features.Entradas.Commands.UpdateEntrada
 {
     public class UpdateEntradaCommandHandler : IRequestHandler<UpdateEntradaCommand>
     {

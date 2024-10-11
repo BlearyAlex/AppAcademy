@@ -4,7 +4,7 @@ namespace AppAcademy.Application.Exceptions
 {
     public class ValidationException : ApplicationException
     {
-        public ValidationException() : base("Se presentaron uno o mas errores de validacion")
+        public ValidationException() : base ("Se presentaron uno o mas errores de validacion")
         {
             Errors = new Dictionary<string, string[]>();
         }

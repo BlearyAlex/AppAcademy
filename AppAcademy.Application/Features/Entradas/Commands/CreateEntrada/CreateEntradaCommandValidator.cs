@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AppAcademy.Application.Features.Entradas.Command.CreateEntrada
+namespace AppAcademy.Application.Features.Entradas.Commands.CreateEntrada
 {
     public class CreateEntradaCommandValidator : AbstractValidator<CreateEntradaCommand>
     {

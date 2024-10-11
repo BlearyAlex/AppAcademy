@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AppAcademy.Domain.PuntoDeVenta;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,7 @@ namespace AppAcademy.Application.Features.Entradas.Queries.GetEntrada
 {
     public class GetEntradaVm
     {
+        public string EntradaId { get; set; }
         public int TotalProductosEntrada { get; set; }
         public DateTime FechaDeEntrega { get; set; }
         public string? NumeroFactura { get; set; }
@@ -16,8 +18,7 @@ namespace AppAcademy.Application.Features.Entradas.Queries.GetEntrada
         public decimal Bruto { get; set; }
 
         // Relaciones
-        public string? UserId { get; set; }
-
         public string? OrigenId { get; set; }
+        public List<EntradaProducto> EntradaProductos { get; set; }
     }
 }

@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AppAcademy.Application.Features.Entradas.Command.DeleteEntrada
+namespace AppAcademy.Application.Features.Entradas.Commands.DeleteEntrada
 {
     public class DeleteEntradaCommandHandler : IRequestHandler<DeleteEntradaCommand>
     {

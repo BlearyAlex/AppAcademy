@@ -45,5 +45,16 @@ namespace AppAcademy.Infrastucture.Persistence
         public DbSet<Materia> Materias { get; set; }
         public DbSet<MaterialAdeudo> MaterialAdeudos { get; set; }
         public DbSet<Materia_Estudiante> MateriaEstudiantes { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Entrada>()
+                .HasMany(e => e.EntradaProductos)
+                .WithOne(ep => ep.Entrada)
+                .HasForeignKey(ep => ep.EntradaId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            base.OnModelCreating(modelBuilder); 
+        }
     }
 }

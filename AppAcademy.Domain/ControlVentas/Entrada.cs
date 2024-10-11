@@ -18,5 +18,7 @@ namespace AppAcademy.Domain.PuntoDeVenta
 
         public string? OrigenId { get; set; }
         public Ubicacion? Origen { get; set; }
+
+        public ICollection<EntradaProducto> EntradaProductos { get; set; } = new List<EntradaProducto>();
     }
 }

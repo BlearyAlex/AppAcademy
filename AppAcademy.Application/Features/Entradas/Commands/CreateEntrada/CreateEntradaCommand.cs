@@ -1,13 +1,6 @@
-﻿using AppAcademy.Domain.Auth;
-using AppAcademy.Domain.PuntoDeVenta;
-using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MediatR;
 
-namespace AppAcademy.Application.Features.Entradas.Command.CreateEntrada
+namespace AppAcademy.Application.Features.Entradas.Commands.CreateEntrada
 {
     public class CreateEntradaCommand : IRequest<string>
     {
@@ -17,9 +10,14 @@ namespace AppAcademy.Application.Features.Entradas.Command.CreateEntrada
         public int VencimientoPago { get; set; }
         public string? Folio { get; set; }
         public decimal Bruto { get; set; }
-
-        public string? UserId { get; set; }
-
         public string? OrigenId { get; set; }
+        public List<CreateEntradaProductoModel>? Productos { get; set; } = new List<CreateEntradaProductoModel>();
+    }
+
+    public class CreateEntradaProductoModel
+    {
+        public int Cantidad { get; set; }
+        public decimal Costo { get; set; }
+        public int ProductoId { get; set; }
     }
 }

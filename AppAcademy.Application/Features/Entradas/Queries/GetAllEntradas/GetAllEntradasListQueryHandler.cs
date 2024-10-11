@@ -23,9 +23,9 @@ namespace AppAcademy.Application.Features.Entradas.Queries.GetAllEntradas
 
         public async Task<List<GetAllEntradasVm>> Handle(GetAllEntradasListQuery request, CancellationToken cancellationToken)
         {
-            var detalleEntrada = await _entradaRepository.GetAllAsync();
+            var entradaList = await _entradaRepository.GetAllAsync();
 
-            return _mapper.Map<List<GetAllEntradasVm>>(detalleEntrada);
+            return _mapper.Map<List<GetAllEntradasVm>>(entradaList);
         }
     }
 }

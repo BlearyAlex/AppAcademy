@@ -22,8 +22,8 @@ using AppAcademy.Application.Features.Devoluciones.Command.CreateDevolucion;
 using AppAcademy.Application.Features.Devoluciones.Command.UpdateDevolucion;
 using AppAcademy.Application.Features.Devoluciones.Queries.GetAllDevoluciones;
 using AppAcademy.Application.Features.Devoluciones.Queries.GetDevolucion;
-using AppAcademy.Application.Features.Entradas.Command.CreateEntrada;
-using AppAcademy.Application.Features.Entradas.Command.UpdateEntrada;
+using AppAcademy.Application.Features.Entradas.Commands.CreateEntrada;
+using AppAcademy.Application.Features.Entradas.Commands.UpdateEntrada;
 using AppAcademy.Application.Features.Entradas.Queries.GetAllEntradas;
 using AppAcademy.Application.Features.EntradasProductos.Command.CreateEntrada;
 using AppAcademy.Application.Features.EntradasProductos.Command.UpdateEntrada;
@@ -178,7 +178,6 @@ namespace AppAcademy.Application.Mapping
 
             #region Entradas
             CreateMap<CreateEntradaCommand, Entrada>()
-                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
                 .ForMember(dest => dest.OrigenId, opt => opt.MapFrom(src => src.OrigenId));
             CreateMap<UpdateEntradaCommand, Entrada>()
                 .ForMember(dest => dest.OrigenId, opt => opt.MapFrom(src => src.OrigenId));
