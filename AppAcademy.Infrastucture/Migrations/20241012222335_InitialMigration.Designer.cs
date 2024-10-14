@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppAcademy.Infrastucture.Migrations
 {
     [DbContext(typeof(AppAcademyDbContext))]
-    [Migration("20240927193621_InitialMigration")]
+    [Migration("20241012222335_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -500,8 +500,8 @@ namespace AppAcademy.Infrastucture.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("VencimientoPago")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("VencimientoPago")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("EntradaId");
 
@@ -1014,8 +1014,9 @@ namespace AppAcademy.Infrastucture.Migrations
             modelBuilder.Entity("AppAcademy.Domain.PuntoDeVenta.EntradaProducto", b =>
                 {
                     b.HasOne("AppAcademy.Domain.PuntoDeVenta.Entrada", "Entrada")
-                        .WithMany()
-                        .HasForeignKey("EntradaId");
+                        .WithMany("EntradaProductos")
+                        .HasForeignKey("EntradaId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("AppAcademy.Domain.PuntoDeVenta.Producto", "Producto")
                         .WithMany("EntradaProductos")
@@ -1193,6 +1194,11 @@ namespace AppAcademy.Infrastucture.Migrations
             modelBuilder.Entity("AppAcademy.Domain.PuntoDeVenta.Corte", b =>
                 {
                     b.Navigation("DetalleCortes");
+                });
+
+            modelBuilder.Entity("AppAcademy.Domain.PuntoDeVenta.Entrada", b =>
+                {
+                    b.Navigation("EntradaProductos");
                 });
 
             modelBuilder.Entity("AppAcademy.Domain.PuntoDeVenta.Marca", b =>

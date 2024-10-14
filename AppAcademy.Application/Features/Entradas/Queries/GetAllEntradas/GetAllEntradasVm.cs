@@ -9,11 +9,17 @@ namespace AppAcademy.Application.Features.Entradas.Queries.GetAllEntradas
         public int TotalProductosEntrada { get; set; }
         public DateTime FechaDeEntrega { get; set; }
         public string? NumeroFactura { get; set; }
-        public int VencimientoPago { get; set; }
+        public DateTime VencimientoPago { get; set; }
         public string? Folio { get; set; }
         public decimal Bruto { get; set; }
-        public string? OrigenId { get; set; }
-        public int MyProperty { get; set; }
-        public List<EntradaProducto> EntradaProductos { get; set; }
+        public List<EntradaProductoVm> Productos { get; set; }
+    }
+
+    public class EntradaProductoVm
+    {
+        public string EntradaProductoId { get; set; }
+        public int Cantidad { get; set; }
+        public decimal Costo { get; set; }
+        public string ProductoId { get; set; }
     }
 }

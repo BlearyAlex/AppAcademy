@@ -304,7 +304,7 @@ namespace AppAcademy.Infrastucture.Migrations
                     TotalProductosEntrada = table.Column<int>(type: "int", nullable: false),
                     FechaDeEntrega = table.Column<DateTime>(type: "datetime2", nullable: false),
                     NumeroFactura = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    VencimientoPago = table.Column<int>(type: "int", nullable: false),
+                    VencimientoPago = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Folio = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Bruto = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
@@ -498,7 +498,8 @@ namespace AppAcademy.Infrastucture.Migrations
                         name: "FK_EntradaProductos_Entradas_EntradaId",
                         column: x => x.EntradaId,
                         principalTable: "Entradas",
-                        principalColumn: "EntradaId");
+                        principalColumn: "EntradaId",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_EntradaProductos_Productos_ProductoId",
                         column: x => x.ProductoId,

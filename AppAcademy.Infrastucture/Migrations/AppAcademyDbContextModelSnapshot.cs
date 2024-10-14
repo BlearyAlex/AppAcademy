@@ -497,8 +497,8 @@ namespace AppAcademy.Infrastucture.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("VencimientoPago")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("VencimientoPago")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("EntradaId");
 

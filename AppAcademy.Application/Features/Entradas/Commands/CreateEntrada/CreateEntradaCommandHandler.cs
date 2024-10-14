@@ -33,8 +33,27 @@ namespace AppAcademy.Application.Features.Entradas.Commands.CreateEntrada
                 NumeroFactura = request.NumeroFactura,
                 VencimientoPago = request.VencimientoPago,
                 Folio = request.Folio,
-                Bruto = request.Bruto,
+                Bruto = request.Bruto
+            };
+
+            if(request.Productos != null && request.Productos.Count > 0)
+            {
+                foreach(var producto in request.Productos)
+                {
+                    var nuevaEntradaProducto = new EntradaProducto
+                    {
+                        Cantidad = producto.Cantidad,
+                        Costo = producto.Costo,
+                        ProductoId = producto.ProductoId
+                    };
+
+                    nuevaEntrada.EntradaProductos.Add(nuevaEntradaProducto);
+                }
             }
+
+            var entradaId = await _entradaRepository.CreateEntradaWithProduct(nuevaEntrada);
+
+            return entradaId;
         }
     }
 }

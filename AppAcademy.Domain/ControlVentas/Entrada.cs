@@ -8,7 +8,7 @@ namespace AppAcademy.Domain.PuntoDeVenta
         public int TotalProductosEntrada { get; set; }
         public DateTime FechaDeEntrega { get; set; }
         public string? NumeroFactura { get; set; }
-        public int VencimientoPago { get; set; }
+        public DateTime VencimientoPago { get; set; }
         public string? Folio { get; set; }
         public decimal Bruto { get; set; }
 
@@ -19,6 +19,6 @@ namespace AppAcademy.Domain.PuntoDeVenta
         public string? OrigenId { get; set; }
         public Ubicacion? Origen { get; set; }
 
-        public ICollection<EntradaProducto> EntradaProductos { get; set; } = new List<EntradaProducto>();
+        public List<EntradaProducto> EntradaProductos { get; set; } = new List<EntradaProducto>();
     }
 }

@@ -7,10 +7,9 @@ namespace AppAcademy.Application.Features.Entradas.Commands.CreateEntrada
         public int TotalProductosEntrada { get; set; }
         public DateTime FechaDeEntrega { get; set; }
         public string? NumeroFactura { get; set; }
-        public int VencimientoPago { get; set; }
+        public DateTime VencimientoPago { get; set; }
         public string? Folio { get; set; }
         public decimal Bruto { get; set; }
-        public string? OrigenId { get; set; }
         public List<CreateEntradaProductoModel>? Productos { get; set; } = new List<CreateEntradaProductoModel>();
     }
 
@@ -18,6 +17,6 @@ namespace AppAcademy.Application.Features.Entradas.Commands.CreateEntrada
     {
         public int Cantidad { get; set; }
         public decimal Costo { get; set; }
-        public int ProductoId { get; set; }
+        public string ProductoId { get; set; }
     }
 }

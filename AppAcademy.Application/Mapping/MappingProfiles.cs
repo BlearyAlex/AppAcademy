@@ -177,12 +177,13 @@ namespace AppAcademy.Application.Mapping
             #endregion
 
             #region Entradas
-            CreateMap<CreateEntradaCommand, Entrada>()
-                .ForMember(dest => dest.OrigenId, opt => opt.MapFrom(src => src.OrigenId));
-            CreateMap<UpdateEntradaCommand, Entrada>()
-                .ForMember(dest => dest.OrigenId, opt => opt.MapFrom(src => src.OrigenId));
+            CreateMap<CreateEntradaCommand, Entrada>();
+            //.ForMember(dest => dest.OrigenId, opt => opt.MapFrom(src => src.OrigenId));
+            CreateMap<UpdateEntradaCommand, Entrada>();
+                //.ForMember(dest => dest.OrigenId, opt => opt.MapFrom(src => src.OrigenId));
 
-            CreateMap<Entrada, GetAllEntradasVm>();
+            CreateMap<Entrada, GetAllEntradasVm>()
+                .ForMember(dest => dest.Productos, opt => opt.MapFrom(src => src.EntradaProductos));
             CreateMap<Entrada, GetEntradaProductoVm>();
             #endregion
 

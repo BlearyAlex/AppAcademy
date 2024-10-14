@@ -1,9 +1,4 @@
 ﻿using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AppAcademy.Application.Features.Entradas.Commands.UpdateEntrada
 {
@@ -22,7 +17,8 @@ namespace AppAcademy.Application.Features.Entradas.Commands.UpdateEntrada
                 .MaximumLength(50).WithMessage("El número de factura no puede tener más de 50 caracteres.");
 
             RuleFor(entrada => entrada.VencimientoPago)
-                .GreaterThan(0).WithMessage("El vencimiento de pago debe ser mayor que 0.");
+                .GreaterThanOrEqualTo(DateTime.Now)
+                .WithMessage("La {PropertyName} debe ser en el futuro o igual a la fecha y hora actual.");
 
             RuleFor(entrada => entrada.Folio)
                 .MaximumLength(50).WithMessage("El folio no puede tener más de 50 caracteres.")

@@ -82,16 +82,15 @@ namespace AppAcademy.Controllers.ControlVentasController
             }
             catch (ValidationException ex)
             {
-                // Devolver los errores de validación específicos
                 return BadRequest(new
                 {
-                    Message = "Se presentaron uno o más errores de validación.",
+                    Message = "Se presentaron errores de validación.",
                     Errors = ex.Errors
                 });
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.InnerException}");
             }
         }
         #endregion

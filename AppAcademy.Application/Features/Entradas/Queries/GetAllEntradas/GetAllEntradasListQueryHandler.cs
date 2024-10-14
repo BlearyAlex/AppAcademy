@@ -1,12 +1,6 @@
 ﻿using AppAcademy.Application.Contracts.Persistence;
-using AppAcademy.Application.Features.Devoluciones.Queries.GetAllDevoluciones;
 using AutoMapper;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AppAcademy.Application.Features.Entradas.Queries.GetAllEntradas
 {
@@ -23,9 +17,24 @@ namespace AppAcademy.Application.Features.Entradas.Queries.GetAllEntradas
 
         public async Task<List<GetAllEntradasVm>> Handle(GetAllEntradasListQuery request, CancellationToken cancellationToken)
         {
-            var entradaList = await _entradaRepository.GetAllAsync();
-
-            return _mapper.Map<List<GetAllEntradasVm>>(entradaList);
+            var entradas = await _entradaRepository.GetEntradasWithProductos();
+            
+            return entradas.Select(e => new GetAllEntradasVm
+            {
+                EntradaId = e.EntradaId,
+                FechaDeEntrega = e.FechaDeEntrega,
+                NumeroFactura = e.NumeroFactura,
+                VencimientoPago = e.VencimientoPago,
+                Folio = e.Folio,
+                Bruto = e.Bruto,
+                Productos = e.EntradaProductos.Select(p => new EntradaProductoVm
+                {
+                    EntradaProductoId = p.EntradaProductoId,
+                    Cantidad = p.Cantidad,
+                    Costo = p.Costo,
+                    ProductoId = p.ProductoId
+                }).ToList()
+            }).ToList();
         }
     }
 }

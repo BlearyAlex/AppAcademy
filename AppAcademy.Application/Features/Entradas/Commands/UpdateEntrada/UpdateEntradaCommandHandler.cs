@@ -14,32 +14,65 @@ namespace AppAcademy.Application.Features.Entradas.Commands.UpdateEntrada
 {
     public class UpdateEntradaCommandHandler : IRequestHandler<UpdateEntradaCommand>
     {
-        private readonly IEntradaRepository _repository;
+        private readonly IEntradaRepository _entradaRepository;
         private readonly IMapper _mapper;
         private readonly ILogger<UpdateEntradaCommandHandler> _logger;
 
-        public UpdateEntradaCommandHandler(IEntradaRepository repository, IMapper mapper, ILogger<UpdateEntradaCommandHandler> logger)
+        public UpdateEntradaCommandHandler(IEntradaRepository entradaRepository, IMapper mapper, ILogger<UpdateEntradaCommandHandler> logger)
         {
-            _repository = repository;
+            _entradaRepository = entradaRepository;
             _mapper = mapper;
             _logger = logger;
         }
 
         public async Task Handle(UpdateEntradaCommand request, CancellationToken cancellationToken)
         {
-            var findEntrada = await _repository.GetById(request.EntradaId);
-
-            if (findEntrada == null)
+           var entradaUpdate = await _entradaRepository.GetByIdWithProductsAsync(request.EntradaId);
+            if (entradaUpdate == null)
             {
-                _logger.LogError($"No se encontro el id de la entrada {request.EntradaId}");
                 throw new NotFoundException(nameof(Entrada), request.EntradaId);
             }
 
-            _mapper.Map(request, findEntrada);
+            // Actualizar los datos de la entrada
+            entradaUpdate.TotalProductosEntrada = request.TotalProductosEntrada;
+            entradaUpdate.FechaDeEntrega = request.FechaDeEntrega;
+            entradaUpdate.NumeroFactura = request.NumeroFactura;
+            entradaUpdate.VencimientoPago = request.VencimientoPago;
+            entradaUpdate.Folio = request.Folio;
+            entradaUpdate.Bruto = request.Bruto;
 
-            await _repository.UpdateAsync(findEntrada);
+            // Actualizar los productos asociados
+            // Primero limpiamos la lista actual de productos
+            entradaUpdate.EntradaProductos.Clear();
 
-            _logger.LogInformation($"La operacion fue exitosa {request.EntradaId}");
+           // Iterar sobre los productos antes de la actualizacion
+           foreach(var productoVm in request.Productos)
+            {
+                var productoExistente = entradaUpdate.EntradaProductos
+                    .FirstOrDefault(p => p.EntradaProductoId == productoVm.EntradaProductoId);
+
+                if(productoExistente != null)
+                {
+                    // Si el producto ya existe, actualizamos solo los campos necesarios
+                    productoExistente.Cantidad = productoVm.Cantidad;
+                    productoExistente.Costo = productoVm.Costo;
+                    productoExistente.ProductoId = productoVm.ProductoId;
+                }
+                else
+                {
+                    // Si el producto no existe, lo agregamos como un nuevo producto
+                    entradaUpdate.EntradaProductos.Add(new EntradaProducto
+                    {
+                        Cantidad = productoVm.Cantidad,
+                        Costo = productoVm.Costo,
+                        ProductoId = productoVm.ProductoId,
+                        EntradaId = entradaUpdate.EntradaId
+                    });
+                }
+            }
+
+            // Guardar los cambios en el repositorio
+            await _entradaRepository.UpdateAsync(entradaUpdate);
         }
     }
 }

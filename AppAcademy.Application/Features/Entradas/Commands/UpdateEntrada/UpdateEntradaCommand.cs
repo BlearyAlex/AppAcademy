@@ -1,4 +1,5 @@
-﻿using AppAcademy.Domain.PuntoDeVenta;
+﻿using AppAcademy.Application.Features.Entradas.Commands.CreateEntrada;
+using AppAcademy.Domain.PuntoDeVenta;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -14,10 +15,17 @@ namespace AppAcademy.Application.Features.Entradas.Commands.UpdateEntrada
         public int TotalProductosEntrada { get; set; }
         public DateTime FechaDeEntrega { get; set; }
         public string? NumeroFactura { get; set; }
-        public int VencimientoPago { get; set; }
+        public DateTime VencimientoPago { get; set; }
         public string? Folio { get; set; }
         public decimal Bruto { get; set; }
-        public string? OrigenId { get; set; }
-        public List<EntradaProducto> EntradaProductos { get; set; }
+        public List<UpdateEntradaProductoModel> Productos { get; set; } = new List<UpdateEntradaProductoModel>();
+    }
+
+    public class UpdateEntradaProductoModel
+    {
+        public string EntradaProductoId { get; set; }
+        public int Cantidad { get; set; }
+        public decimal Costo { get; set; }
+        public string ProductoId { get; set; }
     }
 }
