@@ -1,12 +1,9 @@
 ﻿using AppAcademy.Application.Contracts.Persistence;
-using AppAcademy.Application.Features.Devoluciones.Queries.GetDevolucion;
+using AppAcademy.Application.Exceptions;
+using AppAcademy.Domain.PuntoDeVenta;
 using AutoMapper;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using static AppAcademy.Application.Features.Entradas.Queries.GetEntrada.GetEntradaVm;
 
 namespace AppAcademy.Application.Features.Entradas.Queries.GetEntrada
 {
@@ -23,9 +20,30 @@ namespace AppAcademy.Application.Features.Entradas.Queries.GetEntrada
 
         public async Task<GetEntradaVm> Handle(GetEntradaQuery request, CancellationToken cancellationToken)
         {
-            var entrada = await _entradaRepository.GetById(request._EntradaId);
+            var entrada = await _entradaRepository.GetEntradaByIdWithProductsAsync(request._EntradaId);
 
-            return _mapper.Map<GetEntradaVm>(entrada);
+            if(entrada == null)
+            {
+                throw new NotFoundException(nameof(Entrada), request._EntradaId);
+            }
+
+            return new GetEntradaVm
+            {
+                EntradaId = entrada.EntradaId,
+                TotalProductosEntrada = entrada.TotalProductosEntrada,
+                FechaDeEmision = DateTime.Now,
+                NumeroFactura = entrada.NumeroFactura,
+                Folio = entrada.Folio,
+                Bruto = entrada.Bruto,
+                Productos = entrada.EntradaProductos.Select(p => new EntradaProductoVm
+                {
+                    EntradaProductoId = p.EntradaProductoId,
+                    Cantidad = p.Cantidad,
+                    Costo = p.Costo,
+                    ProductoId = p.ProductoId,
+                    NombreProducto = p.Producto.Nombre
+                }).ToList()
+            };
         }
     }
 }

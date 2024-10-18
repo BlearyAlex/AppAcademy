@@ -32,7 +32,7 @@ namespace AppAcademy.Controllers.ControlVentasController
 
                 if (entradas == null || !entradas.Any())
                 {
-                    return NotFound("No se encontraron entradas.");
+                    return NoContent();
                 }
 
                 return Ok(entradas);
@@ -48,27 +48,12 @@ namespace AppAcademy.Controllers.ControlVentasController
         [HttpGet("GetEntradaById/{id}")]
         public async Task<ActionResult<GetEntradaVm>> GetEntradaById(string id)
         {
-            try
-            {
+           
                 var command = new GetEntradaQuery(id);
 
                 var entrada = await _mediator.Send(command);
 
-                if (entrada == null)
-                {
-                    return NotFound();
-                }
-
                 return Ok(entrada);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound($"Entrada con ID {id} no encontrada.");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.Message}");
-            }
         }
         #endregion
 
@@ -76,22 +61,8 @@ namespace AppAcademy.Controllers.ControlVentasController
         [HttpPost("CreateEntrada")]
         public async Task<ActionResult<string>> CreateEntrada([FromBody] CreateEntradaCommand command)
         {
-            try
-            {
-                return await _mediator.Send(command);
-            }
-            catch (ValidationException ex)
-            {
-                return BadRequest(new
-                {
-                    Message = "Se presentaron errores de validación.",
-                    Errors = ex.Errors
-                });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.InnerException}");
-            }
+            var result = await _mediator.Send(command);
+            return Ok(result);
         }
         #endregion
 
@@ -99,16 +70,9 @@ namespace AppAcademy.Controllers.ControlVentasController
         [HttpPut("UpdateEntrada")]
         public async Task<ActionResult> UpdateEntrada([FromBody] UpdateEntradaCommand command)
         {
-            try
-            {
-                await _mediator.Send(command);
+            await _mediator.Send(command);
 
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.InnerException}");
-            }
+            return NoContent();
         }
         #endregion
 
@@ -116,25 +80,8 @@ namespace AppAcademy.Controllers.ControlVentasController
         [HttpDelete("DeleteEntrada/{id}")]
         public async Task<ActionResult> DeleteEntrada(string id)
         {
-            try
-            {
-                var command = new DeleteEntradaCommand
-                {
-                    EntradaId = id
-                };
-
-                await _mediator.Send(command);
-
-                return NoContent();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound($"Entrada con ID {id} no encontrada.");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.Message}");
-            }
+           await _mediator.Send(new DeleteEntradaCommand(id));
+            return NoContent();
         }
         #endregion
     }

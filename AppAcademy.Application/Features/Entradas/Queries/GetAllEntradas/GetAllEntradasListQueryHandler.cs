@@ -22,12 +22,12 @@ namespace AppAcademy.Application.Features.Entradas.Queries.GetAllEntradas
             return entradas.Select(e => new GetAllEntradasVm
             {
                 EntradaId = e.EntradaId,
-                FechaDeEntrega = e.FechaDeEntrega,
+                TotalProductosEntrada = e.TotalProductosEntrada,
+                FechaDeEmision = DateTime.Now,
                 NumeroFactura = e.NumeroFactura,
-                VencimientoPago = e.VencimientoPago,
                 Folio = e.Folio,
                 Bruto = e.Bruto,
-                Productos = e.EntradaProductos.Select(p => new EntradaProductoVm
+                Productos = e.EntradaProductos.Select(p => new EntradasProductoVm
                 {
                     EntradaProductoId = p.EntradaProductoId,
                     Cantidad = p.Cantidad,

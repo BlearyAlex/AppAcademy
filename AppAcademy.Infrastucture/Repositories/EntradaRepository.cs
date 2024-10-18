@@ -26,7 +26,7 @@ namespace AppAcademy.Infrastucture.Repositories
 
             if(entrada == null)
             {
-                throw new Exception("Entrdada no encontrada");
+                throw new Exception("Entrada con ID {entradaId} no encontrada");
             }
 
             _dbContext.Entradas.Remove(entrada);
@@ -41,18 +41,18 @@ namespace AppAcademy.Infrastucture.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Entrada> ObtenerEntradaPorId(string entradaId)
+        public async Task<Entrada> GetEntradaByIdWithProductsAsync(string entradaId)
         {
             return await _dbContext.Entradas
                 .Include(e => e.EntradaProductos)
+                .ThenInclude(ep => ep.Producto)
                 .FirstOrDefaultAsync(e => e.EntradaId == entradaId);
         }
 
-        public async Task<Entrada> GetByIdWithProductsAsync(string entradaId)
+        public async Task DeleteProductoAsync(EntradaProducto producto)
         {
-            return await _dbContext.Entradas
-                .Include(e => e.EntradaProductos)
-                .FirstOrDefaultAsync(e => e.EntradaId == entradaId);
+            _dbContext.EntradaProductos.Remove(producto);
+            await _dbContext.SaveChangesAsync(); 
         }
     }
 }

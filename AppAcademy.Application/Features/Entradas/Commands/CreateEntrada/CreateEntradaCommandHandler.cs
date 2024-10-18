@@ -14,12 +14,18 @@ namespace AppAcademy.Application.Features.Entradas.Commands.CreateEntrada
     public class CreateEntradaCommandHandler : IRequestHandler<CreateEntradaCommand, string>
     {
         private readonly IEntradaRepository _entradaRepository;
+        private readonly IProductoRepository _productoRepository;
         private readonly IMapper _mapper;
         private readonly ILogger<CreateEntradaCommandHandler> _logger;
 
-        public CreateEntradaCommandHandler(IEntradaRepository entradaRepository, IMapper mapper, ILogger<CreateEntradaCommandHandler> logger)
+        public CreateEntradaCommandHandler(
+            IEntradaRepository entradaRepository,
+            IProductoRepository productoRepository,
+            IMapper mapper, 
+            ILogger<CreateEntradaCommandHandler> logger)
         {
             _entradaRepository = entradaRepository;
+            _productoRepository = productoRepository;
             _mapper = mapper;
             _logger = logger;
         }
@@ -29,9 +35,8 @@ namespace AppAcademy.Application.Features.Entradas.Commands.CreateEntrada
             var nuevaEntrada = new Entrada
             {
                 TotalProductosEntrada = request.TotalProductosEntrada,
-                FechaDeEntrega = request.FechaDeEntrega,
+                FechaDeEmision = DateTime.Now,
                 NumeroFactura = request.NumeroFactura,
-                VencimientoPago = request.VencimientoPago,
                 Folio = request.Folio,
                 Bruto = request.Bruto
             };
@@ -48,6 +53,16 @@ namespace AppAcademy.Application.Features.Entradas.Commands.CreateEntrada
                     };
 
                     nuevaEntrada.EntradaProductos.Add(nuevaEntradaProducto);
+
+                    // Actualizar al stock de producto
+                    var productoEntidad = await _productoRepository.GetById(producto.ProductoId);
+
+                    if(productoEntidad != null)
+                    {
+                        productoEntidad.StockMinimo += producto.Cantidad;
+
+                        await _productoRepository.UpdateAsync(productoEntidad);
+                    }
                 }
             }
 

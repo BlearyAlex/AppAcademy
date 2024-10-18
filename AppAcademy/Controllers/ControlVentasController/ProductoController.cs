@@ -98,6 +98,31 @@ namespace AppAcademy.Controllers.ControlVentasController
         }
         #endregion
 
+        #region GetProductsByName
+        [HttpGet("ByName/{name}")]
+        public async Task<ActionResult<IEnumerable<GetProductsByNameVm>>> GetProductsByName(string name)
+        {
+            try
+            {
+                var query = new GetProductsByNameQuery(name);
+
+                var products = await _mediator.Send(query);
+
+                if (products == null || !products.Any())
+                {
+
+                    return NotFound();
+                }
+
+                return Ok(products);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        #endregion
+
         #region CreateProduct
         [HttpPost("CreateProduct")]
         public async Task<ActionResult<string>> CreateProduct([FromBody] CreateProductoCommand command)
@@ -108,7 +133,7 @@ namespace AppAcademy.Controllers.ControlVentasController
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.InnerException}");
             }
         }
         #endregion

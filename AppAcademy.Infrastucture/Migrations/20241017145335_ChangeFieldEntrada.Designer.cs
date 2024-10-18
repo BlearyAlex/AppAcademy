@@ -4,6 +4,7 @@ using AppAcademy.Infrastucture.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppAcademy.Infrastucture.Migrations
 {
     [DbContext(typeof(AppAcademyDbContext))]
-    partial class AppAcademyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241017145335_ChangeFieldEntrada")]
+    partial class ChangeFieldEntrada
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -479,8 +482,8 @@ namespace AppAcademy.Infrastucture.Migrations
                     b.Property<decimal>("Bruto")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<DateTime>("FechaDeEmision")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly>("FechaDeEntrega")
+                        .HasColumnType("date");
 
                     b.Property<string>("Folio")
                         .HasColumnType("nvarchar(max)");
@@ -496,6 +499,9 @@ namespace AppAcademy.Infrastucture.Migrations
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateOnly>("VencimientoPago")
+                        .HasColumnType("date");
 
                     b.HasKey("EntradaId");
 

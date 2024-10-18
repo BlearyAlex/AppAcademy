@@ -21,7 +21,7 @@ namespace AppAcademy.Infrastucture.Repositories
 
         public async Task<List<Producto>> GetProductsByName(string producto)
         {
-            var products = await _dbContext.Productos.Where(p => p.Nombre ==  producto)
+            var products = await _dbContext.Productos.Where(p => p.Nombre.ToLower().Contains(producto.ToLower()))
                                                      .ToListAsync();
             return products;
         }

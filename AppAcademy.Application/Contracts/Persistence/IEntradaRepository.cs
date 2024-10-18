@@ -6,8 +6,8 @@ namespace AppAcademy.Application.Contracts.Persistence
     {
         Task<string> CreateEntradaWithProduct(Entrada nuevaEntrada);
         Task<List<Entrada>> GetEntradasWithProductos();
-        Task<Entrada> ObtenerEntradaPorId(string entradaId);
-        Task<Entrada> GetByIdWithProductsAsync(string entradaId);
+        Task<Entrada> GetEntradaByIdWithProductsAsync(string entradaId);
         Task DeleteEntrada(string entradaId);
+        Task DeleteProductoAsync(EntradaProducto producto);
     }
 }

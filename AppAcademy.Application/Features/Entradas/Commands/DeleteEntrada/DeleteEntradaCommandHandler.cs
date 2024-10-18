@@ -1,42 +1,53 @@
 ﻿using AppAcademy.Application.Contracts.Persistence;
 using AppAcademy.Application.Exceptions;
+using AppAcademy.Domain.PuntoDeVenta;
 using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AppAcademy.Application.Features.Entradas.Commands.DeleteEntrada
 {
     public class DeleteEntradaCommandHandler : IRequestHandler<DeleteEntradaCommand>
     {
-        private readonly IEntradaRepository _repository;
+        private readonly IEntradaRepository _entradaRepository;
+        private readonly IProductoRepository _productoRepository;
         private readonly IMapper _mapper;
         private readonly ILogger<DeleteEntradaCommandHandler> _logger;
 
-        public DeleteEntradaCommandHandler(IEntradaRepository repository, IMapper mapper, ILogger<DeleteEntradaCommandHandler> logger)
+        public DeleteEntradaCommandHandler(IEntradaRepository entradaRepository, IProductoRepository productoRepository, IMapper mapper, ILogger<DeleteEntradaCommandHandler> logger)
         {
-            _repository = repository;
+            _entradaRepository = entradaRepository;
+            _productoRepository = productoRepository;
             _mapper = mapper;
             _logger = logger;
         }
 
         public async Task Handle(DeleteEntradaCommand request, CancellationToken cancellationToken)
         {
-            var findEntrada = await _repository.GetById(request.EntradaId);
-            if (findEntrada == null)
+            var entrada = await _entradaRepository.GetEntradaByIdWithProductsAsync(request.EntradaId);
+
+            if (entrada == null)
             {
-                _logger.LogError($"{request.EntradaId} Entrada no existe en el sistma");
-                throw new NotFoundException(nameof(findEntrada), request.EntradaId);
+                _logger.LogError($"Entrada with id {request.EntradaId} not found.");
+                throw new NotFoundException(nameof(Entrada), request.EntradaId);
             }
 
-            await _repository.DeleteAsync(findEntrada);
-            _logger.LogInformation($"El {request.EntradaId} fue eliminado con exito");
+            // Restamos las cantidades del stock de los productos asociados a la entrada
+            foreach (var entradaProducto in entrada.EntradaProductos)
+            {
+                var producto = await _productoRepository.GetById(entradaProducto.ProductoId);
 
-            return;
+                if (producto != null)
+                {
+                    // Restamos la cantidad al stock
+                    producto.StockMinimo -= entradaProducto.Cantidad;
+
+                    // Guardamos los cambios en el repositorio de productos
+                    await _productoRepository.UpdateAsync(producto);
+                }
+            }
+
+            await _entradaRepository.DeleteEntrada(entrada.EntradaId);  
         }
     }
 }

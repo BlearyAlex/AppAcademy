@@ -2,6 +2,7 @@ using AppAcademy.Infrastucture;
 using AppAcademy.Application;
 using FluentValidation;
 using AppAcademy.Infrastucture.Seed;
+using AppAcademy.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +33,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseAuthentication();
 

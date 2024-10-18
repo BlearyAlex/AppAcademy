@@ -6,9 +6,8 @@ namespace AppAcademy.Domain.PuntoDeVenta
     {
         public string EntradaId { get; set; } = Guid.NewGuid().ToString();
         public int TotalProductosEntrada { get; set; }
-        public DateTime FechaDeEntrega { get; set; }
+        public DateTime FechaDeEmision { get; set; }
         public string? NumeroFactura { get; set; }
-        public DateTime VencimientoPago { get; set; }
         public string? Folio { get; set; }
         public decimal Bruto { get; set; }
 
