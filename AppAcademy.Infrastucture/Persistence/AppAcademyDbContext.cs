@@ -23,7 +23,6 @@ namespace AppAcademy.Infrastucture.Persistence
         public DbSet<Cliente> Clientes { get; set; }
         public DbSet<Corte> Cortes { get; set; }
         public DbSet<DetalleCorte> DetalleCortes { get; set; }
-        public DbSet<DetallePago> DetallePagos { get; set; }
         public DbSet<DetalleVenta> DetalleVentas { get; set; }
         public DbSet<Devolucion> Devoluciones { get; set; }
         public DbSet<Entrada> Entradas { get; set; }

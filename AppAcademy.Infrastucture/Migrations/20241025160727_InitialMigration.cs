@@ -297,14 +297,39 @@ namespace AppAcademy.Infrastucture.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Devoluciones",
+                columns: table => new
+                {
+                    DevolucionId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Cantidad = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Motivo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FechaDevolucion = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ProductoId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Devoluciones", x => x.DevolucionId);
+                    table.ForeignKey(
+                        name: "FK_Devoluciones_Productos_ProductoId",
+                        column: x => x.ProductoId,
+                        principalTable: "Productos",
+                        principalColumn: "ProductoId");
+                    table.ForeignKey(
+                        name: "FK_Devoluciones_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Entradas",
                 columns: table => new
                 {
                     EntradaId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     TotalProductosEntrada = table.Column<int>(type: "int", nullable: false),
-                    FechaDeEntrega = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FechaDeEmision = table.Column<DateTime>(type: "datetime2", nullable: false),
                     NumeroFactura = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    VencimientoPago = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Folio = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Bruto = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
@@ -461,14 +486,16 @@ namespace AppAcademy.Infrastucture.Migrations
                 name: "Ventas",
                 columns: table => new
                 {
-                    ventaId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FechaCompra = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    VentaId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FechaCompra = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    EstadoVenta = table.Column<int>(type: "int", nullable: false),
+                    Bruto = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     ClienteId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Ventas", x => x.ventaId);
+                    table.PrimaryKey("PK_Ventas", x => x.VentaId);
                     table.ForeignKey(
                         name: "FK_Ventas_Clientes_ClienteId",
                         column: x => x.ClienteId,
@@ -479,6 +506,26 @@ namespace AppAcademy.Infrastucture.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "UserId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DetalleCortes",
+                columns: table => new
+                {
+                    DetalleCorteId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    EstadoTipoPago = table.Column<int>(type: "int", nullable: false),
+                    Monto = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    EstadoCorte = table.Column<int>(type: "int", nullable: false),
+                    CorteId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DetalleCortes", x => x.DetalleCorteId);
+                    table.ForeignKey(
+                        name: "FK_DetalleCortes_Cortes_CorteId",
+                        column: x => x.CorteId,
+                        principalTable: "Cortes",
+                        principalColumn: "CorteId");
                 });
 
             migrationBuilder.CreateTable(
@@ -590,59 +637,15 @@ namespace AppAcademy.Infrastucture.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DetalleCortes",
-                columns: table => new
-                {
-                    DetalleCorteId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TipoPago = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Monto = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    CorteId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    VentaId = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DetalleCortes", x => x.DetalleCorteId);
-                    table.ForeignKey(
-                        name: "FK_DetalleCortes_Cortes_CorteId",
-                        column: x => x.CorteId,
-                        principalTable: "Cortes",
-                        principalColumn: "CorteId");
-                    table.ForeignKey(
-                        name: "FK_DetalleCortes_Ventas_VentaId",
-                        column: x => x.VentaId,
-                        principalTable: "Ventas",
-                        principalColumn: "ventaId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "DetallePagos",
-                columns: table => new
-                {
-                    DetallePagoId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Tipo = table.Column<int>(type: "int", nullable: false),
-                    Monto = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    VentaId = table.Column<string>(type: "nvarchar(450)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DetallePagos", x => x.DetallePagoId);
-                    table.ForeignKey(
-                        name: "FK_DetallePagos_Ventas_VentaId",
-                        column: x => x.VentaId,
-                        principalTable: "Ventas",
-                        principalColumn: "ventaId");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "DetalleVentas",
                 columns: table => new
                 {
                     DetalleVentaId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Tipo = table.Column<int>(type: "int", nullable: false),
-                    Monto = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    DescuentoProducto = table.Column<int>(type: "int", nullable: false),
-                    ventaId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    EstadoTipoPago = table.Column<int>(type: "int", nullable: false),
+                    Costo = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    EstadoCorte = table.Column<int>(type: "int", nullable: false),
+                    Cantidad = table.Column<int>(type: "int", nullable: false),
+                    VentaId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     ProductoId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
@@ -654,42 +657,10 @@ namespace AppAcademy.Infrastucture.Migrations
                         principalTable: "Productos",
                         principalColumn: "ProductoId");
                     table.ForeignKey(
-                        name: "FK_DetalleVentas_Ventas_ventaId",
-                        column: x => x.ventaId,
-                        principalTable: "Ventas",
-                        principalColumn: "ventaId");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Devoluciones",
-                columns: table => new
-                {
-                    DevolucionId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Cantidad = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Motivo = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FechaDevolucion = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    VentaId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    ProductoId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Devoluciones", x => x.DevolucionId);
-                    table.ForeignKey(
-                        name: "FK_Devoluciones_Productos_ProductoId",
-                        column: x => x.ProductoId,
-                        principalTable: "Productos",
-                        principalColumn: "ProductoId");
-                    table.ForeignKey(
-                        name: "FK_Devoluciones_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "UserId");
-                    table.ForeignKey(
-                        name: "FK_Devoluciones_Ventas_VentaId",
+                        name: "FK_DetalleVentas_Ventas_VentaId",
                         column: x => x.VentaId,
                         principalTable: "Ventas",
-                        principalColumn: "ventaId");
+                        principalColumn: "VentaId");
                 });
 
             migrationBuilder.CreateIndex(
@@ -713,24 +684,14 @@ namespace AppAcademy.Infrastucture.Migrations
                 column: "CorteId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DetalleCortes_VentaId",
-                table: "DetalleCortes",
-                column: "VentaId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DetallePagos_VentaId",
-                table: "DetallePagos",
-                column: "VentaId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_DetalleVentas_ProductoId",
                 table: "DetalleVentas",
                 column: "ProductoId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DetalleVentas_ventaId",
+                name: "IX_DetalleVentas_VentaId",
                 table: "DetalleVentas",
-                column: "ventaId");
+                column: "VentaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Devoluciones_ProductoId",
@@ -741,11 +702,6 @@ namespace AppAcademy.Infrastucture.Migrations
                 name: "IX_Devoluciones_UserId",
                 table: "Devoluciones",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Devoluciones_VentaId",
-                table: "Devoluciones",
-                column: "VentaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_EntradaProductos_EntradaId",
@@ -886,9 +842,6 @@ namespace AppAcademy.Infrastucture.Migrations
 
             migrationBuilder.DropTable(
                 name: "DetalleCortes");
-
-            migrationBuilder.DropTable(
-                name: "DetallePagos");
 
             migrationBuilder.DropTable(
                 name: "DetalleVentas");

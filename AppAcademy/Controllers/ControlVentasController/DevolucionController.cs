@@ -1,10 +1,5 @@
 ﻿using AppAcademy.Application.Features.Cortes.Queries.GetCorte;
 using AppAcademy.Application.Features.DetallesCortes.Queries.GetAllDetallesCortes;
-using AppAcademy.Application.Features.DetallesPagos.Command.CreateDetallePago;
-using AppAcademy.Application.Features.DetallesPagos.Command.DeleteDetallePago;
-using AppAcademy.Application.Features.DetallesPagos.Command.UpdateDetallePago;
-using AppAcademy.Application.Features.DetallesPagos.Queries.GetAllDetallesPagos;
-using AppAcademy.Application.Features.DetallesPagos.Queries.GetDetallePago;
 using AppAcademy.Application.Features.Devoluciones.Command.CreateDevolucion;
 using AppAcademy.Application.Features.Devoluciones.Command.DeleteDevolucion;
 using AppAcademy.Application.Features.Devoluciones.Command.UpdateDevolucion;

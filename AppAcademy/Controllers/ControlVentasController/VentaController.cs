@@ -1,36 +1,39 @@
 ﻿using AppAcademy.Application.Features.Entradas.Commands.CreateEntrada;
 using AppAcademy.Application.Features.Entradas.Commands.DeleteEntrada;
 using AppAcademy.Application.Features.Entradas.Commands.UpdateEntrada;
-using AppAcademy.Application.Features.Entradas.Queries.GetAllEntradas;
 using AppAcademy.Application.Features.Entradas.Queries.GetEntrada;
+using AppAcademy.Application.Features.Ventas.Command.CreateVenta;
+using AppAcademy.Application.Features.Ventas.Command.DeleteVenta;
+using AppAcademy.Application.Features.Ventas.Command.UpdateVenta;
+using AppAcademy.Application.Features.Ventas.Queries.GetAllVentas;
+using AppAcademy.Application.Features.Ventas.Queries.GetVenta;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using FluentValidation;
-
 
 namespace AppAcademy.Controllers.ControlVentasController
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class EntradaController : ControllerBase
+    public class VentaController : ControllerBase
     {
         private readonly IMediator _mediator;
 
-        public EntradaController(IMediator mediator)
+        public VentaController(IMediator mediator)
         {
             _mediator = mediator;
         }
 
-        #region GetAll
-        [HttpGet("GetAllEntradas")]
-        public async Task<ActionResult<IEnumerable<GetAllEntradasVm>>> GetAllEntradas()
+        #region GetAllVentas
+        [HttpGet("GetAllVentas")]
+        public async Task<ActionResult<IEnumerable<GetAllVentasVm>>> GetAllVentas()
         {
             try
             {
-                var query = new GetAllEntradasListQuery();
+                var query = new GetAllVentasListQuery();
                 var entradas = await _mediator.Send(query);
 
-                if (entradas == null || !entradas.Any())
+                if(entradas == null || !entradas.Any())
                 {
                     return NoContent();
                 }
@@ -44,31 +47,31 @@ namespace AppAcademy.Controllers.ControlVentasController
         }
         #endregion
 
-        #region GetEntradaById
-        [HttpGet("GetEntradaById/{id}")]
-        public async Task<ActionResult<GetEntradaVm>> GetEntradaById(string id)
+        #region GetVentaById
+        [HttpGet("GetVentaById/{id}")]
+        public async Task<ActionResult<GetVentaVm>> GetVentaById(string id)
         {
-           
-                var command = new GetEntradaQuery(id);
 
-                var entrada = await _mediator.Send(command);
+            var command = new GetVentaQuery(id);
 
-                return Ok(entrada);
+            var venta = await _mediator.Send(command);
+
+            return Ok(venta);
         }
         #endregion
 
-        #region CreateEntrada
-        [HttpPost("CreateEntrada")]
-        public async Task<ActionResult<string>> CreateEntrada([FromBody] CreateEntradaCommand command)
+        #region CreateVenta
+        [HttpPost("CreateVenta")]
+        public async Task<ActionResult<string>> CreateVenta([FromBody] CreateVentaCommand command)
         {
             var result = await _mediator.Send(command);
             return Ok(result);
         }
         #endregion
 
-        #region UpdateEntrada
-        [HttpPut("UpdateEntrada")]
-        public async Task<ActionResult> UpdateEntrada([FromBody] UpdateEntradaCommand command)
+        #region UpdateVenta
+        [HttpPut("UpdateVenta")]
+        public async Task<ActionResult> UpdateVenta([FromBody] UpdateVentaCommand command)
         {
             try
             {
@@ -83,13 +86,14 @@ namespace AppAcademy.Controllers.ControlVentasController
         }
         #endregion
 
-        #region DeleteEntrada
-        [HttpDelete("DeleteEntrada/{id}")]
-        public async Task<ActionResult> DeleteEntrada(string id)
+        #region DeleteVenta
+        [HttpDelete("DeleteVenta/{id}")]
+        public async Task<ActionResult> DeleteVenta(string id)
         {
-           await _mediator.Send(new DeleteEntradaCommand(id));
+            await _mediator.Send(new DeleteVentaCommand(id));
             return NoContent();
         }
         #endregion
     }
 }
+

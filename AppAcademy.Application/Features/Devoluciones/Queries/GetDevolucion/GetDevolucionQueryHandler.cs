@@ -1,5 +1,4 @@
 ﻿using AppAcademy.Application.Contracts.Persistence;
-using AppAcademy.Application.Features.DetallesPagos.Queries.GetDetallePago;
 using AutoMapper;
 using MediatR;
 using System;

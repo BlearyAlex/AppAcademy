@@ -12,9 +12,7 @@ namespace AppAcademy.Application.Features.Ventas.Command.UpdateVenta
     {
         public UpdateVentaCommandValidator()
         {
-            RuleFor(v => v.FechaCompra)
-               .NotEmpty().WithMessage("La fecha de compra es obligatoria.")
-               .LessThanOrEqualTo(DateTime.Now).WithMessage("La fecha de compra no puede ser en el futuro.");
+
         }
     }
 }

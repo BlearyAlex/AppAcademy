@@ -14,10 +14,6 @@ using AppAcademy.Application.Features.DetallesCortes.Command.CreateDetalleCorte;
 using AppAcademy.Application.Features.DetallesCortes.Command.UpdateDetalleCorte;
 using AppAcademy.Application.Features.DetallesCortes.Queries.GetAllDetallesCortes;
 using AppAcademy.Application.Features.DetallesCortes.Queries.GetDetalleCorte;
-using AppAcademy.Application.Features.DetallesPagos.Command.CreateDetallePago;
-using AppAcademy.Application.Features.DetallesPagos.Command.UpdateDetallePago;
-using AppAcademy.Application.Features.DetallesPagos.Queries.GetAllDetallesPagos;
-using AppAcademy.Application.Features.DetallesPagos.Queries.GetDetallePago;
 using AppAcademy.Application.Features.Devoluciones.Command.CreateDevolucion;
 using AppAcademy.Application.Features.Devoluciones.Command.UpdateDevolucion;
 using AppAcademy.Application.Features.Devoluciones.Queries.GetAllDevoluciones;
@@ -142,34 +138,24 @@ namespace AppAcademy.Application.Mapping
             #endregion
 
             #region DetalleCorte
-            CreateMap<CreateDetalleCorteCommand, DetalleCorte>()
-                .ForMember(dest => dest.CorteId, opt => opt.MapFrom(src => src.CorteId))
-                .ForMember(dest => dest.VentaId, opt => opt.MapFrom(src => src.VentaId));
-            CreateMap<UpdateDetalleCorteCommand, DetalleCorte>()
-                 .ForMember(dest => dest.CorteId, opt => opt.MapFrom(src => src.CorteId))
-                 .ForMember(dest => dest.VentaId, opt => opt.MapFrom(src => src.VentaId));
+            //CreateMap<CreateDetalleCorteCommand, DetalleCorte>()
+            //    .ForMember(dest => dest.CorteId, opt => opt.MapFrom(src => src.CorteId))
+            //    .ForMember(dest => dest.VentaId, opt => opt.MapFrom(src => src.VentaId));
+            //CreateMap<UpdateDetalleCorteCommand, DetalleCorte>()
+            //     .ForMember(dest => dest.CorteId, opt => opt.MapFrom(src => src.CorteId))
+            //     .ForMember(dest => dest.VentaId, opt => opt.MapFrom(src => src.VentaId));
 
-            CreateMap<DetalleCorte, GetAllDetallesCortesVm>();
-            CreateMap<DetalleCorte, GetDetalleCorteVm>();
-            #endregion
-
-            #region DetallesPagos
-            CreateMap<CreateDetallePagoCommand, DetallePago>()
-                .ForMember(dest => dest.VentaId, opt => opt.MapFrom(src => src.VentaId));
-            CreateMap<UpdateDetallePagoCommand, DetallePago>()
-                .ForMember(dest => dest.VentaId, opt => opt.MapFrom(src => src.VentaId));
-
-            CreateMap<DetallePago, GetAllDetallesPagosVm>();
-            CreateMap<DetallePago, GetDetallePagoVm>();
+            //CreateMap<DetalleCorte, GetAllDetallesCortesVm>();
+            //CreateMap<DetalleCorte, GetDetalleCorteVm>();
             #endregion
 
             #region Devoluciones
             CreateMap<CreateDevolucionCommand, Devolucion>()
-                .ForMember(dest => dest.VentaId, opt => opt.MapFrom(src => src.VentaId))
+                //.ForMember(dest => dest.VentaId, opt => opt.MapFrom(src => src.VentaId))
                 .ForMember(dest => dest.ProductoId, opt => opt.MapFrom(src => src.ProductoId))
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId));
             CreateMap<UpdateDevolucionCommand, Devolucion>()
-                .ForMember(dest => dest.VentaId, opt => opt.MapFrom(src => src.VentaId))
+                //.ForMember(dest => dest.VentaId, opt => opt.MapFrom(src => src.VentaId))
                 .ForMember(dest => dest.ProductoId, opt => opt.MapFrom(src => src.ProductoId));
 
             CreateMap<Devolucion, GetAllDevolucionesVm>();
@@ -255,13 +241,15 @@ namespace AppAcademy.Application.Mapping
 
             #region Ventas
             CreateMap<CreateVentaCommand, Venta>()
-                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
+                //.ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
                 .ForMember(dest => dest.ClienteId, opt => opt.MapFrom(src => src.ClienteId));
             CreateMap<UpdateVentaCommand, Venta>()
                 .ForMember(dest => dest.ClienteId, opt => opt.MapFrom(src => src.ClienteId));
 
-            CreateMap<Venta, GetAllVentasVm>();
-            CreateMap<Venta, GetVentaVm>();
+            CreateMap<Venta, GetAllVentasVm>()
+                .ForMember(dest => dest.EstadoVenta, opt => opt.MapFrom(src => src.EstadoVenta.ToString()));
+            CreateMap<Venta, GetVentaVm>()
+                .ForMember(dest => dest.EstadoVenta, opt => opt.MapFrom(src => src.EstadoVenta.ToString()));
             #endregion
         }
     }

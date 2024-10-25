@@ -3,35 +3,64 @@ using AppAcademy.Domain.PuntoDeVenta;
 using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AppAcademy.Application.Features.Ventas.Command.CreateVenta
 {
     public class CreateVentaCommandHandler : IRequestHandler<CreateVentaCommand, string>
     {
-        private readonly IVentaRepository _repository;
+        private readonly IVentaRepository _ventaRepository;
+        private readonly IProductoRepository _productoRepository;
         private readonly IMapper _mapper;
         private readonly ILogger<CreateVentaCommandHandler> _logger;
 
-        public CreateVentaCommandHandler(IVentaRepository repository, IMapper mapper, ILogger<CreateVentaCommandHandler> logger)
+        public CreateVentaCommandHandler(IVentaRepository ventaRepository, IProductoRepository productoRepository, IMapper mapper, ILogger<CreateVentaCommandHandler> logger)
         {
-            _repository = repository;
+            _ventaRepository = ventaRepository;
+            _productoRepository = productoRepository;
             _mapper = mapper;
             _logger = logger;
         }
 
         public async Task<string> Handle(CreateVentaCommand request, CancellationToken cancellationToken)
         {
-            var ventaEntity = _mapper.Map<Venta>(request);
-            var newVenta = await _repository.AddAsync(ventaEntity);
+            var nuevaVenta = new Venta
+            {
+                FechaCompra = DateTime.Now,
+                EstadoVenta = request.EstadoVenta,
+                ClienteId = request.ClienteId,
+                Bruto = request.Bruto
+            };
 
-            _logger.LogInformation($"Venta {newVenta.ventaId} fue creado exitosamente");
+            if(request.Productos != null && request.Productos.Count > 0)
+            {
+                foreach(var product in request.Productos)
+                {
+                    var nuevoDetalleVenta = new DetalleVenta
+                    {
+                        EstadoTipoPago = product.EstadoTipoPago,
+                        Costo = product.Costo,
+                        EstadoCorte = product.EstadoCorte,
+                        Cantidad = product.Cantidad,
+                        ProductoId = product.ProductoId,
 
-            return newVenta.ventaId;
+                    };
+
+                    nuevaVenta.DetalleVentas.Add(nuevoDetalleVenta);
+
+                    var productoEntidad = await _productoRepository.GetById(product.ProductoId);
+
+                    if(productoEntidad != null)
+                    {
+                        productoEntidad.StockMinimo -= product.Cantidad;
+                        
+                        await _productoRepository.UpdateAsync(productoEntidad);
+                    }
+                }
+            }
+
+            var ventaId = await _ventaRepository.CreateVentaWithProduct(nuevaVenta);
+
+            return ventaId;
         }
     }
 }

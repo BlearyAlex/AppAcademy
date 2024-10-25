@@ -1,4 +1,4 @@
-﻿using AppAcademy.Application.Contracts.Persistence;
+﻿    using AppAcademy.Application.Contracts.Persistence;
 using AppAcademy.Domain.PuntoDeVenta;
 using AutoMapper;
 using MediatR;

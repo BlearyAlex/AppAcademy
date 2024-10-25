@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppAcademy.Infrastucture.Migrations
 {
     [DbContext(typeof(AppAcademyDbContext))]
-    [Migration("20241017145335_ChangeFieldEntrada")]
-    partial class ChangeFieldEntrada
+    [Migration("20241025160727_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -371,44 +371,20 @@ namespace AppAcademy.Infrastucture.Migrations
                     b.Property<string>("CorteId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int>("EstadoCorte")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EstadoTipoPago")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("Monto")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("TipoPago")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("VentaId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("DetalleCorteId");
 
                     b.HasIndex("CorteId");
 
-                    b.HasIndex("VentaId");
-
                     b.ToTable("DetalleCortes");
-                });
-
-            modelBuilder.Entity("AppAcademy.Domain.PuntoDeVenta.DetallePago", b =>
-                {
-                    b.Property<string>("DetallePagoId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<decimal>("Monto")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("Tipo")
-                        .HasColumnType("int");
-
-                    b.Property<string>("VentaId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("DetallePagoId");
-
-                    b.HasIndex("VentaId");
-
-                    b.ToTable("DetallePagos");
                 });
 
             modelBuilder.Entity("AppAcademy.Domain.PuntoDeVenta.DetalleVenta", b =>
@@ -416,26 +392,29 @@ namespace AppAcademy.Infrastucture.Migrations
                     b.Property<string>("DetalleVentaId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("DescuentoProducto")
+                    b.Property<int>("Cantidad")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("Monto")
+                    b.Property<decimal>("Costo")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("EstadoCorte")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EstadoTipoPago")
+                        .HasColumnType("int");
 
                     b.Property<string>("ProductoId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("Tipo")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ventaId")
+                    b.Property<string>("VentaId")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("DetalleVentaId");
 
                     b.HasIndex("ProductoId");
 
-                    b.HasIndex("ventaId");
+                    b.HasIndex("VentaId");
 
                     b.ToTable("DetalleVentas");
                 });
@@ -460,16 +439,11 @@ namespace AppAcademy.Infrastucture.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("VentaId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("DevolucionId");
 
                     b.HasIndex("ProductoId");
 
                     b.HasIndex("UserId");
-
-                    b.HasIndex("VentaId");
 
                     b.ToTable("Devoluciones");
                 });
@@ -482,8 +456,8 @@ namespace AppAcademy.Infrastucture.Migrations
                     b.Property<decimal>("Bruto")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<DateOnly>("FechaDeEntrega")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("FechaDeEmision")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Folio")
                         .HasColumnType("nvarchar(max)");
@@ -499,9 +473,6 @@ namespace AppAcademy.Infrastucture.Migrations
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateOnly>("VencimientoPago")
-                        .HasColumnType("date");
 
                     b.HasKey("EntradaId");
 
@@ -778,19 +749,25 @@ namespace AppAcademy.Infrastucture.Migrations
 
             modelBuilder.Entity("AppAcademy.Domain.PuntoDeVenta.Venta", b =>
                 {
-                    b.Property<string>("ventaId")
+                    b.Property<string>("VentaId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("Bruto")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ClienteId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("FechaCompra")
+                    b.Property<int>("EstadoVenta")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("FechaCompra")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("ventaId");
+                    b.HasKey("VentaId");
 
                     b.HasIndex("ClienteId");
 
@@ -940,24 +917,7 @@ namespace AppAcademy.Infrastucture.Migrations
                         .WithMany("DetalleCortes")
                         .HasForeignKey("CorteId");
 
-                    b.HasOne("AppAcademy.Domain.PuntoDeVenta.Venta", "Venta")
-                        .WithMany("DetalleCortes")
-                        .HasForeignKey("VentaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Corte");
-
-                    b.Navigation("Venta");
-                });
-
-            modelBuilder.Entity("AppAcademy.Domain.PuntoDeVenta.DetallePago", b =>
-                {
-                    b.HasOne("AppAcademy.Domain.PuntoDeVenta.Venta", "Venta")
-                        .WithMany("DetallePagos")
-                        .HasForeignKey("VentaId");
-
-                    b.Navigation("Venta");
                 });
 
             modelBuilder.Entity("AppAcademy.Domain.PuntoDeVenta.DetalleVenta", b =>
@@ -968,7 +928,7 @@ namespace AppAcademy.Infrastucture.Migrations
 
                     b.HasOne("AppAcademy.Domain.PuntoDeVenta.Venta", "Venta")
                         .WithMany("DetalleVentas")
-                        .HasForeignKey("ventaId");
+                        .HasForeignKey("VentaId");
 
                     b.Navigation("Producto");
 
@@ -985,15 +945,9 @@ namespace AppAcademy.Infrastucture.Migrations
                         .WithMany("Devoluciones")
                         .HasForeignKey("UserId");
 
-                    b.HasOne("AppAcademy.Domain.PuntoDeVenta.Venta", "Venta")
-                        .WithMany("Devoluciones")
-                        .HasForeignKey("VentaId");
-
                     b.Navigation("Producto");
 
                     b.Navigation("User");
-
-                    b.Navigation("Venta");
                 });
 
             modelBuilder.Entity("AppAcademy.Domain.PuntoDeVenta.Entrada", b =>
@@ -1233,13 +1187,7 @@ namespace AppAcademy.Infrastucture.Migrations
 
             modelBuilder.Entity("AppAcademy.Domain.PuntoDeVenta.Venta", b =>
                 {
-                    b.Navigation("DetalleCortes");
-
-                    b.Navigation("DetallePagos");
-
                     b.Navigation("DetalleVentas");
-
-                    b.Navigation("Devoluciones");
                 });
 #pragma warning restore 612, 618
         }

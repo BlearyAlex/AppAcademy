@@ -75,7 +75,6 @@ namespace AppAcademy.Infrastucture
             services.AddScoped<IClienteRepository, ClienteRepository>();
             services.AddScoped<ICorteRepository, CorteRepository>();
             services.AddScoped<IDetalleCorteRepository, DetalleCorteRepository>();
-            services.AddScoped<IDetallePagoRepository, DetallePagoRepository>();
             services.AddScoped<IDevolucionRepository, DevolucionRepository>();
             services.AddScoped<IEntradaProductoRepository, EntradaProductoRepository>();
             services.AddScoped<IEntradaRepository, EntradaRepository>();

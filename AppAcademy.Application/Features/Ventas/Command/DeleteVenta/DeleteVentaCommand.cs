@@ -10,5 +10,10 @@ namespace AppAcademy.Application.Features.Ventas.Command.DeleteVenta
     public class DeleteVentaCommand : IRequest
     {
         public string VentaId { get; set; }
+
+        public DeleteVentaCommand(string ventaId)
+        {
+            VentaId = ventaId;
+        }
     }
 }

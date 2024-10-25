@@ -9,5 +9,13 @@ namespace AppAcademy.Infrastucture.Repositories
         public VentaRepository(AppAcademyDbContext dbContext) : base(dbContext)
         {
         }
+
+        public async Task<string> CreateVentaWithProduct(Venta nuevaVenta)
+        {
+            _dbContext.Ventas.Add(nuevaVenta);
+            await _dbContext.SaveChangesAsync();
+
+            return nuevaVenta.VentaId;
+        }
     }
 }
