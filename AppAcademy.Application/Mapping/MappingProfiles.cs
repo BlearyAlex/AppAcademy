@@ -247,9 +247,11 @@ namespace AppAcademy.Application.Mapping
                 .ForMember(dest => dest.ClienteId, opt => opt.MapFrom(src => src.ClienteId));
 
             CreateMap<Venta, GetAllVentasVm>()
-                .ForMember(dest => dest.EstadoVenta, opt => opt.MapFrom(src => src.EstadoVenta.ToString()));
+                .ForMember(dest => dest.EstadoVenta, opt => opt.MapFrom(src => src.EstadoVenta.ToString()))
+                .ForMember(dest => dest.EstadoTipoPago, opt => opt.MapFrom(src => src.EstadoTipoPago.ToString()));
             CreateMap<Venta, GetVentaVm>()
-                .ForMember(dest => dest.EstadoVenta, opt => opt.MapFrom(src => src.EstadoVenta.ToString()));
+                .ForMember(dest => dest.EstadoVenta, opt => opt.MapFrom(src => src.EstadoVenta.ToString()))
+                .ForMember(dest => dest.EstadoTipoPago, opt => opt.MapFrom(src => src.EstadoTipoPago.ToString()));
             #endregion
         }
     }

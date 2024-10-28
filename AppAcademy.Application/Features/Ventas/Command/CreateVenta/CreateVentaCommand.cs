@@ -7,17 +7,17 @@ namespace AppAcademy.Application.Features.Ventas.Command.CreateVenta
     {
         public DateTime? FechaCompra { get; set; }
         public VentaEstado EstadoVenta { get; set; }
+        public TipoPagoEstado EstadoTipoPago { get; set; }
         public string? ClienteId { get; set; }
         public decimal Bruto { get; set; }
+        public int TotalProductos { get; set; }
 
         public List<CreateDetalleVentaModel>? Productos { get; set; } = new List<CreateDetalleVentaModel>();
     }
 
     public class CreateDetalleVentaModel
     {
-        public TipoPagoEstado EstadoTipoPago { get; set; }
         public decimal Costo { get; set; }
-        public CorteEstado EstadoCorte { get; set; }
         public int Cantidad { get; set; }
         public string? ProductoId { get; set; }
     }

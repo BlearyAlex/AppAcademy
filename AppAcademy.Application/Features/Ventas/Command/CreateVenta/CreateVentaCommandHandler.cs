@@ -28,7 +28,9 @@ namespace AppAcademy.Application.Features.Ventas.Command.CreateVenta
                 FechaCompra = DateTime.Now,
                 EstadoVenta = request.EstadoVenta,
                 ClienteId = request.ClienteId,
-                Bruto = request.Bruto
+                Bruto = request.Bruto,
+                TotalProductos = request.TotalProductos,
+                EstadoTipoPago = request.EstadoTipoPago,
             };
 
             if(request.Productos != null && request.Productos.Count > 0)
@@ -37,12 +39,9 @@ namespace AppAcademy.Application.Features.Ventas.Command.CreateVenta
                 {
                     var nuevoDetalleVenta = new DetalleVenta
                     {
-                        EstadoTipoPago = product.EstadoTipoPago,
                         Costo = product.Costo,
-                        EstadoCorte = product.EstadoCorte,
                         Cantidad = product.Cantidad,
                         ProductoId = product.ProductoId,
-
                     };
 
                     nuevaVenta.DetalleVentas.Add(nuevoDetalleVenta);
