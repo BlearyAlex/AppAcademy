@@ -64,8 +64,15 @@ namespace AppAcademy.Controllers.ControlVentasController
         [HttpPost("CreateVenta")]
         public async Task<ActionResult<string>> CreateVenta([FromBody] CreateVentaCommand command)
         {
-            var result = await _mediator.Send(command);
-            return Ok(result);
+            try
+            {
+                var result = await _mediator.Send(command);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.InnerException}");
+            }
         }
         #endregion
 
@@ -90,8 +97,24 @@ namespace AppAcademy.Controllers.ControlVentasController
         [HttpDelete("DeleteVenta/{id}")]
         public async Task<ActionResult> DeleteVenta(string id)
         {
-            await _mediator.Send(new DeleteVentaCommand(id));
-            return NoContent();
+            try
+            {
+                var command = new DeleteVentaCommand
+                {
+                    VentaId = id
+                };
+
+                await _mediator.Send(command);
+                return NoContent();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound($"Venta con Id {id} no encontrada");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.Message}");
+            }
         }
         #endregion
     }

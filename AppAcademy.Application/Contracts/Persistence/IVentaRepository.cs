@@ -6,5 +6,7 @@ namespace AppAcademy.Application.Contracts.Persistence
     {
         Task<string> CreateVentaWithProduct(Venta nuevaVenta);
         Task<List<Venta>> GetVentasWithProductos();
+        Task<Venta> GetVentaByIdWithProductsAsync(string ventaId);
+        Task DeleteDetalleVentaAsync(DetalleVenta detalleVenta);
     }
 }

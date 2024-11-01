@@ -10,6 +10,8 @@ namespace AppAcademy.Domain.PuntoDeVenta
         public VentaEstado EstadoVenta { get; set; }
         public TipoPagoEstado EstadoTipoPago { get; set; }
         public decimal Bruto { get; set; }
+        public decimal? Descuento { get; set; }
+        public decimal Neto { get; set; }
         public int TotalProductos { get; set; }
 
         // Relaciones

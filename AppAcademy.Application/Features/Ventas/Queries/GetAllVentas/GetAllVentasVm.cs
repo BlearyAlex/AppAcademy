@@ -7,13 +7,15 @@ namespace AppAcademy.Application.Features.Ventas.Queries.GetAllVentas
     {
         public string VentaId { get; set; }
         public DateTime? FechaCompra { get; set; }
-        public VentaEstado EstadoVenta { get; set; }
-        public TipoPagoEstado EstadoTipoPago { get; set; }
+        public string EstadoVenta { get; set; }
+        public string EstadoTipoPago { get; set; }
         public string? ClienteId { get; set; }
         public decimal Bruto { get; set; }
+        public decimal? Descuento { get; set; }
+        public decimal Neto { get; set; }
         public int TotalProductos { get; set; }
 
-        public List<GetAllDetallesVentaVm> Productos { get; set; }
+        public List<GetAllDetallesVentaVm> DetalleVentas { get; set; }
     }
 
     public class GetAllDetallesVentaVm

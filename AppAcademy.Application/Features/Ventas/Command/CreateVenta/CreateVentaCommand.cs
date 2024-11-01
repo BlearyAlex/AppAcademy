@@ -10,6 +10,8 @@ namespace AppAcademy.Application.Features.Ventas.Command.CreateVenta
         public TipoPagoEstado EstadoTipoPago { get; set; }
         public string? ClienteId { get; set; }
         public decimal Bruto { get; set; }
+        public decimal? Descuento { get; set; }
+        public decimal Neto { get; set; }
         public int TotalProductos { get; set; }
 
         public List<CreateDetalleVentaModel>? Productos { get; set; } = new List<CreateDetalleVentaModel>();
@@ -19,6 +21,6 @@ namespace AppAcademy.Application.Features.Ventas.Command.CreateVenta
     {
         public decimal Costo { get; set; }
         public int Cantidad { get; set; }
-        public string? ProductoId { get; set; }
+        public string ProductoId { get; set; }
     }
 }

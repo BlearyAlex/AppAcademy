@@ -10,31 +10,98 @@ namespace AppAcademy.Application.Features.Ventas.Command.UpdateVenta
     public class UpdateVentaCommandHandler : IRequestHandler<UpdateVentaCommand>
     {
         private readonly IVentaRepository _ventaRepository;
+        private readonly IProductoRepository _productoRepository;
         private readonly IMapper _mapper;
         private readonly ILogger<UpdateVentaCommandHandler> _logger;
 
-        public UpdateVentaCommandHandler(IVentaRepository ventaRepository, IMapper mapper, ILogger<UpdateVentaCommandHandler> logger)
+        public UpdateVentaCommandHandler(IVentaRepository ventaRepository, IProductoRepository productoRepository, IMapper mapper, ILogger<UpdateVentaCommandHandler> logger)
         {
             _ventaRepository = ventaRepository;
+            _productoRepository = productoRepository;
             _mapper = mapper;
             _logger = logger;
-        }
+        } 
 
         public async Task Handle(UpdateVentaCommand request, CancellationToken cancellationToken)
         {
-            var findVenta = await _ventaRepository.GetById(request.ventaId);
-
-            if (findVenta == null)
+            var ventaUpdate = await _ventaRepository.GetVentaByIdWithProductsAsync(request.VentaId);
+            if (ventaUpdate == null)
             {
-                _logger.LogError($"No se encontro el id de la venta {request.ventaId}");
-                throw new NotFoundException(nameof(Venta), request.ventaId);
+                throw new NotFoundException(nameof(Venta), request.VentaId);
             }
 
-            _mapper.Map(request, findVenta);
+            // Actualizar los datos de la venta
+            ventaUpdate.Descuento = request.Descuento;
+            ventaUpdate.EstadoVenta = request.EstadoVenta;
+            ventaUpdate.EstadoTipoPago = request.EstadoTipoPago;
+            ventaUpdate.FechaCompra = DateTime.Now;
+            ventaUpdate.ClienteId = request.ClienteId;
 
-            await _ventaRepository.UpdateAsync(findVenta);
+            // Actualizar los productos asociados
+            // Primero limpiamos la lista actual de productos
+            var productosEliminar = ventaUpdate.DetalleVentas.ToList();
 
-            _logger.LogInformation($"La operacion fue exitosa {request.ventaId}");
+            // Iterar sobre los productos antes de la actualizacion
+            foreach ( var product in request.Productos)
+            {
+                // Verificar si es un producto existente o nuevo
+                if (string.IsNullOrEmpty(product.DetalleVentaId))
+                {
+                    // Si es nuevo lo agregamos
+                    var nuevoDetalleVenta = new DetalleVenta
+                    {
+                        Cantidad = product.Cantidad,
+                        Costo = product.Costo,
+                        ProductoId = product.ProductoId,
+                        VentaId = product.VentaId,
+                    };
+
+                    ventaUpdate.DetalleVentas.Add(nuevoDetalleVenta);
+
+                    // Actualizar el stock del producto
+                    var producto = await _productoRepository.GetById(product.ProductoId);
+                    if (producto != null)
+                    {
+                        producto.StockMinimo -= product.Cantidad;
+                        await _productoRepository.UpdateAsync(producto);
+                    }
+                }
+                else
+                {
+                    // Si el producto ya existe, actualizamos los campos
+                    var productoExistente = ventaUpdate.DetalleVentas
+                        .FirstOrDefault(p => p.DetalleVentaId == product.DetalleVentaId);
+
+                    if (productoExistente != null)
+                    {
+                        // Actualiza solo los campos necesarios
+                        var cantidadAnterior = productoExistente.Cantidad;  // Guarda la cantidad anterior para calcular el cambio en el stock
+                        productoExistente.Cantidad = product.Cantidad;
+                        productoExistente.Costo = product.Costo;
+
+                        // Actualizamos el stock del producto
+                        var productoEntidad = await _productoRepository.GetById(product.ProductoId);
+                        if (productoEntidad != null)
+                        {
+                            productoEntidad.StockMinimo += (product.Cantidad - cantidadAnterior);
+                            await _productoRepository.UpdateAsync(productoEntidad);
+                        }
+
+                        // Elimina de la lista de productos a eliminar
+                        productosEliminar.Remove(productoExistente);
+                    }
+                }
+            }
+
+            // Eliminar los productos que ya no están en la lista
+            foreach (var productoParaEliminar in productosEliminar)
+            {
+                await _ventaRepository.DeleteDetalleVentaAsync(productoParaEliminar);
+            }
+
+            // Guardar los cambios en el repositorio
+            await _ventaRepository.UpdateAsync(ventaUpdate);
+
         }
     }
 }

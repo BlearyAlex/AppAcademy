@@ -29,6 +29,8 @@ namespace AppAcademy.Application.Features.Ventas.Command.CreateVenta
                 EstadoVenta = request.EstadoVenta,
                 ClienteId = request.ClienteId,
                 Bruto = request.Bruto,
+                Descuento = request.Descuento,
+                Neto = request.Neto,
                 TotalProductos = request.TotalProductos,
                 EstadoTipoPago = request.EstadoTipoPago,
             };

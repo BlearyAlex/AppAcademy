@@ -53,6 +53,12 @@ namespace AppAcademy.Infrastucture.Persistence
                 .HasForeignKey(ep => ep.EntradaId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<Venta>()
+                .HasMany(v => v.DetalleVentas)
+                .WithOne(ep => ep.Venta)
+                .HasForeignKey(ep =>ep.VentaId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             base.OnModelCreating(modelBuilder); 
         }
     }

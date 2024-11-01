@@ -25,5 +25,19 @@ namespace AppAcademy.Infrastucture.Repositories
                 .Include(v => v.DetalleVentas)
                 .ToListAsync();
         }
+
+        public async Task<Venta> GetVentaByIdWithProductsAsync(string ventaId)
+        {
+            return await _dbContext.Ventas
+                .Include(v => v.DetalleVentas)
+                .ThenInclude(dv => dv.Producto)
+                .FirstOrDefaultAsync(v => v.VentaId == ventaId);
+        }
+
+        public async Task DeleteDetalleVentaAsync(DetalleVenta detalleVenta)
+        {
+            _dbContext.DetalleVentas.Remove(detalleVenta);
+            await _dbContext.SaveChangesAsync();
+        }
     }
 }

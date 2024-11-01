@@ -23,12 +23,14 @@ namespace AppAcademy.Application.Features.Ventas.Queries.GetAllVentas
             {
                 VentaId = v.VentaId,
                 FechaCompra = v.FechaCompra,
-                EstadoVenta = v.EstadoVenta,
-                EstadoTipoPago = v.EstadoTipoPago,
+                EstadoVenta = v.EstadoVenta.ToString(), // Asegúrate de que esté aquí
+                EstadoTipoPago = v.EstadoTipoPago.ToString(), // Asegúrate de que esté aquí
                 ClienteId = v.ClienteId,
                 Bruto = v.Bruto,
+                Descuento = v.Descuento,
+                Neto = v.Neto,
                 TotalProductos = v.TotalProductos,
-                Productos = v.DetalleVentas.Select(d =>  new GetAllDetallesVentaVm
+                DetalleVentas = v.DetalleVentas.Select(d => new GetAllDetallesVentaVm
                 {
                     DetalleVentaId = d.DetalleVentaId,
                     Costo = d.Costo,
