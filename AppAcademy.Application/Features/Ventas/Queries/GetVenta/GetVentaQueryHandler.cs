@@ -12,20 +12,39 @@ namespace AppAcademy.Application.Features.Ventas.Queries.GetVenta
 {
     public class GetVentaQueryHandler : IRequestHandler<GetVentaQuery, GetVentaVm>
     {
-        private readonly IVentaRepository _repository;
+        private readonly IVentaRepository _ventaRepository;
         private readonly IMapper _mapper;
 
-        public GetVentaQueryHandler(IVentaRepository repository, IMapper mapper)
+        public GetVentaQueryHandler(IVentaRepository ventaRepository, IMapper mapper)
         {
-            _repository = repository;
+            _ventaRepository = ventaRepository;
             _mapper = mapper;
         }
 
         public async Task<GetVentaVm> Handle(GetVentaQuery request, CancellationToken cancellationToken)
         {
-            var venta = await _repository.GetById(request._VentaId);
+            var venta = await _ventaRepository.GetVentaByIdWithProductsAsync(request._VentaId);
 
-            return _mapper.Map<GetVentaVm>(venta);
+            return new GetVentaVm
+            {
+                VentaId = venta.VentaId,
+                FechaCompra = DateTime.Now,
+                EstadoVenta = venta.EstadoVenta,
+                EstadoTipoPago = venta.EstadoTipoPago,
+                ClienteId = venta.ClienteId,
+                Bruto = venta.Bruto,
+                Descuento = venta.Descuento,
+                Neto = venta.Neto,
+                TotalProductos = venta.TotalProductos,
+                DetalleVentas = venta.DetalleVentas.Select(v => new GetDetallesVentaVm
+                {
+                    DetalleVentaId = v.DetalleVentaId,
+                    Cantidad = v.Cantidad,
+                    Costo = v.Costo,
+                    ProductoId = v.ProductoId,
+                    NombreProducto = v.Producto.Nombre
+                }).ToList()
+            };
         }
     }
 }
