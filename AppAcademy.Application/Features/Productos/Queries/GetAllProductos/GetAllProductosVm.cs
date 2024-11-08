@@ -1,6 +1,4 @@
-﻿using AppAcademy.Domain.Enum;
-
-namespace AppAcademy.Application.Features.Productos.Queries.GetAllProductos
+﻿namespace AppAcademy.Application.Features.Productos.Queries.GetAllProductos
 {
     public class GetAllProductosVm
     {

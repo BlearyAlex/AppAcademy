@@ -1,10 +1,12 @@
 ﻿using AppAcademy.Application.Contracts.Persistence;
 using AppAcademy.Application.Contracts.Persistence.Auth;
+using AppAcademy.Application.Contracts.Persistence.IControlAcademia;
 using AppAcademy.Application.Filters;
 using AppAcademy.Infrastucture.BackgroundServices;
 using AppAcademy.Infrastucture.Persistence;
 using AppAcademy.Infrastucture.Repositories;
 using AppAcademy.Infrastucture.Repositories.Auth;
+using AppAcademy.Infrastucture.Repositories.ControlAcademia;
 using AppAcademy.Infrastucture.Seed;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -85,6 +87,10 @@ namespace AppAcademy.Infrastucture
             services.AddScoped<ISalidaRepository, SalidaRepository>();
             services.AddScoped<IUbicacionRepository, UbicacionRepository>();
             services.AddScoped<IVentaRepository, VentaRepository>();
+            #endregion
+
+            #region ControlAcademia
+            services.AddScoped<IEstudianteRepository, EstudianteRepository>();
             #endregion
 
             #region SeedData

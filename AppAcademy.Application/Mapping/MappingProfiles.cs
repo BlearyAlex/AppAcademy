@@ -25,6 +25,8 @@ using AppAcademy.Application.Features.EntradasProductos.Command.CreateEntrada;
 using AppAcademy.Application.Features.EntradasProductos.Command.UpdateEntrada;
 using AppAcademy.Application.Features.EntradasProductos.Queries.GetAllEntradas;
 using AppAcademy.Application.Features.EntradasProductos.Queries.GetEntrada;
+using AppAcademy.Application.Features.Estudiantes.Commands.CreateEstudiante;
+using AppAcademy.Application.Features.Estudiantes.Queries.GetAllEstudiantes;
 using AppAcademy.Application.Features.HistorialInventarios.Command.CreateHistorialInventario;
 using AppAcademy.Application.Features.HistorialInventarios.Command.UpdateHistorialInventario;
 using AppAcademy.Application.Features.HistorialInventarios.Queries.GetAllHistorialInventario;
@@ -62,6 +64,7 @@ using AppAcademy.Application.Features.Ventas.Command.CreateVenta;
 using AppAcademy.Application.Features.Ventas.Command.UpdateVenta;
 using AppAcademy.Application.Features.Ventas.Queries.GetAllVentas;
 using AppAcademy.Application.Features.Ventas.Queries.GetVenta;
+using AppAcademy.Domain.ControlAcademia;
 using AppAcademy.Domain.PuntoDeVenta;
 using AutoMapper;
 
@@ -252,6 +255,12 @@ namespace AppAcademy.Application.Mapping
             CreateMap<Venta, GetVentaVm>()
                 .ForMember(dest => dest.EstadoVenta, opt => opt.MapFrom(src => src.EstadoVenta.ToString()))
                 .ForMember(dest => dest.EstadoTipoPago, opt => opt.MapFrom(src => src.EstadoTipoPago.ToString()));
+            #endregion
+
+            #region Estudiantes
+            CreateMap<CreateEstudianteCommand, Estudiante>();
+
+            CreateMap<Estudiante, GetAllEstudiantesVm>();
             #endregion
         }
     }
