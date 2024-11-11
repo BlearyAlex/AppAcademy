@@ -91,6 +91,7 @@ namespace AppAcademy.Infrastucture
 
             #region ControlAcademia
             services.AddScoped<IEstudianteRepository, EstudianteRepository>();
+            services.AddScoped<IColegiaturaRepository, ColegiaturaRepository>();
             #endregion
 
             #region SeedData

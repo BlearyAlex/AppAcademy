@@ -4,6 +4,6 @@
     {
         Pagado,
         Pendiente,
-        Atrasado
+        Vencido
     }
 }

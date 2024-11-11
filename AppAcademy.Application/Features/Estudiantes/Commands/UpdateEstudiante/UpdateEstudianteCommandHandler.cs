@@ -12,18 +12,18 @@ namespace AppAcademy.Application.Features.Estudiantes.Commands.UpdateEstudiante
 {
     public class UpdateEstudianteCommandHandler : IRequestHandler<UpdateEstudianteCommand>
     {
-        private readonly IEstudianteRepository _esteudianteRepository;
+        private readonly IEstudianteRepository _estudianteRepository;
         private readonly IMapper _mapper;
 
-        public UpdateEstudianteCommandHandler(IEstudianteRepository esteudianteRepository, IMapper mapper)
+        public UpdateEstudianteCommandHandler(IEstudianteRepository estudianteRepository, IMapper mapper)
         {
-            _esteudianteRepository = esteudianteRepository;
+            _estudianteRepository = estudianteRepository;
             _mapper = mapper;
         }
 
         public async Task Handle(UpdateEstudianteCommand request, CancellationToken cancellationToken)
         {
-            var findStudent = await _esteudianteRepository.GetById(request.EstudianteId);
+            var findStudent = await _estudianteRepository.GetById(request.EstudianteId);
 
             if (findStudent == null)
             {
@@ -32,7 +32,7 @@ namespace AppAcademy.Application.Features.Estudiantes.Commands.UpdateEstudiante
 
             _mapper.Map(request, findStudent);
 
-            await _esteudianteRepository.UpdateAsync(findStudent);
+            await _estudianteRepository.UpdateAsync(findStudent);
         }
     }
 }

@@ -6,14 +6,14 @@ using AppAcademy.Application.Features.Clientes.Commands.CreateCliente;
 using AppAcademy.Application.Features.Clientes.Commands.UpdateCliente;
 using AppAcademy.Application.Features.Clientes.Queries.GetAllCliente;
 using AppAcademy.Application.Features.Clientes.Queries.GetClienteById;
+using AppAcademy.Application.Features.Colegiaturas.Commands.CreateColegiatura;
+using AppAcademy.Application.Features.Colegiaturas.Commands.UpdateColegiatura;
+using AppAcademy.Application.Features.Colegiaturas.Queries.GetAllColegiaturas;
+using AppAcademy.Application.Features.Colegiaturas.Queries.GetColegiatura;
 using AppAcademy.Application.Features.Cortes.Commands.CreateCorte;
 using AppAcademy.Application.Features.Cortes.Commands.UpdateCorte;
 using AppAcademy.Application.Features.Cortes.Queries.GetAllCortes;
 using AppAcademy.Application.Features.Cortes.Queries.GetCorte;
-using AppAcademy.Application.Features.DetallesCortes.Command.CreateDetalleCorte;
-using AppAcademy.Application.Features.DetallesCortes.Command.UpdateDetalleCorte;
-using AppAcademy.Application.Features.DetallesCortes.Queries.GetAllDetallesCortes;
-using AppAcademy.Application.Features.DetallesCortes.Queries.GetDetalleCorte;
 using AppAcademy.Application.Features.Devoluciones.Command.CreateDevolucion;
 using AppAcademy.Application.Features.Devoluciones.Command.UpdateDevolucion;
 using AppAcademy.Application.Features.Devoluciones.Queries.GetAllDevoluciones;
@@ -26,7 +26,9 @@ using AppAcademy.Application.Features.EntradasProductos.Command.UpdateEntrada;
 using AppAcademy.Application.Features.EntradasProductos.Queries.GetAllEntradas;
 using AppAcademy.Application.Features.EntradasProductos.Queries.GetEntrada;
 using AppAcademy.Application.Features.Estudiantes.Commands.CreateEstudiante;
+using AppAcademy.Application.Features.Estudiantes.Commands.UpdateEstudiante;
 using AppAcademy.Application.Features.Estudiantes.Queries.GetAllEstudiantes;
+using AppAcademy.Application.Features.Estudiantes.Queries.GetEstudianteById;
 using AppAcademy.Application.Features.HistorialInventarios.Command.CreateHistorialInventario;
 using AppAcademy.Application.Features.HistorialInventarios.Command.UpdateHistorialInventario;
 using AppAcademy.Application.Features.HistorialInventarios.Queries.GetAllHistorialInventario;
@@ -87,8 +89,7 @@ namespace AppAcademy.Application.Mapping
 
             // Queries
             CreateMap<Producto, GetAllProductosVm>()
-                .ForMember(dest => dest.EstadoProducto, opt => opt
-                .MapFrom(src => src.EstadoProducto.ToString()));
+                .ForMember(dest => dest.EstadoProducto, opt => opt.MapFrom(src => src.EstadoProducto.ToString()));
             CreateMap<Producto, GetProductsByCategoriaVm>()
                 .ForMember(dest => dest.EstadoProducto, opt => opt.MapFrom(src => src.EstadoProducto.ToString()));
             CreateMap<Producto, GetProductByIdVm>()
@@ -259,8 +260,19 @@ namespace AppAcademy.Application.Mapping
 
             #region Estudiantes
             CreateMap<CreateEstudianteCommand, Estudiante>();
+            CreateMap<UpdateEstudianteCommand, Estudiante>();
 
             CreateMap<Estudiante, GetAllEstudiantesVm>();
+            CreateMap<Estudiante, GetEstudianteByIdVm>();
+            #endregion
+
+            #region Colegiatura
+            CreateMap<CreateColegiaturaCommand, Colegiatura>()
+                .ForMember(dest => dest.EstudianteId, opt => opt.MapFrom(src => src.EstudianteId));
+            CreateMap<UpdateColegiaturaCommand, Colegiatura>();
+
+            CreateMap<Colegiatura, GetAllColegiaturasVm>();
+            CreateMap<Colegiatura, GetColegiaturaVm>();
             #endregion
         }
     }

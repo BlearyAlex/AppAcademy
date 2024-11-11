@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using AppAcademy.Domain.Enum;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,8 +14,9 @@ namespace AppAcademy.Application.Features.Estudiantes.Commands.UpdateEstudiante
         public string? Nombre { get; set; }
         public string? Apellido { get; set; }
         public string? Correo { get; set; }
-        public int Telefono { get; set; }
+        public string? Telefono { get; set; }
         public string? Direccion { get; set; }
+        public EstudianteEstado EstadoEstudiante { get; set; }
         public DateTime FechaNacimiento { get; set; }
 
     }

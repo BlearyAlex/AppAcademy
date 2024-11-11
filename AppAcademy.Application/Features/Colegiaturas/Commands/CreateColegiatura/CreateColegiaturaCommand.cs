@@ -1,11 +1,10 @@
-﻿using AppAcademy.Domain.Auth;
-using AppAcademy.Domain.Enum;
+﻿using AppAcademy.Domain.Enum;
+using MediatR;
 
-namespace AppAcademy.Domain.ControlAcademia
+namespace AppAcademy.Application.Features.Colegiaturas.Commands.CreateColegiatura
 {
-    public class Colegiatura
+    public class CreateColegiaturaCommand :IRequest<string>
     {
-        public string ColegiaturaId { get; set; } = Guid.NewGuid().ToString();
         public DateTime FechaPago { get; set; }
         public decimal MontoTotal { get; set; }
         public decimal MontoPagado { get; set; }
@@ -19,8 +18,5 @@ namespace AppAcademy.Domain.ControlAcademia
 
         // Relaciones
         public string? EstudianteId { get; set; }
-        public Estudiante? Estudiante { get; set; }
-
-        public User? User { get; set; }
     }
 }
