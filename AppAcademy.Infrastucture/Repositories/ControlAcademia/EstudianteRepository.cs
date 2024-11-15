@@ -1,11 +1,7 @@
 ﻿using AppAcademy.Application.Contracts.Persistence.IControlAcademia;
 using AppAcademy.Domain.ControlAcademia;
 using AppAcademy.Infrastucture.Persistence;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
 {
@@ -13,6 +9,20 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
     {
         public EstudianteRepository(AppAcademyDbContext dbContext) : base(dbContext)
         {
+        }
+
+        public async Task<Estudiante> GetEstudianteWithColegiatura(string studentId) 
+        {
+            var student = await _dbContext.Estudiantes
+                .Include(e => e.Colegiaturas)
+                .FirstOrDefaultAsync(e => e.EstudianteId == studentId);
+
+            if (student == null)
+            {
+                throw new KeyNotFoundException($"Estudiante con ID {studentId} no encontrado.");
+            }
+
+            return student;
         }
     }
 }

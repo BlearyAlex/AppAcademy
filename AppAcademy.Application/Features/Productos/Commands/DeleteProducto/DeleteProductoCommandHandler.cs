@@ -21,14 +21,39 @@ namespace AppAcademy.Application.Features.Productos.Commands.DeleteProducto
 
         public async Task Handle(DeleteProductoCommand request, CancellationToken cancellationToken)
         {
-            var deleteProducto = await _productoRepository.GetById(request.ProductoId);
-            if (deleteProducto == null)
+            var producto = await _productoRepository.GetById(request.ProductoId);
+
+            if (producto == null)
             {
                 _logger.LogError($"{request.ProductoId} producto no existe en el sistma");
-                throw new NotFoundException(nameof(deleteProducto), request.ProductoId);
+                throw new NotFoundException(nameof(producto), request.ProductoId);
             }
 
-            await _productoRepository.DeleteAsync(deleteProducto);
+            // Si hay una imagen asociada, eliminarla del servidor
+            if (!string.IsNullOrEmpty(producto.Imagen))
+            {
+                var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "products", "images", Path.GetFileName(producto.Imagen.TrimStart('/')));
+
+                if (File.Exists(imagePath))
+                {
+                    try
+                    {
+                        File.Delete(imagePath);
+                        _logger.LogInformation($"Imagen eliminada del servidor: {imagePath}");
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"Error al eliminar la imagen: {ex.Message}");
+                        // Puedes optar por continuar o lanzar un error dependiendo de si quieres que falle la eliminación del producto si no se puede eliminar la imagen.
+                    }
+                }
+                else
+                {
+                    _logger.LogWarning($"No se encontró la imagen en el servidor para eliminar: {imagePath}");
+                }
+            }
+
+            await _productoRepository.DeleteAsync(producto);
             _logger.LogInformation($"El {request.ProductoId} fue eliminado con exito");
 
             return;

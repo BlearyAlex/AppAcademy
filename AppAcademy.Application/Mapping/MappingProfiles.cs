@@ -29,6 +29,7 @@ using AppAcademy.Application.Features.Estudiantes.Commands.CreateEstudiante;
 using AppAcademy.Application.Features.Estudiantes.Commands.UpdateEstudiante;
 using AppAcademy.Application.Features.Estudiantes.Queries.GetAllEstudiantes;
 using AppAcademy.Application.Features.Estudiantes.Queries.GetEstudianteById;
+using AppAcademy.Application.Features.Estudiantes.Queries.GetEstudianteWithColegiaturas;
 using AppAcademy.Application.Features.HistorialInventarios.Command.CreateHistorialInventario;
 using AppAcademy.Application.Features.HistorialInventarios.Command.UpdateHistorialInventario;
 using AppAcademy.Application.Features.HistorialInventarios.Queries.GetAllHistorialInventario;
@@ -69,6 +70,7 @@ using AppAcademy.Application.Features.Ventas.Queries.GetVenta;
 using AppAcademy.Domain.ControlAcademia;
 using AppAcademy.Domain.PuntoDeVenta;
 using AutoMapper;
+using static AppAcademy.Application.Features.Colegiaturas.Queries.GetAllColegiaturas.GetAllColegiaturasVm;
 
 namespace AppAcademy.Application.Mapping
 {
@@ -263,7 +265,16 @@ namespace AppAcademy.Application.Mapping
             CreateMap<UpdateEstudianteCommand, Estudiante>();
 
             CreateMap<Estudiante, GetAllEstudiantesVm>();
-            CreateMap<Estudiante, GetEstudianteByIdVm>();
+
+            CreateMap<Estudiante, GetEstudianteByIdVm>()
+                .ForMember(dest => dest.FechaNacimiento, opt => opt.MapFrom(src => src.FechaNacimiento.ToString("yyyy-MM-dd")));
+
+            CreateMap<Estudiante, GetEstudianteWithColegiaturaVm>()
+                .ForMember(dest => dest.Colegiaturas, opt => opt.MapFrom(src => src.Colegiaturas))
+                .ForMember(dest => dest.FechaNacimiento, opt => opt.MapFrom(src => src.FechaNacimiento.ToString("yyyy-MM-dd")));
+
+            CreateMap<Colegiatura, GetColegiaturaWithEstudianteVm>();
+
             #endregion
 
             #region Colegiatura
@@ -273,6 +284,7 @@ namespace AppAcademy.Application.Mapping
 
             CreateMap<Colegiatura, GetAllColegiaturasVm>();
             CreateMap<Colegiatura, GetColegiaturaVm>();
+            CreateMap<Estudiante, EstudianteDto>();
             #endregion
         }
     }

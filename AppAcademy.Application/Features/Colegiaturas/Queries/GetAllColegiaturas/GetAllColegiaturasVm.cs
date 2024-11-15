@@ -1,12 +1,4 @@
-﻿using AppAcademy.Domain.ControlAcademia;
-using AppAcademy.Domain.Enum;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AppAcademy.Application.Features.Colegiaturas.Queries.GetAllColegiaturas
+﻿namespace AppAcademy.Application.Features.Colegiaturas.Queries.GetAllColegiaturas
 {
     public class GetAllColegiaturasVm
     {
@@ -20,10 +12,12 @@ namespace AppAcademy.Application.Features.Colegiaturas.Queries.GetAllColegiatura
         public string Mes { get; set; }
         public string? Notas { get; set; }
         public string EstadoColegiatura { get; set; }
+        public EstudianteDto Estudiante { get; set; }
 
-
-        // Relaciones
-        public string? EstudianteId { get; set; }
-        public string EstudianteNombre { get; set; }
+        public class EstudianteDto
+        {
+            public string? EstudianteId { get; set; }
+            public string Nombre { get; set; }
+        }
     }
 }

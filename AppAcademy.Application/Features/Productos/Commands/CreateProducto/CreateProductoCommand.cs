@@ -1,5 +1,6 @@
 ﻿using AppAcademy.Domain.Enum;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 
 namespace AppAcademy.Application.Features.Productos.Commands.CreateProducto
 {
@@ -9,6 +10,7 @@ namespace AppAcademy.Application.Features.Productos.Commands.CreateProducto
         public string? CodigoBarras { get; set; }
         public string? Descripcion { get; set; }
         public string? Imagen { get; set; }
+        public IFormFile? ImageFile { get; set; }
         public decimal Costo { get; set; }
         public decimal Utilidad { get; set; }
         public decimal Precio => Costo + Utilidad;

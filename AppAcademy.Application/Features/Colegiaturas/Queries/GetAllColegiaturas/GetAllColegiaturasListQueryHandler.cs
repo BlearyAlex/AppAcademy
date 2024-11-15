@@ -17,7 +17,7 @@ namespace AppAcademy.Application.Features.Colegiaturas.Queries.GetAllColegiatura
 
         public async Task<List<GetAllColegiaturasVm>> Handle(GetAllColegiaturasListQuery request, CancellationToken cancellationToken)
         {
-            var colegiaturaList = await _colegiaturaRepository.GetAllAsync();
+            var colegiaturaList = await _colegiaturaRepository.GetAllAsyncWithEstudiante();
 
             return _mapper.Map<List<GetAllColegiaturasVm>>(colegiaturaList);
         }

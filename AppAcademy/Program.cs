@@ -3,6 +3,8 @@ using AppAcademy.Application;
 using FluentValidation;
 using AppAcademy.Infrastucture.Seed;
 using AppAcademy.Middleware;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,6 +44,9 @@ app.UseAuthorization();
 app.UseCors("CorsPolicy");
 
 app.MapControllers();
+
+app.UseStaticFiles();
+
 
 // Inicializa los datos
 using (var scope = app.Services.CreateScope())

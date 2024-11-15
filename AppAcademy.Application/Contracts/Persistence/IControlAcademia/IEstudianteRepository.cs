@@ -9,5 +9,6 @@ namespace AppAcademy.Application.Contracts.Persistence.IControlAcademia
 {
     public interface IEstudianteRepository : IAsyncRepository<Estudiante>
     {
+        Task<Estudiante> GetEstudianteWithColegiatura(string studentId);
     }
 }

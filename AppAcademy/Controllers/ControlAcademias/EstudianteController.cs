@@ -7,6 +7,7 @@ using AppAcademy.Application.Features.Estudiantes.Commands.DeleteEstudiante;
 using AppAcademy.Application.Features.Estudiantes.Commands.UpdateEstudiante;
 using AppAcademy.Application.Features.Estudiantes.Queries.GetAllEstudiantes;
 using AppAcademy.Application.Features.Estudiantes.Queries.GetEstudianteById;
+using AppAcademy.Application.Features.Estudiantes.Queries.GetEstudianteWithColegiaturas;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -71,6 +72,31 @@ namespace AppAcademy.Controllers.ControlAcademias
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        #endregion
+
+        #region GetEstudianteWithColegiatura
+        [HttpGet("GetEstudianteWithColegiatura/{estudianteId}")]
+        public async Task<ActionResult<GetEstudianteWithColegiaturaVm>> GetEstudianteWithColegiatura(string estudianteId)
+        {
+            try
+            {
+                var command = new GetEstudianteWithColegiaturaQuery(estudianteId);
+
+                var student = await _mediator.Send(command);
+
+                if(student == null)
+                {
+                    return NoContent();
+                }
+
+                return Ok(student);
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
         }
         #endregion

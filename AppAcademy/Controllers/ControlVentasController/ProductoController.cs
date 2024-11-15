@@ -125,22 +125,37 @@ namespace AppAcademy.Controllers.ControlVentasController
 
         #region CreateProduct
         [HttpPost("CreateProduct")]
-        public async Task<ActionResult<string>> CreateProduct([FromBody] CreateProductoCommand command)
+        public async Task<ActionResult<string>> CreateProduct([FromForm] CreateProductoCommand command)
         {
             try
             {
-                return await _mediator.Send(command);
+                // Validar si el archivo de la imagen es valido, si es necesario
+                if (command.ImageFile != null && (command.ImageFile.Length == 0 || !IsValidImage(command.ImageFile)))
+                {
+                    return BadRequest("El archivo de la imagen no es válido.");
+                }
+
+                // Llamar al mediator para ejecutar el comando 
+                var result = await _mediator.Send(command);
+
+                // Devolver el Id del producto creado como respuesta
+                return Ok(result);
+            }
+            catch (ApplicationException ex)
+            {
+                // Error relacionado con la carga de la imagen u otros procesos específicos
+                return StatusCode(StatusCodes.Status400BadRequest, $"Error en la carga de la imagen: {ex.Message}");
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.InnerException}");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error interno del servidor.");
             }
         }
         #endregion
 
         #region UpdateProduct
         [HttpPut("UpdateProduct")]
-        public async Task<ActionResult> UpdateProduct([FromBody] UpdateProductoCommand command)
+        public async Task<ActionResult> UpdateProduct([FromForm] UpdateProductoCommand command)
         {
             try
             {
@@ -176,9 +191,19 @@ namespace AppAcademy.Controllers.ControlVentasController
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.InnerException}");
             }
         }
         #endregion
+
+        private bool IsValidImage(IFormFile image)
+        {
+            // Aquí podrías agregar validación del tipo de archivo y tamaño
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+            var extension = Path.GetExtension(image.FileName).ToLower();
+
+            return allowedExtensions.Contains(extension);
+
+        }
     }
 }

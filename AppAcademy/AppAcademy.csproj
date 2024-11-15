@@ -24,4 +24,8 @@
     <ProjectReference Include="..\AppAcademy.Infrastucture\AppAcademy.Infrastucture.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\products\images\" />
+  </ItemGroup>
+
 </Project>
