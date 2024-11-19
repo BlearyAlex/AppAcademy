@@ -1,15 +1,10 @@
-﻿using AppAcademy.Application.Features.Categorias.Commands.CreateCategoria;
-using AppAcademy.Application.Features.Categorias.Commands.DeleteCategoria;
-using AppAcademy.Application.Features.Categorias.Commands.UpdateCategoria;
-using AppAcademy.Application.Features.Categorias.Queries.GetCategoriaById;
-using AppAcademy.Application.Features.Estudiantes.Commands.CreateEstudiante;
+﻿using AppAcademy.Application.Features.Estudiantes.Commands.CreateEstudiante;
 using AppAcademy.Application.Features.Estudiantes.Commands.DeleteEstudiante;
 using AppAcademy.Application.Features.Estudiantes.Commands.UpdateEstudiante;
 using AppAcademy.Application.Features.Estudiantes.Queries.GetAllEstudiantes;
 using AppAcademy.Application.Features.Estudiantes.Queries.GetEstudianteById;
 using AppAcademy.Application.Features.Estudiantes.Queries.GetEstudianteWithColegiaturas;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppAcademy.Controllers.ControlAcademias
@@ -34,7 +29,7 @@ namespace AppAcademy.Controllers.ControlAcademias
                 var query = new GetAllEstudiantesListQuery();
                 var students = await _mediator.Send(query);
 
-                if(students == null)
+                if (students == null)
                 {
                     return NotFound("No se encontraron estudiantes.");
                 }
@@ -86,7 +81,7 @@ namespace AppAcademy.Controllers.ControlAcademias
 
                 var student = await _mediator.Send(command);
 
-                if(student == null)
+                if (student == null)
                 {
                     return NoContent();
                 }
@@ -103,22 +98,29 @@ namespace AppAcademy.Controllers.ControlAcademias
 
         #region CreateEstudiante
         [HttpPost("CreateEstudiante")]
-        public async Task<ActionResult<string>> CreateEstudiante([FromBody] CreateEstudianteCommand command)
+        public async Task<ActionResult<string>> CreateEstudiante([FromForm] CreateEstudianteCommand command)
         {
             try
             {
-                return await _mediator.Send(command);
+                if (command.ImageFile != null && (command.ImageFile.Length == 0 || !IsValidImage(command.ImageFile)))
+                {
+                    return BadRequest("El archivo de la imagen no es válido.");
+                }
+
+                var result = await _mediator.Send(command);
+
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.InnerException}");
             }
         }
         #endregion
 
         #region UpdateEstudiante
         [HttpPut("UpdateEstudiante")]
-        public async Task<ActionResult> UpdateEstudiante([FromBody] UpdateEstudianteCommand command)
+        public async Task<ActionResult> UpdateEstudiante([FromForm] UpdateEstudianteCommand command)
         {
             try
             {
@@ -158,5 +160,15 @@ namespace AppAcademy.Controllers.ControlAcademias
             }
         }
         #endregion
+     private bool IsValidImage(IFormFile image)
+        {
+            // Aquí podrías agregar validación del tipo de archivo y tamaño
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+            var extension = Path.GetExtension(image.FileName).ToLower();
+
+            return allowedExtensions.Contains(extension);
+
+        }
     }
+
 }

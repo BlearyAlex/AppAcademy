@@ -5,7 +5,6 @@ using AppAcademy.Application.Features.Productos.Queries.GetAllProductos;
 using AppAcademy.Application.Features.Productos.Queries.GetProductById;
 using AppAcademy.Application.Features.Productos.Queries.GetProductsByName;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppAcademy.Controllers.ControlVentasController

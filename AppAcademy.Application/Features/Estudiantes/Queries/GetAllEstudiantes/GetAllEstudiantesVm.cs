@@ -8,6 +8,7 @@
         public string? Correo { get; set; }
         public string Telefono { get; set; }
         public string? Direccion { get; set; }
+        public string ImageUrl { get; set; }
         public DateTime FechaNacimiento { get; set; }
         public string EstadoEstudiante { get; set; }
 

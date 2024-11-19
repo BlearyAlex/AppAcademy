@@ -15,6 +15,7 @@ namespace AppAcademy.Application.Features.Estudiantes.Queries.GetEstudianteWithC
         public string? Correo { get; set; }
         public string Telefono { get; set; }
         public string? Direccion { get; set; }
+        public string ImageUrl { get; set; }
         public DateTime FechaNacimiento { get; set; }
         public EstudianteEstado EstadoEstudiante { get; set; }
         public List<GetColegiaturaWithEstudianteVm> Colegiaturas { get; set; }

@@ -1,9 +1,4 @@
 ﻿using AppAcademy.Domain.Enum;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AppAcademy.Application.Features.Estudiantes.Queries.GetEstudianteById
 {
@@ -15,6 +10,7 @@ namespace AppAcademy.Application.Features.Estudiantes.Queries.GetEstudianteById
         public string? Correo { get; set; }
         public string Telefono { get; set; }
         public string? Direccion { get; set; }
+        public string ImageUrl { get; set; }
         public DateTime FechaNacimiento { get; set; }
         public EstudianteEstado EstadoEstudiante { get; set; }
     }

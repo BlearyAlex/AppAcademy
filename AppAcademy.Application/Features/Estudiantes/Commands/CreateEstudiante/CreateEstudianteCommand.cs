@@ -1,5 +1,6 @@
 ﻿using AppAcademy.Domain.Enum;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 
 namespace AppAcademy.Application.Features.Estudiantes.Commands.CreateEstudiante
 {
@@ -10,6 +11,8 @@ namespace AppAcademy.Application.Features.Estudiantes.Commands.CreateEstudiante
         public string? Correo { get; set; }
         public string? Telefono { get; set; }
         public string? Direccion { get; set; }
+        public string? ImageUrl { get; set; }
+        public IFormFile? ImageFile { get; set; }
         public EstudianteEstado EstadoEstudiante { get; set; }
         public DateTime FechaNacimiento { get; set; }
     }

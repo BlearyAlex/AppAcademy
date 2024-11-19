@@ -2,12 +2,8 @@
 using AppAcademy.Domain.ControlAcademia;
 using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AppAcademy.Application.Features.Estudiantes.Commands.CreateEstudiante
 {
@@ -26,18 +22,59 @@ namespace AppAcademy.Application.Features.Estudiantes.Commands.CreateEstudiante
 
         public async Task<string> Handle(CreateEstudianteCommand request, CancellationToken cancellationToken)
         {
+           if (request.ImageFile != null && request.ImageFile.Length > 0)
+            {
+                try
+                {
+                    // Guardar la imagen y obtener la url
+                    var imageUrl = await SaveImageAndGetUrl(request.ImageFile);
+                    request.ImageUrl = imageUrl;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Error al procesar la imagen: {ex.Message}");
+                    throw new ApplicationException("No se pudo guardar la imagen del producto");
+                }
+
+            }
+
+            var student = _mapper.Map<Estudiante>(request);
+
+            var newStudent = await _estudianteRepository.AddAsync(student);
+
+            return newStudent.EstudianteId;
+        }
+
+        private async Task<string> SaveImageAndGetUrl(IFormFile imageFile)
+        {
             try
             {
-                var newStudent = _mapper.Map<Estudiante>(request);
+                // Generar un nombre único para la imagen
+                var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(imageFile.FileName)}";
 
-                var addStudent = await _estudianteRepository.AddAsync(newStudent);
+                // Crear directorio si no existe
+                var directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
 
-                return addStudent.EstudianteId;
+                if (!Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
+
+                var filePath = Path.Combine(directoryPath, fileName);
+
+                // Guardar la imagen en el servidor
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await imageFile.CopyToAsync(fileStream);
+                }
+
+                // Devolver la URL de la imagen
+                return $"/images/{fileName}";
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                _logger.LogError($"Error al guardar la imagen: {ex.Message}");
+                throw new ApplicationException("Error al guardar la imagen del producto");
             }
         }
     }

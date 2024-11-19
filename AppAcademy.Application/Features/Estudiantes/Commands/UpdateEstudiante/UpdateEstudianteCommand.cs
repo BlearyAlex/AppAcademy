@@ -1,10 +1,6 @@
 ﻿using AppAcademy.Domain.Enum;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace AppAcademy.Application.Features.Estudiantes.Commands.UpdateEstudiante
 {
@@ -16,6 +12,8 @@ namespace AppAcademy.Application.Features.Estudiantes.Commands.UpdateEstudiante
         public string? Correo { get; set; }
         public string? Telefono { get; set; }
         public string? Direccion { get; set; }
+        public string? ImageUrl { get; set; }
+        public IFormFile ImageFile { get; set; }
         public EstudianteEstado EstadoEstudiante { get; set; }
         public DateTime FechaNacimiento { get; set; }
 

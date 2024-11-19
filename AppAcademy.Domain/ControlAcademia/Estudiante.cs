@@ -12,15 +12,10 @@ namespace AppAcademy.Domain.ControlAcademia
         public string? Correo { get; set; }
         public string? Telefono { get; set; }
         public string? Direccion { get; set; }
+        public string? ImageUrl { get; set; }
         public EstudianteEstado EstadoEstudiante { get; set; }
         public DateTime FechaNacimiento { get; set; }
 
-        [NotMapped]
-        public string FechaNacimientoFormateada
-        {
-            get { return FechaNacimiento.ToString("yyyy-MM-dd"); }
-            set { FechaNacimiento = DateTime.ParseExact(value, "yyyy-MM-dd", null); }
-        }
 
         // Relaciones
         public List<Colegiatura> Colegiaturas { get; set; } = [];

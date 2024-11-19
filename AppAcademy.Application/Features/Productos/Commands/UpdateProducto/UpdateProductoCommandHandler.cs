@@ -1,6 +1,4 @@
 ﻿using AppAcademy.Application.Contracts.Persistence;
-using AppAcademy.Application.Exceptions;
-using AppAcademy.Domain.PuntoDeVenta;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -46,7 +44,6 @@ namespace AppAcademy.Application.Features.Productos.Commands.UpdateProducto
                     throw new ApplicationException("No se pudo guardar la nueva imagen del producto");
                 }
             }
-
             else
             {
                 // Si no hay una nueva imagen, conservar la URL existente
