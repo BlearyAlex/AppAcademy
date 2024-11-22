@@ -23,7 +23,7 @@ namespace AppAcademy.Application.Features.Entradas.Queries.GetAllEntradas
             {
                 EntradaId = e.EntradaId,
                 TotalProductosEntrada = e.TotalProductosEntrada,
-                FechaDeEmision = DateTime.Now,
+                FechaDeEmision = e.FechaDeEmision,
                 NumeroFactura = e.NumeroFactura,
                 Folio = e.Folio,
                 Bruto = e.Bruto,

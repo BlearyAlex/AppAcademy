@@ -7,6 +7,7 @@ using AppAcademy.Application.Features.Ventas.Command.DeleteVenta;
 using AppAcademy.Application.Features.Ventas.Command.UpdateVenta;
 using AppAcademy.Application.Features.Ventas.Queries.GetAllVentas;
 using AppAcademy.Application.Features.Ventas.Queries.GetVenta;
+using AppAcademy.Application.Features.Ventas.Queries.GetVentasForDate;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -28,12 +29,12 @@ namespace AppAcademy.Controllers.ControlVentasController
         [HttpGet("GetAllVentas")]
         public async Task<ActionResult<IEnumerable<GetAllVentasVm>>> GetAllVentas()
         {
-            try
+            try 
             {
                 var query = new GetAllVentasListQuery();
                 var entradas = await _mediator.Send(query);
 
-                if(entradas == null || !entradas.Any())
+                if (entradas == null || !entradas.Any())
                 {
                     return NoContent();
                 }
@@ -57,6 +58,27 @@ namespace AppAcademy.Controllers.ControlVentasController
             var venta = await _mediator.Send(command);
 
             return Ok(venta);
+        }
+        #endregion
+
+        #region GetVentasForDate
+        [HttpGet("GetVentasForDate")]
+        public async Task<IActionResult> GetVentasForDate([FromQuery] string periodo)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(periodo))
+                {
+                    return BadRequest("Debe especificar el periodo: 'dia', 'semana' o 'mes'.");
+                }
+
+                var result = await _mediator.Send(new GetVentasForDateQuery(periodo));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.Message}");
+            }
         }
         #endregion
 
