@@ -30,13 +30,16 @@ namespace AppAcademy.Application.Features.Ventas.Command.UpdateVenta
                 throw new NotFoundException(nameof(Venta), request.VentaId);
             }
 
+            var mexicoTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time (Mexico)");
+            var mexicoTime = TimeZoneInfo.ConvertTime(DateTime.Now, mexicoTimeZone);
+
             // Actualizar los datos de la venta
             ventaUpdate.Descuento = request.Descuento;
             ventaUpdate.Neto = request.Neto;
             ventaUpdate.Bruto = request.Bruto;
             ventaUpdate.EstadoVenta = request.EstadoVenta;
             ventaUpdate.EstadoTipoPago = request.EstadoTipoPago;
-            ventaUpdate.FechaCompra = DateTime.Now;
+            ventaUpdate.FechaCompra = mexicoTime;
             ventaUpdate.ClienteId = request.ClienteId;
 
             // Actualizar los productos asociados

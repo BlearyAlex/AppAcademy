@@ -39,8 +39,18 @@ namespace AppAcademy.Application.Features.Entradas.Commands.DeleteEntrada
 
                 if (producto != null)
                 {
-                    // Restamos la cantidad al stock
-                    producto.StockMinimo -= entradaProducto.Cantidad;
+                    // Verificamos si el stock será negativo después de la operación
+                    if (producto.StockMinimo < entradaProducto.Cantidad)
+                    {
+                        // Si el stock sería negativo, solo ajustamos el stock para que llegue a cero
+                        _logger.LogWarning($"El stock del producto {producto.Nombre} (ID: {producto.ProductoId}) es insuficiente para restar la cantidad solicitada. Ajustando el stock a cero.");
+                        producto.StockMinimo = 0;  // Ajustamos el stock a cero en lugar de permitir que sea negativo
+                    }
+                    else
+                    {
+                        // Si el stock es suficiente, restamos la cantidad normalmente
+                        producto.StockMinimo -= entradaProducto.Cantidad;
+                    }
 
                     // Guardamos los cambios en el repositorio de productos
                     await _productoRepository.UpdateAsync(producto);

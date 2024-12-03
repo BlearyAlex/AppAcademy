@@ -1,4 +1,6 @@
-﻿using AppAcademy.Domain.PuntoDeVenta;
+﻿using AppAcademy.Application.Features.Entradas.Queries.GetEntradasForMonth;
+using AppAcademy.Domain.PuntoDeVenta;
+using System.Threading.Tasks;
 
 namespace AppAcademy.Application.Contracts.Persistence
 {
@@ -9,5 +11,6 @@ namespace AppAcademy.Application.Contracts.Persistence
         Task<Entrada> GetEntradaByIdWithProductsAsync(string entradaId);
         Task DeleteEntrada(string entradaId);
         Task DeleteProductoAsync(EntradaProducto producto);
+        Task<GetEntradasForMonthVm> GetEntradasForMonth();
     }
 }

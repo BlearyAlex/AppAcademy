@@ -7,6 +7,8 @@ using AppAcademy.Application.Features.Ventas.Command.DeleteVenta;
 using AppAcademy.Application.Features.Ventas.Command.UpdateVenta;
 using AppAcademy.Application.Features.Ventas.Queries.GetAllVentas;
 using AppAcademy.Application.Features.Ventas.Queries.GetVenta;
+using AppAcademy.Application.Features.Ventas.Queries.GetVentaForDay;
+using AppAcademy.Application.Features.Ventas.Queries.GetVentaForMonth;
 using AppAcademy.Application.Features.Ventas.Queries.GetVentasForDate;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -73,6 +75,38 @@ namespace AppAcademy.Controllers.ControlVentasController
                 }
 
                 var result = await _mediator.Send(new GetVentasForDateQuery(periodo));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        #endregion
+
+        #region GetVentasForMonth
+        [HttpGet("GetVentasForMonth")]
+        public async Task<IActionResult> GetVentasForMonth()
+        {
+            try
+            { 
+                var result = await _mediator.Send(new GetVentaForMonthQuery());
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        #endregion
+
+        #region GetVentasForDay
+        [HttpGet("GetVentasForDay")]
+        public async Task<IActionResult> GetVentasForDay()
+        {
+            try
+            {
+                var result = await _mediator.Send(new GetVentaForDayQuery());
                 return Ok(result);
             }
             catch (Exception ex)

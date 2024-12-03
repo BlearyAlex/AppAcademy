@@ -6,6 +6,7 @@ using AppAcademy.Application.Features.Entradas.Queries.GetEntrada;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using FluentValidation;
+using AppAcademy.Application.Features.Entradas.Queries.GetEntradasForMonth;
 
 
 namespace AppAcademy.Controllers.ControlVentasController
@@ -54,6 +55,25 @@ namespace AppAcademy.Controllers.ControlVentasController
                 var entrada = await _mediator.Send(command);
 
                 return Ok(entrada);
+        }
+        #endregion
+
+        #region GetEntradaForMonth
+        [HttpGet("GetEntradaForMont")]
+        public async Task<ActionResult<GetEntradasForMonthVm>> GetEntradForMont()
+        {
+            try
+            {
+                var command = new GetEntradasForMonthQuery();
+
+                var entrada = await _mediator.Send(command);
+
+                return Ok(entrada);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.Message}");
+            }
         }
         #endregion
 

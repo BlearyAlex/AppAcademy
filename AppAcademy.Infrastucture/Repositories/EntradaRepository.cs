@@ -1,4 +1,5 @@
 ﻿using AppAcademy.Application.Contracts.Persistence;
+using AppAcademy.Application.Features.Entradas.Queries.GetEntradasForMonth;
 using AppAcademy.Domain.PuntoDeVenta;
 using AppAcademy.Infrastucture.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +25,7 @@ namespace AppAcademy.Infrastucture.Repositories
             var entrada = await _dbContext.Entradas
                 .FirstOrDefaultAsync(e => e.EntradaId == entradaId);
 
-            if(entrada == null)
+            if (entrada == null)
             {
                 throw new Exception("Entrada con ID {entradaId} no encontrada");
             }
@@ -52,7 +53,25 @@ namespace AppAcademy.Infrastucture.Repositories
         public async Task DeleteProductoAsync(EntradaProducto producto)
         {
             _dbContext.EntradaProductos.Remove(producto);
-            await _dbContext.SaveChangesAsync(); 
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<GetEntradasForMonthVm> GetEntradasForMonth()
+        {
+            var month = DateTime.Now.Month;
+            var year = DateTime.Now.Year;
+
+            var entradasForMonth = await _dbContext.Entradas
+                .Where(e => e.FechaDeEmision.Month == month && e.FechaDeEmision.Year == year)
+                .SelectMany(e => e.EntradaProductos, (entrada, EntradaProducto) => EntradaProducto.Costo * EntradaProducto.Cantidad)
+                .SumAsync();
+
+            return new GetEntradasForMonthVm
+            {
+                Mes = month,
+                Año = year,
+                TotalCompras = entradasForMonth
+            };
         }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using AppAcademy.Application.Contracts.Persistence;
+using AppAcademy.Application.Features.Ventas.Queries.GetVentaForDay;
+using AppAcademy.Application.Features.Ventas.Queries.GetVentaForMonth;
 using AppAcademy.Application.Features.Ventas.Queries.GetVentasForDate;
 using AppAcademy.Domain.PuntoDeVenta;
 using AppAcademy.Infrastucture.Persistence;
@@ -42,15 +44,14 @@ namespace AppAcademy.Infrastucture.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task <List<GetVentasForDateVm>> GetVentasForDate(CancellationToken cancellationToken, string periodo)
+        public async Task<List<GetVentasForDateVm>> GetVentasForDate(CancellationToken cancellationToken, string periodo)
         {
             var ventas = await _dbContext.Ventas
-                .Where(v => v.FechaCompra.HasValue)
+                .Where(v => v.FechaCompra != DateTime.MinValue) // Solo verifica si la fecha no es la fecha mínima
                 .Select(v => new
                 {
-                    Fecha = v.FechaCompra.Value,
-                    Neto = v.Neto,
-                    TotalProductos = v.TotalProductos
+                    Fecha = v.FechaCompra,
+                    Neto = v.Neto
                 })
                 .ToListAsync(cancellationToken);
 
@@ -60,8 +61,7 @@ namespace AppAcademy.Infrastucture.Repositories
                                .Select(g => new GetVentasForDateVm
                                {
                                    Fecha = g.Key.ToString("yyyy-MM-dd"),
-                                   TotalVentas = g.Sum(v => v.Neto),
-                                   TotalProductos = g.Sum(v => v.TotalProductos)
+                                   TotalVentas = g.Sum(v => v.Neto)
                                }).ToList(),
 
                 "semana" => ventas.GroupBy(v => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(v.Fecha, CalendarWeekRule.FirstDay, DayOfWeek.Monday))
@@ -69,7 +69,6 @@ namespace AppAcademy.Infrastucture.Repositories
                                   {
                                       Fecha = $"Semana {g.Key}",
                                       TotalVentas = g.Sum(v => v.Neto),
-                                      TotalProductos = g.Sum(v => v.TotalProductos)
                                   }).ToList(),
 
                 "mes" => ventas.GroupBy(v => new { v.Fecha.Year, v.Fecha.Month })
@@ -77,12 +76,50 @@ namespace AppAcademy.Infrastucture.Repositories
                                {
                                    Fecha = $"{g.Key.Month}/{g.Key.Year}",
                                    TotalVentas = g.Sum(v => v.Neto),
-                                   TotalProductos = g.Sum(v => v.TotalProductos)
                                }).ToList(),
 
                 _ => throw new ArgumentException("El periodo no es válido. Usa 'dia', 'semana' o 'mes'.")
             };
         }
+
+
+        public async Task<GetVentaForMonthVm> GetVentaForMont()
+        {
+            var month = DateTime.Now.Month;
+            var year = DateTime.Now.Year;
+
+            var ventas = await _dbContext.Ventas
+                .Where(v => v.FechaCompra.Month == month && v.FechaCompra.Year == year)
+                .SelectMany(e => e.DetalleVentas, (venta, DetalleVenta) => DetalleVenta.Costo * DetalleVenta.Cantidad)
+                .SumAsync();
+
+            return new GetVentaForMonthVm
+            {
+                Mes = month,
+                Año = year,
+                TotalVentas = ventas
+            };
+        }
+
+        public async Task<GetVentaForDayVm> GetVentaForDay()
+        {
+            // Ajusta la hora al huso horario de México
+            var mexicoTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time (Mexico)");
+            var todayStart = TimeZoneInfo.ConvertTime(DateTime.Today, mexicoTimeZone); // 00:00:00 del día actual en hora local
+            var tomorrowStart = todayStart.AddDays(1); // 00:00:00 del siguiente día en hora local
+
+            var ventas = await _dbContext.Ventas
+                .Where(v => v.FechaCompra >= todayStart && v.FechaCompra < tomorrowStart)
+                .SumAsync(v => v.Neto);
+
+            return new GetVentaForDayVm
+            {
+                Fecha = todayStart.ToString("yyyy-MM-dd"), 
+                TotalVenta = ventas
+            };
+        }
+
+
     }
 }
 

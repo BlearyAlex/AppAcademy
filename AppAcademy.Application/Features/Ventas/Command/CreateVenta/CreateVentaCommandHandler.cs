@@ -23,9 +23,13 @@ namespace AppAcademy.Application.Features.Ventas.Command.CreateVenta
 
         public async Task<string> Handle(CreateVentaCommand request, CancellationToken cancellationToken)
         {
+
+            var mexicoTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time (Mexico)");
+            var mexicoTime = TimeZoneInfo.ConvertTime(DateTime.Now, mexicoTimeZone);
+
             var nuevaVenta = new Venta
             {
-                FechaCompra = DateTime.Now,
+                FechaCompra = mexicoTime,
                 EstadoVenta = request.EstadoVenta,
                 ClienteId = request.ClienteId,
                 Bruto = request.Bruto,

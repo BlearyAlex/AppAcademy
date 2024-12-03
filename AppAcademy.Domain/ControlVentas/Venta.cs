@@ -6,7 +6,7 @@ namespace AppAcademy.Domain.PuntoDeVenta
     public class Venta
     {
         public string VentaId { get; set; } = Guid.NewGuid().ToString();
-        public DateTime? FechaCompra { get; set; }
+        public DateTime FechaCompra { get; set; }
         public VentaEstado EstadoVenta { get; set; }
         public TipoPagoEstado EstadoTipoPago { get; set; }
         public decimal Bruto { get; set; }
