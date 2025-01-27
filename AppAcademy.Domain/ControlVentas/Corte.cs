@@ -1,6 +1,4 @@
-﻿using AppAcademy.Domain.Auth;
-
-namespace AppAcademy.Domain.PuntoDeVenta
+﻿namespace AppAcademy.Domain.PuntoDeVenta
 {
     public class Corte
     {
@@ -13,9 +11,6 @@ namespace AppAcademy.Domain.PuntoDeVenta
         public string? Comentarios { get; set; }
 
         // Relaciones
-        public string? UserId { get; set; }
-        public User? User { get; set; }
-
         public List<DetalleCorte> DetalleCortes { get; set; } = [];
     }
 }

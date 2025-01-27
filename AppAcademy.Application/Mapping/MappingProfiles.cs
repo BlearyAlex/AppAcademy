@@ -14,10 +14,6 @@ using AppAcademy.Application.Features.Cortes.Commands.CreateCorte;
 using AppAcademy.Application.Features.Cortes.Commands.UpdateCorte;
 using AppAcademy.Application.Features.Cortes.Queries.GetAllCortes;
 using AppAcademy.Application.Features.Cortes.Queries.GetCorte;
-using AppAcademy.Application.Features.Devoluciones.Command.CreateDevolucion;
-using AppAcademy.Application.Features.Devoluciones.Command.UpdateDevolucion;
-using AppAcademy.Application.Features.Devoluciones.Queries.GetAllDevoluciones;
-using AppAcademy.Application.Features.Devoluciones.Queries.GetDevolucion;
 using AppAcademy.Application.Features.Entradas.Commands.CreateEntrada;
 using AppAcademy.Application.Features.Entradas.Commands.UpdateEntrada;
 using AppAcademy.Application.Features.Entradas.Queries.GetAllEntradas;
@@ -30,10 +26,6 @@ using AppAcademy.Application.Features.Estudiantes.Commands.UpdateEstudiante;
 using AppAcademy.Application.Features.Estudiantes.Queries.GetAllEstudiantes;
 using AppAcademy.Application.Features.Estudiantes.Queries.GetEstudianteById;
 using AppAcademy.Application.Features.Estudiantes.Queries.GetEstudianteWithColegiaturas;
-using AppAcademy.Application.Features.HistorialInventarios.Command.CreateHistorialInventario;
-using AppAcademy.Application.Features.HistorialInventarios.Command.UpdateHistorialInventario;
-using AppAcademy.Application.Features.HistorialInventarios.Queries.GetAllHistorialInventario;
-using AppAcademy.Application.Features.HistorialInventarios.Queries.GetHistorialInventario;
 using AppAcademy.Application.Features.Inventarios.Command.CreateInventario;
 using AppAcademy.Application.Features.Inventarios.Command.UpdateInventario;
 using AppAcademy.Application.Features.Inventarios.Queries.GetAllInventarios;
@@ -47,10 +39,6 @@ using AppAcademy.Application.Features.Productos.Commands.UpdateProducto;
 using AppAcademy.Application.Features.Productos.Queries.GetAllProductos;
 using AppAcademy.Application.Features.Productos.Queries.GetProductById;
 using AppAcademy.Application.Features.Productos.Queries.GetProductsByName;
-using AppAcademy.Application.Features.Promociones.Command.CreatePromocion;
-using AppAcademy.Application.Features.Promociones.Command.UpdatePromocion;
-using AppAcademy.Application.Features.Promociones.Queries.GetAllPromociones;
-using AppAcademy.Application.Features.Promociones.Queries.GetPromocion;
 using AppAcademy.Application.Features.Proveedores.Commands.CreateProveedor;
 using AppAcademy.Application.Features.Proveedores.Commands.UpdateProveedor;
 using AppAcademy.Application.Features.Proveedores.Queries.GetAllProveedor;
@@ -59,10 +47,6 @@ using AppAcademy.Application.Features.Salidas.Command.CreateSalida;
 using AppAcademy.Application.Features.Salidas.Command.UpdateSalida;
 using AppAcademy.Application.Features.Salidas.Queries.GetAllSalidas;
 using AppAcademy.Application.Features.Salidas.Queries.GetSalida;
-using AppAcademy.Application.Features.Ubicaciones.Command.CreateUbicacion;
-using AppAcademy.Application.Features.Ubicaciones.Command.UpdateUbicacion;
-using AppAcademy.Application.Features.Ubicaciones.Queries.GetAllUbicaciones;
-using AppAcademy.Application.Features.Ubicaciones.Queries.GetUbicacion;
 using AppAcademy.Application.Features.Ventas.Command.CreateVenta;
 using AppAcademy.Application.Features.Ventas.Command.UpdateVenta;
 using AppAcademy.Application.Features.Ventas.Queries.GetAllVentas;
@@ -134,8 +118,7 @@ namespace AppAcademy.Application.Mapping
 
             #region Cortes
             // Commands
-            CreateMap<CreateCorteCommand, Corte>()
-                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId));
+            CreateMap<CreateCorteCommand, Corte>();
             CreateMap<UpdateCorteCommand, Corte>();
 
             // Queries
@@ -153,19 +136,6 @@ namespace AppAcademy.Application.Mapping
 
             //CreateMap<DetalleCorte, GetAllDetallesCortesVm>();
             //CreateMap<DetalleCorte, GetDetalleCorteVm>();
-            #endregion
-
-            #region Devoluciones
-            CreateMap<CreateDevolucionCommand, Devolucion>()
-                //.ForMember(dest => dest.VentaId, opt => opt.MapFrom(src => src.VentaId))
-                .ForMember(dest => dest.ProductoId, opt => opt.MapFrom(src => src.ProductoId))
-                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId));
-            CreateMap<UpdateDevolucionCommand, Devolucion>()
-                //.ForMember(dest => dest.VentaId, opt => opt.MapFrom(src => src.VentaId))
-                .ForMember(dest => dest.ProductoId, opt => opt.MapFrom(src => src.ProductoId));
-
-            CreateMap<Devolucion, GetAllDevolucionesVm>();
-            CreateMap<Devolucion, GetDevolucionVm>();
             #endregion
 
             #region Entradas
@@ -191,17 +161,6 @@ namespace AppAcademy.Application.Mapping
             CreateMap<EntradaProducto, GetEntradaProductoVm>();
             #endregion
 
-            #region HistorialInventario
-            CreateMap<CreateHistorialInventarioCommand, HistorialInventario>()
-                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
-                .ForMember(dest => dest.ProductoId, opt => opt.MapFrom(src => src.ProductoId));
-            CreateMap<UpdateHistorialInventarioCommand, HistorialInventario>()
-                .ForMember(dest => dest.ProductoId, opt => opt.MapFrom(src => src.ProductoId));
-
-            CreateMap<HistorialInventario, GetAllHistorialInventarioVm>();
-            CreateMap<HistorialInventario, GetHistorialInventarioVm>();
-            #endregion
-
             #region Inventarios
             CreateMap<CreateInventarioCommand, Inventario>()
                 .ForMember(dest => dest.ProductoId, opt => opt.MapFrom(src => src.ProductoId));
@@ -220,29 +179,12 @@ namespace AppAcademy.Application.Mapping
             CreateMap<Marca, GetMarcaVm>();
             #endregion
 
-            #region Promociones
-            CreateMap<CreatePromocionCommand, Promocion>();
-            CreateMap<UpdatePromocionCommand, Promocion>();
-
-            CreateMap<Promocion, GetAllPromocionesVm>();
-            CreateMap<Promocion, GetPromocionVm>();
-            #endregion
-
             #region Salidas
-            CreateMap<CreateSalidaCommand, Salida>()
-                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId));
+            CreateMap<CreateSalidaCommand, Salida>();
             CreateMap<UpdateSalidaCommand, Salida>();
 
             CreateMap<Salida, GetAllSalidasVm>();
             CreateMap<Salida, GetSalidaVm>();
-            #endregion
-
-            #region Ubicaciones
-            CreateMap<CreateUbicacionCommand, Ubicacion>();
-            CreateMap<UpdateUbicacionCommand, Ubicacion>();
-
-            CreateMap<Ubicacion, GetAllUbicacionesVm>();
-            CreateMap<Ubicacion, GetUbicacionVm>();
             #endregion
 
             #region Ventas

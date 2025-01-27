@@ -1,7 +1,6 @@
 using AppAcademy.Infrastucture;
 using AppAcademy.Application;
 using FluentValidation;
-using AppAcademy.Infrastucture.Seed;
 using AppAcademy.Middleware;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
@@ -46,21 +45,5 @@ app.UseCors("CorsPolicy");
 app.MapControllers();
 
 app.UseStaticFiles();
-
-
-// Inicializa los datos
-using (var scope = app.Services.CreateScope())
-{
-    var seedData = scope.ServiceProvider.GetRequiredService<SeedData>();
-    try
-    {
-        await seedData.Initialize();
-    }
-    catch (Exception ex)
-    {
-        // Registra el error (puedes usar un logger o simplemente escribir en la consola)
-        Console.WriteLine($"Error al inicializar datos: {ex.Message}");
-    }
-}
 
 app.Run();

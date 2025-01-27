@@ -1,5 +1,4 @@
-﻿using AppAcademy.Domain.Auth;
-using AppAcademy.Domain.PuntoDeVenta;
+﻿using AppAcademy.Domain.PuntoDeVenta;
 using System;
 using System.Collections.Generic;
 using System.Linq;

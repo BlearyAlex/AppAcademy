@@ -1,6 +1,4 @@
-﻿using AppAcademy.Domain.Auth;
-
-namespace AppAcademy.Domain.PuntoDeVenta
+﻿namespace AppAcademy.Domain.PuntoDeVenta
 {
     public class Entrada
     {
@@ -12,12 +10,6 @@ namespace AppAcademy.Domain.PuntoDeVenta
         public decimal Bruto { get; set; }
 
         // Relaciones
-        public string? UserId { get; set; }
-        public User? User { get; set; }
-
-        public string? OrigenId { get; set; }
-        public Ubicacion? Origen { get; set; }
-
         public List<EntradaProducto> EntradaProductos { get; set; } = new List<EntradaProducto>();
     }
 }

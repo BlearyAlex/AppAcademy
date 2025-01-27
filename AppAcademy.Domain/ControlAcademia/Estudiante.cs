@@ -1,6 +1,4 @@
-﻿using AppAcademy.Domain.Auth;
-using AppAcademy.Domain.Enum;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using AppAcademy.Domain.Enum;
 
 namespace AppAcademy.Domain.ControlAcademia
 {
@@ -21,7 +19,5 @@ namespace AppAcademy.Domain.ControlAcademia
         public List<Colegiatura> Colegiaturas { get; set; } = [];
         public List<MaterialAdeudo> MaterialAdeudos { get; set; } = [];
         public List<Materia_Estudiante> MateriaSEstudiantes { get; set; } = [];
-
-        public User? User { get; set; }
     }
 }

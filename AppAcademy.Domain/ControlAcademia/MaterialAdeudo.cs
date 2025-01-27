@@ -1,5 +1,4 @@
-﻿using AppAcademy.Domain.Auth;
-using AppAcademy.Domain.Enum;
+﻿using AppAcademy.Domain.Enum;
 
 namespace AppAcademy.Domain.ControlAcademia
 {
@@ -13,7 +12,5 @@ namespace AppAcademy.Domain.ControlAcademia
 
         // Relaciones
         public Estudiante? Estudiante { get; set; }
-
-        public User? User { get; set; }
     }
 }

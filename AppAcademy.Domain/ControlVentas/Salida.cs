@@ -1,6 +1,4 @@
-﻿using AppAcademy.Domain.Auth;
-
-namespace AppAcademy.Domain.PuntoDeVenta
+﻿namespace AppAcademy.Domain.PuntoDeVenta
 {
     public class Salida
     {
@@ -8,9 +6,5 @@ namespace AppAcademy.Domain.PuntoDeVenta
         public DateTime FechaSalida { get; set; }
         public int TotalProductosSalida { get; set; }
         public string? Comentarios { get; set; }
-
-        // Relaciones
-        public string? UserId { get; set; }
-        public User? User { get; set; }
     }
 }

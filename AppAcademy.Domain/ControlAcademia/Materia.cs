@@ -1,6 +1,4 @@
-﻿using AppAcademy.Domain.Auth;
-
-namespace AppAcademy.Domain.ControlAcademia
+﻿namespace AppAcademy.Domain.ControlAcademia
 {
     public class Materia
     {
@@ -10,7 +8,5 @@ namespace AppAcademy.Domain.ControlAcademia
 
         // Relaciones
         public List<Materia_Estudiante> MateriasEstudiantes { get; set; } = [];
-
-        public User? User { get; set; }
     }
 }
