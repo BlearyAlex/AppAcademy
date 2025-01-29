@@ -1,9 +1,8 @@
 using AppAcademy.Infrastucture;
 using AppAcademy.Application;
-using FluentValidation;
 using AppAcademy.Middleware;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.Identity;
+using AppAcademy.Infrastucture.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +25,12 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await IdentityInitializer.InitializeRoles(services);
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

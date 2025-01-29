@@ -1,10 +1,12 @@
 ﻿using AppAcademy.Domain.ControlAcademia;
 using AppAcademy.Domain.PuntoDeVenta;
+using AppAcademy.Infrastucture.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace AppAcademy.Infrastucture.Persistence
 {
-    public class AppAcademyDbContext : DbContext
+    public class AppAcademyDbContext : IdentityDbContext<AppUser>
     {
         public AppAcademyDbContext(DbContextOptions<AppAcademyDbContext> options) : base(options)
         {
