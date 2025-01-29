@@ -34,6 +34,9 @@ namespace AppAcademy.Infrastucture.Persistence
         public DbSet<MaterialAdeudo> MaterialAdeudos { get; set; }
         public DbSet<Materia_Estudiante> MateriaEstudiantes { get; set; }
 
+        // Auth
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Entrada>()

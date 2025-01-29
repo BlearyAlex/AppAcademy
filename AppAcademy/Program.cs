@@ -41,11 +41,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<ExceptionMiddleware>();
 
+app.UseRouting();
+
+app.UseCors("CorsPolicy");
+
 app.UseAuthentication();
 
 app.UseAuthorization();
-
-app.UseCors("CorsPolicy");
 
 app.MapControllers();
 

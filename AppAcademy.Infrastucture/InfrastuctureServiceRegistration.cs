@@ -3,6 +3,7 @@ using AppAcademy.Application.Contracts.Persistence.IControlAcademia;
 using AppAcademy.Infrastucture.Identity;
 using AppAcademy.Infrastucture.Persistence;
 using AppAcademy.Infrastucture.Repositories;
+using AppAcademy.Infrastucture.Repositories.Auth;
 using AppAcademy.Infrastucture.Repositories.ControlAcademia;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -10,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 using System.Text;
 
 namespace AppAcademy.Infrastucture
@@ -30,13 +32,12 @@ namespace AppAcademy.Infrastucture
                 {
                     options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
                     {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
-                        ValidIssuer = configuration["Jwt:Issuer"],
-                        ValidAudience = configuration["Jwt:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("P3m7e0NbBTIWUdrv03TNxoHcBvqmXjdOODN7iMoEbeo")),
+                        RoleClaimType = ClaimTypes.Role
                     };
                 });
 
@@ -59,6 +60,10 @@ namespace AppAcademy.Infrastucture
             #region ControlAcademia
             services.AddScoped<IEstudianteRepository, EstudianteRepository>();
             services.AddScoped<IColegiaturaRepository, ColegiaturaRepository>();
+            #endregion
+
+            #region Auth
+            services.AddScoped<RefreshTokenService>();
             #endregion
 
             return services;
