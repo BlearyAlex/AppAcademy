@@ -17,7 +17,7 @@ namespace AppAcademy.Application.Features.Productos.Queries.GetAllProductos
 
         public async Task<List<GetAllProductosVm>> Handle(GetAllProductosListQuery request, CancellationToken cancellationToken)
         {
-            var productList = await _productoRepository.GetAllAsync();
+            var productList = await _productoRepository.GetAllProductos();
 
             return _mapper.Map<List<GetAllProductosVm>>(productList);
         }
