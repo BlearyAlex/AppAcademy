@@ -30,24 +30,25 @@ namespace AppAcademy.Infrastucture.Repositories
                     Costo = p.Costo,
                     Utilidad = p.Utilidad,
                     Precio = p.Precio,
-                    DescuentoBase = p.DescuentoBase,
-                    Impuesto = p.Impuesto,
                     EstadoProducto = p.EstadoProducto.ToString(),
-                    StockMinimo = p.StockMinimo,
+                    Stock = p.Stock,
                     Categoria = new GetAllCategoriaVm
                     {
                         CategoriaId = p.Categoria.CategoriaId,
-                        Nombre = p.Categoria.Nombre
+                        Nombre = p.Categoria.Nombre,
+                        Color = p.Marca.Color,
                     },
                     Marca = new GetAllMarcaVm
                     {
                         MarcaId = p.Marca.MarcaId,
-                        Nombre = p.Marca.Nombre
+                        Nombre = p.Marca.Nombre,
+                        Color = p.Marca.Color,
                     },
                     Proveedor = new GetAllProveedorVm
                     {
                         ProveedorId = p.Proveedor.ProveedorId,
-                        Nombre = p.Proveedor.Nombre
+                        Nombre = p.Proveedor.Nombre,
+                        Color = p.Marca.Color
                     }
                 }).ToListAsync();
 

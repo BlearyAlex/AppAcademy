@@ -11,5 +11,6 @@ namespace AppAcademy.Application.Features.Marcas.Command.UpdateMarca
     {
         public string MarcaId { get; set; } 
         public string? Nombre { get; set; }
+        public string? Color { get; set; }
     }
 }

@@ -18,7 +18,7 @@ namespace AppAcademy.Application.Features.Productos.Commands.UpdateProducto
         public decimal DescuentoBase { get; set; }
         public int Impuesto { get; set; }
         public ProductoEstado EstadoProducto { get; set; }
-        public int StockMinimo { get; set; }
+        public int Stock { get; set; }
 
         // Relación con otras entidades
         public string? CategoriaId { get; set; }

@@ -14,6 +14,6 @@ namespace AppAcademy.Application.Features.Productos.Queries.GetProductsByName
         public decimal DescuentoBase { get; set; }
         public int Impuesto { get; set; }
         public ProductoEstado EstadoProducto { get; set; }
-        public int StockMinimo { get; set; }
+        public int Stock { get; set; }
     }
 }

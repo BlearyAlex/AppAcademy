@@ -11,6 +11,7 @@ namespace AppAcademy.Application.Features.Marcas.Command.CreateMarca
     public class CreateMarcaCommand : IRequest<string>
     {
         public string? Nombre { get; set; }
+        public string? Color { get; set; }
 
         // Relaciones
         public List<Producto> Productos { get; set; } = [];

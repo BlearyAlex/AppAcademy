@@ -4,6 +4,7 @@ using AppAcademy.Infrastucture.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppAcademy.Infrastucture.Migrations
 {
     [DbContext(typeof(AppAcademyDbContext))]
-    partial class AppAcademyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250206203613_AddedFieldColorsInModels")]
+    partial class AddedFieldColorsInModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -417,7 +420,7 @@ namespace AppAcademy.Infrastucture.Migrations
                     b.Property<string>("ProveedorId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("Stock")
+                    b.Property<int>("StockMinimo")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Utilidad")

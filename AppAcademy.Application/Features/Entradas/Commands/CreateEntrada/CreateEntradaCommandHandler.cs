@@ -59,7 +59,7 @@ namespace AppAcademy.Application.Features.Entradas.Commands.CreateEntrada
 
                     if(productoEntidad != null)
                     {
-                        productoEntidad.StockMinimo += producto.Cantidad;
+                        productoEntidad.Stock += producto.Cantidad;
 
                         await _productoRepository.UpdateAsync(productoEntidad);
                     }
