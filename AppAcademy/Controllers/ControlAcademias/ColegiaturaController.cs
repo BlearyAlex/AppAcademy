@@ -4,6 +4,7 @@ using AppAcademy.Application.Features.Colegiaturas.Commands.UpdateColegiatura;
 using AppAcademy.Application.Features.Colegiaturas.Queries.GetAllColegiaturas;
 using AppAcademy.Application.Features.Colegiaturas.Queries.GetColegiatura;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppAcademy.Controllers.ControlAcademias
@@ -20,6 +21,7 @@ namespace AppAcademy.Controllers.ControlAcademias
         }
 
         #region GetAll
+        [Authorize(Roles = "Admin")]
         [HttpGet("GetAllColegiaturas")]
         public async Task<ActionResult<IEnumerable<GetAllColegiaturasVm>>> GetAllColegiaturas()
         {

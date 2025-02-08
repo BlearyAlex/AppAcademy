@@ -13,11 +13,33 @@
         public decimal DescuentoBase { get; set; }
         public int Impuesto { get; set; }
         public string EstadoProducto { get; set; }
-        public int StockMinimo { get; set; }
+        public int Stock { get; set; }
 
         // Relación con otras entidades
-        public string? CategoriaId { get; set; }
-        public string? MarcaId { get; set; }
-        public string? ProveedorId { get; set; }
+        public GetAllCategoriaVm? Categoria { get; set; }
+        public GetAllMarcaVm? Marca { get; set; }
+        public GetAllProveedorVm? Proveedor { get; set; }
     }
+
+    public class GetAllCategoriaVm
+    {
+        public string CategoriaId { get; set; }
+        public string Nombre { get; set; }
+        public string Color { get; set; }
+    }
+
+    public class GetAllMarcaVm
+    {
+        public string MarcaId { get; set; }
+        public string Nombre { get; set; }
+        public string Color { get; set; }
+    }
+
+    public class GetAllProveedorVm
+    {
+        public string ProveedorId { get; set; }
+        public string Nombre { get; set; }
+        public string Color { get; set; }
+    }
+
 }

@@ -67,7 +67,7 @@ namespace AppAcademy.Application.Features.Entradas.Commands.UpdateEntrada
                     var productoEntidad = await _productoRepository.GetById(productoVm.ProductoId);
                     if(productoEntidad != null)
                     {
-                        productoEntidad.StockMinimo += productoVm.Cantidad;
+                        productoEntidad.Stock += productoVm.Cantidad;
                         await _productoRepository.UpdateAsync(productoEntidad);
                     }
                 }
@@ -88,7 +88,7 @@ namespace AppAcademy.Application.Features.Entradas.Commands.UpdateEntrada
                         var productoEntidad = await _productoRepository.GetById(productoVm.ProductoId);
                         if (productoEntidad != null)
                         {
-                            productoEntidad.StockMinimo += (productoVm.Cantidad - cantidadAnterior); 
+                            productoEntidad.Stock += (productoVm.Cantidad - cantidadAnterior); 
                             await _productoRepository.UpdateAsync(productoEntidad);
                         }
 

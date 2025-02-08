@@ -56,14 +56,14 @@ namespace AppAcademy.Application.Features.Ventas.Command.CreateVenta
 
                     if(productoEntidad != null)
                     {
-                        if(productoEntidad.StockMinimo < product.Cantidad)
+                        if(productoEntidad.Stock < product.Cantidad)
                         {
                             // Log para indicar que el producto no tiene suficiente stock
-                            _logger.LogWarning($"No hay suficiente stock para el producto {productoEntidad.Nombre} (ID: {productoEntidad.ProductoId}). Stock disponible: {productoEntidad.StockMinimo}, cantidad solicitada: {product.Cantidad}.");
+                            _logger.LogWarning($"No hay suficiente stock para el producto {productoEntidad.Nombre} (ID: {productoEntidad.ProductoId}). Stock disponible: {productoEntidad.Stock}, cantidad solicitada: {product.Cantidad}.");
                             throw new InvalidOperationException($"No hay suficiente stock para el producto {productoEntidad.Nombre}.");
                         }
 
-                        productoEntidad.StockMinimo -= product.Cantidad;
+                        productoEntidad.Stock -= product.Cantidad;
 
                         await _productoRepository.UpdateAsync(productoEntidad);
                     }

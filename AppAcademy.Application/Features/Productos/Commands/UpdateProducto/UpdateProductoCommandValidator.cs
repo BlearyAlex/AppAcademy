@@ -32,7 +32,7 @@ namespace AppAcademy.Application.Features.Productos.Commands.UpdateProducto
                 .IsInEnum()
                 .WithMessage("El Estado del producto no es válido.");
 
-            RuleFor(p => p.StockMinimo)
+            RuleFor(p => p.Stock)
                 .GreaterThanOrEqualTo(0)
                 .WithMessage("El Stock Mínimo no puede ser menor que 0.");
         }

@@ -1,4 +1,5 @@
 ﻿using AppAcademy.Application.Contracts.Persistence;
+using AppAcademy.Application.Features.Productos.Queries.GetAllProductos;
 using AppAcademy.Application.Features.Productos.Queries.GetProductsByName;
 using AppAcademy.Application.Features.Productos.Queries.GetProductsMostSale;
 using AppAcademy.Domain.PuntoDeVenta;
@@ -11,6 +12,47 @@ namespace AppAcademy.Infrastucture.Repositories
     {
         public ProductoRepository(AppAcademyDbContext dbContext) : base(dbContext)
         {
+        }
+
+        public async Task<List<GetAllProductosVm>> GetAllProductos()
+        {
+            var productos = await _dbContext.Productos
+                .Include(p => p.Categoria)
+                .Include(p => p.Marca)
+                .Include(p => p.Proveedor)
+                .Select(p => new GetAllProductosVm
+                {
+                    ProductoId = p.ProductoId,
+                    Nombre = p.Nombre,
+                    CodigoBarras = p.CodigoBarras,
+                    Descripcion = p.Descripcion,
+                    Imagen = p.Imagen,
+                    Costo = p.Costo,
+                    Utilidad = p.Utilidad,
+                    Precio = p.Precio,
+                    EstadoProducto = p.EstadoProducto.ToString(),
+                    Stock = p.Stock,
+                    Categoria = new GetAllCategoriaVm
+                    {
+                        CategoriaId = p.Categoria.CategoriaId,
+                        Nombre = p.Categoria.Nombre,
+                        Color = p.Marca.Color,
+                    },
+                    Marca = new GetAllMarcaVm
+                    {
+                        MarcaId = p.Marca.MarcaId,
+                        Nombre = p.Marca.Nombre,
+                        Color = p.Marca.Color,
+                    },
+                    Proveedor = new GetAllProveedorVm
+                    {
+                        ProveedorId = p.Proveedor.ProveedorId,
+                        Nombre = p.Proveedor.Nombre,
+                        Color = p.Marca.Color
+                    }
+                }).ToListAsync();
+
+            return productos;
         }
 
         public async Task<List<Producto>> GetProductsByCategoria(string categoria)
