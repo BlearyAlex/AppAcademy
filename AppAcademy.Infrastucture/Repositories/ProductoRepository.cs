@@ -1,5 +1,6 @@
 ﻿using AppAcademy.Application.Contracts.Persistence;
 using AppAcademy.Application.Features.Productos.Queries.GetAllProductos;
+using AppAcademy.Application.Features.Productos.Queries.GetProductById;
 using AppAcademy.Application.Features.Productos.Queries.GetProductsByName;
 using AppAcademy.Application.Features.Productos.Queries.GetProductsMostSale;
 using AppAcademy.Domain.PuntoDeVenta;
@@ -30,13 +31,14 @@ namespace AppAcademy.Infrastucture.Repositories
                     Costo = p.Costo,
                     Utilidad = p.Utilidad,
                     Precio = p.Precio,
+                    Color = p.Color,
                     EstadoProducto = p.EstadoProducto.ToString(),
                     Stock = p.Stock,
                     Categoria = new GetAllCategoriaVm
                     {
                         CategoriaId = p.Categoria.CategoriaId,
                         Nombre = p.Categoria.Nombre,
-                        Color = p.Marca.Color,
+                        Color = p.Categoria.Color,
                     },
                     Marca = new GetAllMarcaVm
                     {
@@ -48,11 +50,54 @@ namespace AppAcademy.Infrastucture.Repositories
                     {
                         ProveedorId = p.Proveedor.ProveedorId,
                         Nombre = p.Proveedor.Nombre,
-                        Color = p.Marca.Color
+                        Color = p.Proveedor.Color
                     }
                 }).ToListAsync();
 
             return productos;
+        }
+
+        public async Task<GetProductByIdVm> GetProductById(string productoId)
+        {
+            var product = await _dbContext.Productos
+                .Include(p => p.Categoria)
+                .Include(p => p.Marca)
+                .Include(p => p.Proveedor)
+                .Where(p => p.ProductoId ==  productoId)
+                .Select(p => new GetProductByIdVm
+                {
+                    ProductoId = p.ProductoId,
+                    Nombre = p.Nombre,
+                    CodigoBarras = p.CodigoBarras,
+                    Descripcion = p.Descripcion,
+                    Imagen = p.Imagen,
+                    Costo = p.Costo,
+                    Utilidad = p.Utilidad,
+                    Precio = p.Precio,
+                    EstadoProducto = p.EstadoProducto,
+                    Stock = p.Stock,
+                    Color = p.Color,
+                    Categoria = new GetByIdCategoriaVm
+                    {
+                        CategoriaId = p.Categoria.CategoriaId,
+                        Nombre = p.Categoria.Nombre,
+                        Color = p.Categoria.Color
+                    },
+                    Marca = new GetByIdMarcaVm
+                    {
+                        MarcaId = p.Marca.MarcaId,
+                        Nombre = p.Marca.Nombre,
+                        Color = p.Marca.Color
+                    },
+                    Proveedor = new GetByIdProveedorVm
+                    {
+                        ProveedorId = p.Proveedor.ProveedorId,
+                        Nombre = p.Proveedor.Nombre,
+                        Color = p.Proveedor.Color
+                    }
+                }).FirstOrDefaultAsync();
+
+            return product;
         }
 
         public async Task<List<Producto>> GetProductsByCategoria(string categoria)

@@ -1,11 +1,6 @@
 ﻿using AppAcademy.Application.Contracts.Persistence;
 using AutoMapper;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AppAcademy.Application.Features.Productos.Queries.GetProductById
 {
@@ -22,7 +17,7 @@ namespace AppAcademy.Application.Features.Productos.Queries.GetProductById
 
         public async Task<GetProductByIdVm> Handle(GetProductQuery request, CancellationToken cancellationToken)
         {
-            var product = await _productoRepository.GetById(request._ProductoId);
+            var product = await _productoRepository.GetProductById(request._ProductoId);
 
             return _mapper.Map<GetProductByIdVm>(product);
         }

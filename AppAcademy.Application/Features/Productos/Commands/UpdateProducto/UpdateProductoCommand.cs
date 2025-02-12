@@ -15,8 +15,7 @@ namespace AppAcademy.Application.Features.Productos.Commands.UpdateProducto
         public decimal Costo { get; set; }
         public decimal Utilidad { get; set; }
         public decimal Precio { get; set; }
-        public decimal DescuentoBase { get; set; }
-        public int Impuesto { get; set; }
+        public string Color { get; set; }
         public ProductoEstado EstadoProducto { get; set; }
         public int Stock { get; set; }
 

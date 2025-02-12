@@ -20,14 +20,6 @@ namespace AppAcademy.Application.Features.Productos.Commands.UpdateProducto
                 .GreaterThanOrEqualTo(0)
                 .WithMessage("El Precio no puede ser menor que 0.");
 
-            RuleFor(p => p.DescuentoBase)
-                .GreaterThanOrEqualTo(0)
-                .WithMessage("El Descuento Base no puede ser menor que 0.");
-
-            RuleFor(p => p.Impuesto)
-                .GreaterThanOrEqualTo(0)
-                .WithMessage("El Impuesto no puede ser menor que 0.");
-
             RuleFor(p => p.EstadoProducto)
                 .IsInEnum()
                 .WithMessage("El Estado del producto no es válido.");

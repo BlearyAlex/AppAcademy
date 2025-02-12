@@ -18,6 +18,7 @@ namespace AppAcademy.Application.Features.Productos.Commands.CreateProducto
         public int Impuesto { get; set; }
         public ProductoEstado EstadoProducto { get; set; }
         public int Stock { get; set; }
+        public string? Color { get; set; }
 
         // Relación con otras entidades
         public string? CategoriaId { get; set; }

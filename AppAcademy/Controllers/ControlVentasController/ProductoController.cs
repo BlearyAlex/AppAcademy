@@ -164,7 +164,7 @@ namespace AppAcademy.Controllers.ControlVentasController
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error interno del servidor.");
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor. ${ex.InnerException}");
             }
         }
         #endregion
