@@ -2,11 +2,6 @@
 using AppAcademy.Domain.PuntoDeVenta;
 using AutoMapper;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AppAcademy.Application.Features.Marcas.Command.CreateMarca
 {
@@ -23,7 +18,14 @@ namespace AppAcademy.Application.Features.Marcas.Command.CreateMarca
 
         public async Task<string> Handle(CreateMarcaCommand request, CancellationToken cancellationToken)
         {
-            var marca = _mapper.Map<Marca>(request);
+            var marca = new Marca
+            {
+                Nombre = request.Nombre,
+                Color = request.Color,
+                Description = request.Description,
+                FechaRegistro = DateTime.Now,
+            };
+
             var newMarca = await _repository.AddAsync(marca);
 
             return newMarca.MarcaId;

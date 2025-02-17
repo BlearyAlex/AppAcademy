@@ -15,6 +15,7 @@ namespace AppAcademy.Application.Features.Productos.Queries.GetProductById
         public string Color { get; set; }
         public ProductoEstado EstadoProducto { get; set; }
         public int Stock { get; set; }
+        public DateTime FechaRegistro { get; set; }
 
         // Relación con otras entidades
         public GetByIdCategoriaVm Categoria { get; set; }

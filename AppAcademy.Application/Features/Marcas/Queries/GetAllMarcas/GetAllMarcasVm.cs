@@ -12,6 +12,8 @@ namespace AppAcademy.Application.Features.Marcas.Queries.GetAllMarcas
         public string? Nombre { get; set; }
         public string? MarcaId { get; set; }
         public string? Color { get; set; }
+        public string? Description { get; set; }
+        public DateTime FechaRegistro { get; set; }
 
         // Relaciones
         public List<Producto> Productos { get; set; } = [];

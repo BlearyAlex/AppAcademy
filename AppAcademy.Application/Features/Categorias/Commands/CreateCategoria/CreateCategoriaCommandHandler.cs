@@ -21,8 +21,15 @@ namespace AppAcademy.Application.Features.Categorias.Commands.CreateCategoria
 
         public async Task<string> Handle(CreateCategoriaCommand request, CancellationToken cancellationToken)
         {
-            var categoriaEnity = _mapper.Map<Categoria>(request);
-            var newCategoria = await _categoriaRepository.AddAsync(categoriaEnity);
+            var categoria = new Categoria
+            {
+                Nombre = request.Nombre,
+                Color = request.Color,
+                Description = request.Description,
+                FechaRegistro = DateTime.Now,
+            };
+
+            var newCategoria = await _categoriaRepository.AddAsync(categoria);
 
             _logger.LogInformation($"Categoria {newCategoria.CategoriaId} fue creado exitosamente");
 

@@ -21,8 +21,15 @@ namespace AppAcademy.Application.Features.Proveedores.Commands.CreateProveedor
 
         public async Task<string> Handle(CreateProveedorCommand request, CancellationToken cancellationToken)
         {
-            var proveedorEntity = _mapper.Map<Proveedor>(request);
-            var newProveedor = await _repository.AddAsync(proveedorEntity);
+            var proveedor = new Proveedor
+            {
+                Nombre = request.Nombre,
+                Color = request.Color,
+                Description = request.Description,
+                FechaRegistro = DateTime.Now
+            };
+
+            var newProveedor = await _repository.AddAsync(proveedor);
 
             _logger.LogInformation($"Proveedor {newProveedor.ProveedorId} fue creado exitosamente");
 

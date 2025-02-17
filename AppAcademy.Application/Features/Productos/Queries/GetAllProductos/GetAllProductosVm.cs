@@ -13,6 +13,7 @@
         public string Color { get; set; }
         public string EstadoProducto { get; set; }
         public int Stock { get; set; }
+        public DateTime FechaRegistro { get; set; }
 
         // Relación con otras entidades
         public GetAllCategoriaVm? Categoria { get; set; }

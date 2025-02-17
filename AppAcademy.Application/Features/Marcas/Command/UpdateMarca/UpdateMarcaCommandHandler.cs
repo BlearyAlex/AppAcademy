@@ -34,7 +34,9 @@ namespace AppAcademy.Application.Features.Marcas.Command.UpdateMarca
                 throw new NotFoundException(nameof(Inventario), request.MarcaId);
             }
 
-            _mapper.Map(request, updateMarca);
+            updateMarca.Nombre = request.Nombre;
+            updateMarca.Color = request.Color;
+            updateMarca.Description = request.Description;
 
             await _repository.UpdateAsync(updateMarca);
 

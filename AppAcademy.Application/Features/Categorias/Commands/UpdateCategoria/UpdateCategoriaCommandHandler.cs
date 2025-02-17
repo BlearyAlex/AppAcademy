@@ -30,7 +30,9 @@ namespace AppAcademy.Application.Features.Categorias.Commands.UpdateCategoria
                 throw new NotFoundException(nameof(Categoria), request.CategoriaId);
             }
 
-            _mapper.Map(request, findCategoria);
+            findCategoria.Nombre = request.Nombre;
+            findCategoria.Color = request.Color;
+            findCategoria.Description = request.Description;
 
             await _categoriaRepository.UpdateAsync(findCategoria);
 

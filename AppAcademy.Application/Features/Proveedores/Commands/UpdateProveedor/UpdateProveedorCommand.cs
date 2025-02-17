@@ -6,5 +6,7 @@ namespace AppAcademy.Application.Features.Proveedores.Commands.UpdateProveedor
     {
         public string ProveedorId { get; set; }
         public string? Nombre { get; set; }
+        public string? Color { get; set; }
+        public string? Description { get; set; }
     }
 }

@@ -15,6 +15,7 @@ namespace AppAcademy.Domain.PuntoDeVenta
         public decimal Precio { get; set; }
         public ProductoEstado EstadoProducto { get; set; }
         public int Stock { get; set; }
+        public DateTime FechaRegistro { get; set; }
 
 
         // Relaciones

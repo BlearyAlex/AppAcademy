@@ -37,11 +37,26 @@ namespace AppAcademy.Application.Features.Productos.Commands.CreateProducto
                 }
             }
 
-            // Mapear el comando a la entidad de producto 
-            var producto = _mapper.Map<Producto>(request);
+            var nuevoProducto = new Producto
+            {
+                Nombre = request.Nombre,
+                CodigoBarras = request.CodigoBarras,
+                Descripcion = request.Descripcion,
+                Imagen = request.Imagen,
+                Color = request.Color,
+                Costo = request.Costo,
+                Utilidad = request.Utilidad,
+                Precio = request.Precio,
+                EstadoProducto = request.EstadoProducto,
+                Stock = request.Stock,
+                FechaRegistro = DateTime.Now,
+                CategoriaId = request.CategoriaId,
+                MarcaId = request.MarcaId,
+                ProveedorId = request.ProveedorId
+            };
 
             // Guardar el producto en la base de datos 
-            var newProducto = await _productoRepository.AddAsync(producto);
+            var newProducto = await _productoRepository.AddAsync(nuevoProducto);
 
             // Registrar la creación del producto
             _logger.LogInformation($"Producto {newProducto.ProductoId} fue creado exitosamente");

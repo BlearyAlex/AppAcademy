@@ -19,6 +19,7 @@ namespace AppAcademy.Application.Features.Productos.Commands.CreateProducto
         public ProductoEstado EstadoProducto { get; set; }
         public int Stock { get; set; }
         public string? Color { get; set; }
+        public DateTime FechaRegistro { get; set; }
 
         // Relación con otras entidades
         public string? CategoriaId { get; set; }

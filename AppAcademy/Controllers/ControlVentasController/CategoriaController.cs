@@ -76,7 +76,9 @@ namespace AppAcademy.Controllers.ControlVentasController
         {
             try
             {
-                return await _mediator.Send(command);
+                var result =  await _mediator.Send(command);
+
+                return Ok(new { message = "Categoria creada exitosamente.", categoriaId = result });
             }
             catch (Exception ex)
             {

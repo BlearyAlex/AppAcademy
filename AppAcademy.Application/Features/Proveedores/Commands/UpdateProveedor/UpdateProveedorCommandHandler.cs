@@ -30,7 +30,9 @@ namespace AppAcademy.Application.Features.Proveedores.Commands.UpdateProveedor
                 throw new NotFoundException(nameof(Proveedor), request.ProveedorId);
             }
 
-            _mapper.Map(request, findProveedor);
+            findProveedor.Nombre = request.Nombre;
+            findProveedor.Color = request.Color;
+            findProveedor.Description = request.Description;
 
             await _repository.UpdateAsync(findProveedor);
 

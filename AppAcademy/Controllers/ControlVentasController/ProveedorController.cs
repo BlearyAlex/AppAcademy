@@ -80,7 +80,9 @@ namespace AppAcademy.Controllers.ControlVentasController
         {
             try
             {
-                return await _mediator.Send(command);
+                var result = await _mediator.Send(command);
+
+                return Ok(new { message = "Proveedor creado exitosamente.", proveedorId = result });
             }
             catch (Exception ex)
             {

@@ -75,7 +75,9 @@ namespace AppAcademy.Controllers.ControlVentasController
         {
             try
             {
-                return await _mediator.Send(command);
+                var result = await _mediator.Send(command);
+
+                return Ok(new { message = "Marca creada exitosamente.", marcaId = result });
             }
             catch (Exception ex)
             {

@@ -36,7 +36,7 @@ namespace AppAcademy.Application.Features.Productos.Commands.UpdateProducto
                 {
                     // Guardar la nueva imagen y obtener la URL
                     var imageUrl = await SaveImageAndGetUrl(request.ImageFile);
-                    request.Imagen = imageUrl;
+                    producto.Imagen = imageUrl;
                 }
                 catch (Exception ex)
                 {
@@ -44,14 +44,19 @@ namespace AppAcademy.Application.Features.Productos.Commands.UpdateProducto
                     throw new ApplicationException("No se pudo guardar la nueva imagen del producto");
                 }
             }
-            else
-            {
-                // Si no hay una nueva imagen, conservar la URL existente
-                request.Imagen = producto.Imagen;
-            }
 
-            // Mapear los datos actualizados del comando al modelo de producto
-            _mapper.Map(request, producto);
+            producto.Nombre = request.Nombre;
+            producto.CodigoBarras = request.CodigoBarras;
+            producto.Descripcion = request.Descripcion;
+            producto.Color = request.Color;
+            producto.Costo = request.Costo;
+            producto.Utilidad = request.Utilidad;
+            producto.Precio = request.Precio;
+            producto.EstadoProducto = request.EstadoProducto;
+            producto.Stock = request.Stock;
+            producto.CategoriaId = request.CategoriaId;
+            producto.MarcaId = request.MarcaId;
+            producto.ProveedorId = request.ProveedorId;
 
             await _productoRepository.UpdateAsync(producto);
 

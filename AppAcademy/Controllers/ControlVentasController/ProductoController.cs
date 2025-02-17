@@ -155,7 +155,7 @@ namespace AppAcademy.Controllers.ControlVentasController
                 var result = await _mediator.Send(command);
 
                 // Devolver el Id del producto creado como respuesta
-                return Ok(result);
+                return Ok(new { message = "Producto creado con éxito", productId = result });
             }
             catch (ApplicationException ex)
             {
