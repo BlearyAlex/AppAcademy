@@ -2,7 +2,9 @@
 {
     public enum VentaEstado
     {
+        Pendiente,
+        EnProceso,
         Pagado,
-        Pendiente
+        Cancelado
     }
 }

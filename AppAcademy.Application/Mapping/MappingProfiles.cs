@@ -48,7 +48,6 @@ using AppAcademy.Application.Features.Salidas.Command.UpdateSalida;
 using AppAcademy.Application.Features.Salidas.Queries.GetAllSalidas;
 using AppAcademy.Application.Features.Salidas.Queries.GetSalida;
 using AppAcademy.Application.Features.Ventas.Command.CreateVenta;
-using AppAcademy.Application.Features.Ventas.Command.UpdateVenta;
 using AppAcademy.Application.Features.Ventas.Queries.GetAllVentas;
 using AppAcademy.Application.Features.Ventas.Queries.GetVenta;
 using AppAcademy.Domain.ControlAcademia;
@@ -191,15 +190,11 @@ namespace AppAcademy.Application.Mapping
             CreateMap<CreateVentaCommand, Venta>()
                 //.ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
                 .ForMember(dest => dest.ClienteId, opt => opt.MapFrom(src => src.ClienteId));
-            CreateMap<UpdateVentaCommand, Venta>()
-                .ForMember(dest => dest.ClienteId, opt => opt.MapFrom(src => src.ClienteId));
 
             CreateMap<Venta, GetAllVentasVm>()
-                .ForMember(dest => dest.EstadoVenta, opt => opt.MapFrom(src => src.EstadoVenta.ToString()))
-                .ForMember(dest => dest.EstadoTipoPago, opt => opt.MapFrom(src => src.EstadoTipoPago.ToString()));
+                .ForMember(dest => dest.EstadoVenta, opt => opt.MapFrom(src => src.EstadoVenta.ToString()));
             CreateMap<Venta, GetVentaVm>()
-                .ForMember(dest => dest.EstadoVenta, opt => opt.MapFrom(src => src.EstadoVenta.ToString()))
-                .ForMember(dest => dest.EstadoTipoPago, opt => opt.MapFrom(src => src.EstadoTipoPago.ToString()));
+                .ForMember(dest => dest.EstadoVenta, opt => opt.MapFrom(src => src.EstadoVenta.ToString()));
             #endregion
 
             #region Estudiantes

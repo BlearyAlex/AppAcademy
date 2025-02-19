@@ -4,7 +4,6 @@ using AppAcademy.Application.Features.Productos.Commands.UpdateProducto;
 using AppAcademy.Application.Features.Productos.Queries.GetAllProductos;
 using AppAcademy.Application.Features.Productos.Queries.GetProductById;
 using AppAcademy.Application.Features.Productos.Queries.GetProductsByName;
-using AppAcademy.Application.Features.Productos.Queries.GetProductsMostSale;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -114,22 +113,6 @@ namespace AppAcademy.Controllers.ControlVentasController
                     return NotFound();
                 }
 
-                return Ok(products);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.Message}");
-            }
-        }
-        #endregion
-
-        #region GetProductsMostSale
-        [HttpGet("GetProductsMostSale")]
-        public async Task<IActionResult> GetProductsMostSale()
-        {
-            try
-            {
-                var products = await _mediator.Send(new GetProductsMostSaleQuery());
                 return Ok(products);
             }
             catch (Exception ex)

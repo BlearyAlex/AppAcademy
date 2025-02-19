@@ -1,4 +1,5 @@
 ﻿using AppAcademy.Application.Contracts.Persistence;
+using AppAcademy.Domain.Enum;
 using AppAcademy.Domain.PuntoDeVenta;
 using AutoMapper;
 using MediatR;
@@ -9,70 +10,43 @@ namespace AppAcademy.Application.Features.Ventas.Command.CreateVenta
     public class CreateVentaCommandHandler : IRequestHandler<CreateVentaCommand, string>
     {
         private readonly IVentaRepository _ventaRepository;
-        private readonly IProductoRepository _productoRepository;
         private readonly IMapper _mapper;
         private readonly ILogger<CreateVentaCommandHandler> _logger;
 
-        public CreateVentaCommandHandler(IVentaRepository ventaRepository, IProductoRepository productoRepository, IMapper mapper, ILogger<CreateVentaCommandHandler> logger)
+        public CreateVentaCommandHandler(IVentaRepository ventaRepository, IMapper mapper, ILogger<CreateVentaCommandHandler> logger)
         {
             _ventaRepository = ventaRepository;
-            _productoRepository = productoRepository;
             _mapper = mapper;
             _logger = logger;
         }
 
         public async Task<string> Handle(CreateVentaCommand request, CancellationToken cancellationToken)
         {
-
-            var mexicoTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time (Mexico)");
-            var mexicoTime = TimeZoneInfo.ConvertTime(DateTime.Now, mexicoTimeZone);
-
-            var nuevaVenta = new Venta
+            try
             {
-                FechaCompra = mexicoTime,
-                EstadoVenta = request.EstadoVenta,
-                ClienteId = request.ClienteId,
-                Bruto = request.Bruto,
-                Descuento = request.Descuento,
-                Neto = request.Neto,
-                TotalProductos = request.TotalProductos,
-                EstadoTipoPago = request.EstadoTipoPago,
-            };
-
-            if(request.Productos != null && request.Productos.Count > 0)
-            {
-                foreach(var product in request.Productos)
+                var venta = new Venta
                 {
-                    var nuevoDetalleVenta = new DetalleVenta
+                    ClienteId = request.ClienteId,
+                    Descuento = request.Descuento,
+                    Impuesto = request.Impuesto,
+                    DetalleVentas = request.Detalles.Select(d => new VentaDetalle
                     {
-                        Costo = product.Costo,
-                        Cantidad = product.Cantidad,
-                        ProductoId = product.ProductoId,
-                    };
+                        ProductoId = d.ProductoId,
+                        Cantidad = d.Cantidad,
+                        PrecioUnitario = d.PrecioUnitario,
+                        Total = d.Cantidad * d.PrecioUnitario,
+                    }).ToList()
+                };
 
-                    nuevaVenta.DetalleVentas.Add(nuevoDetalleVenta);
+                var nuevaVenta = await _ventaRepository.CreateVenta(venta);
 
-                    var productoEntidad = await _productoRepository.GetById(product.ProductoId);
-
-                    if(productoEntidad != null)
-                    {
-                        if(productoEntidad.Stock < product.Cantidad)
-                        {
-                            // Log para indicar que el producto no tiene suficiente stock
-                            _logger.LogWarning($"No hay suficiente stock para el producto {productoEntidad.Nombre} (ID: {productoEntidad.ProductoId}). Stock disponible: {productoEntidad.Stock}, cantidad solicitada: {product.Cantidad}.");
-                            throw new InvalidOperationException($"No hay suficiente stock para el producto {productoEntidad.Nombre}.");
-                        }
-
-                        productoEntidad.Stock -= product.Cantidad;
-
-                        await _productoRepository.UpdateAsync(productoEntidad);
-                    }
-                }
+                return $"Venta creada exitosamente. ID: {nuevaVenta.VentaId}";
             }
+            catch (Exception)
+            {
 
-            var ventaId = await _ventaRepository.CreateVentaWithProduct(nuevaVenta);
-
-            return ventaId;
+                throw;
+            }
         }
     }
 }

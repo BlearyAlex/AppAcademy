@@ -4,12 +4,8 @@ using AppAcademy.Application.Features.Entradas.Commands.UpdateEntrada;
 using AppAcademy.Application.Features.Entradas.Queries.GetEntrada;
 using AppAcademy.Application.Features.Ventas.Command.CreateVenta;
 using AppAcademy.Application.Features.Ventas.Command.DeleteVenta;
-using AppAcademy.Application.Features.Ventas.Command.UpdateVenta;
 using AppAcademy.Application.Features.Ventas.Queries.GetAllVentas;
 using AppAcademy.Application.Features.Ventas.Queries.GetVenta;
-using AppAcademy.Application.Features.Ventas.Queries.GetVentaForDay;
-using AppAcademy.Application.Features.Ventas.Queries.GetVentaForMonth;
-using AppAcademy.Application.Features.Ventas.Queries.GetVentasForDate;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -63,88 +59,18 @@ namespace AppAcademy.Controllers.ControlVentasController
         }
         #endregion
 
-        #region GetVentasForDate
-        [HttpGet("GetVentasForDate")]
-        public async Task<IActionResult> GetVentasForDate([FromQuery] string periodo)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(periodo))
-                {
-                    return BadRequest("Debe especificar el periodo: 'dia', 'semana' o 'mes'.");
-                }
-
-                var result = await _mediator.Send(new GetVentasForDateQuery(periodo));
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.Message}");
-            }
-        }
-        #endregion
-
-        #region GetVentasForMonth
-        [HttpGet("GetVentasForMonth")]
-        public async Task<IActionResult> GetVentasForMonth()
-        {
-            try
-            { 
-                var result = await _mediator.Send(new GetVentaForMonthQuery());
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.Message}");
-            }
-        }
-        #endregion
-
-        #region GetVentasForDay
-        [HttpGet("GetVentasForDay")]
-        public async Task<IActionResult> GetVentasForDay()
-        {
-            try
-            {
-                var result = await _mediator.Send(new GetVentaForDayQuery());
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.Message}");
-            }
-        }
-        #endregion
-
         #region CreateVenta
         [HttpPost("CreateVenta")]
-        public async Task<ActionResult<string>> CreateVenta([FromBody] CreateVentaCommand command)
+        public async Task<ActionResult> CreateVenta([FromBody] CreateVentaCommand command)
         {
             try
             {
                 var result = await _mediator.Send(command);
-                return Ok(result);
+                return Ok(new { message = result });
             }
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.InnerException}");
-            }
-        }
-        #endregion
-
-        #region UpdateVenta
-        [HttpPut("UpdateVenta")]
-        public async Task<ActionResult> UpdateVenta([FromBody] UpdateVentaCommand command)
-        {
-            try
-            {
-                await _mediator.Send(command);
-
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.Message}");
             }
         }
         #endregion

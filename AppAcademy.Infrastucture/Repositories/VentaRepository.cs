@@ -1,7 +1,5 @@
 ﻿using AppAcademy.Application.Contracts.Persistence;
-using AppAcademy.Application.Features.Ventas.Queries.GetVentaForDay;
-using AppAcademy.Application.Features.Ventas.Queries.GetVentaForMonth;
-using AppAcademy.Application.Features.Ventas.Queries.GetVentasForDate;
+using AppAcademy.Domain.Enum;
 using AppAcademy.Domain.PuntoDeVenta;
 using AppAcademy.Infrastucture.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -11,115 +9,156 @@ namespace AppAcademy.Infrastucture.Repositories
 {
     public class VentaRepository : AsyncRepository<Venta>, IVentaRepository
     {
-        public VentaRepository(AppAcademyDbContext dbContext) : base(dbContext)
+        private readonly IProductoRepository _productoRepository;
+
+        public VentaRepository(AppAcademyDbContext dbContext, IProductoRepository productoRepository) : base(dbContext)
         {
+            _productoRepository = productoRepository;
         }
 
-        public async Task<string> CreateVentaWithProduct(Venta nuevaVenta)
+        public async Task<Venta> CreateVenta(Venta venta)
         {
-            _dbContext.Ventas.Add(nuevaVenta);
-            await _dbContext.SaveChangesAsync();
-
-            return nuevaVenta.VentaId;
-        }
-
-        public async Task<List<Venta>> GetVentasWithProductos()
-        {
-            return await _dbContext.Ventas
-                .Include(v => v.DetalleVentas)
-                .ToListAsync();
-        }
-
-        public async Task<Venta> GetVentaByIdWithProductsAsync(string ventaId)
-        {
-            return await _dbContext.Ventas
-                .Include(v => v.DetalleVentas)
-                .ThenInclude(dv => dv.Producto)
-                .FirstOrDefaultAsync(v => v.VentaId == ventaId);
-        }
-
-        public async Task DeleteDetalleVentaAsync(DetalleVenta detalleVenta)
-        {
-            _dbContext.DetalleVentas.Remove(detalleVenta);
-            await _dbContext.SaveChangesAsync();
-        }
-
-        public async Task<List<GetVentasForDateVm>> GetVentasForDate(CancellationToken cancellationToken, string periodo)
-        {
-            var ventas = await _dbContext.Ventas
-                .Where(v => v.FechaCompra != DateTime.MinValue) // Solo verifica si la fecha no es la fecha mínima
-                .Select(v => new
+           using (var transaction = await _dbContext.Database.BeginTransactionAsync())
+            {
+                try
                 {
-                    Fecha = v.FechaCompra,
-                    Neto = v.Neto
-                })
-                .ToListAsync(cancellationToken);
+                    // Calcular el total de la venta
+                    decimal total = venta.DetalleVentas.Sum(d => d.PrecioUnitario * d.Cantidad);
+                    decimal totalConDescuento = total - venta.Descuento;
+                    decimal impuestoCalculado = totalConDescuento * (venta.Impuesto / 100);
+                    decimal totalFinal = totalConDescuento + impuestoCalculado;
 
-            return periodo.ToLower() switch
-            {
-                "dia" => ventas.GroupBy(v => v.Fecha.Date)
-                               .Select(g => new GetVentasForDateVm
-                               {
-                                   Fecha = g.Key.ToString("yyyy-MM-dd"),
-                                   TotalVentas = g.Sum(v => v.Neto)
-                               }).ToList(),
+                    // Asignar valores calculados a la venta
+                    venta.Total = total;
+                    venta.SaldoPendiente = totalFinal;
+                    venta.EstadoVenta = VentaEstado.Pendiente;
+                    venta.Fecha = DateTime.Now;
 
-                "semana" => ventas.GroupBy(v => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(v.Fecha, CalendarWeekRule.FirstDay, DayOfWeek.Monday))
-                                  .Select(g => new GetVentasForDateVm
-                                  {
-                                      Fecha = $"Semana {g.Key}",
-                                      TotalVentas = g.Sum(v => v.Neto),
-                                  }).ToList(),
+                    // Descontar el stock de los productos
+                    foreach (var detalle in venta.DetalleVentas)
+                    {
+                        var producto = await _productoRepository.GetById(detalle.ProductoId);
+                        if (producto == null || producto.Stock < detalle.Cantidad)
+                        {
+                            throw new Exception($"Producto no disponible o stock insuficiente para el producto: {detalle.ProductoId}");
+                        }
+                        await _productoRepository.DescontarStock(detalle.ProductoId, detalle.Cantidad);
+                    }
 
-                "mes" => ventas.GroupBy(v => new { v.Fecha.Year, v.Fecha.Month })
-                               .Select(g => new GetVentasForDateVm
-                               {
-                                   Fecha = $"{g.Key.Month}/{g.Key.Year}",
-                                   TotalVentas = g.Sum(v => v.Neto),
-                               }).ToList(),
+                    // Agregar la venta a la base de datos
+                    await _dbContext.Ventas.AddAsync(venta);
+                    await _dbContext.SaveChangesAsync();  // Guardar la venta en la base de datos
 
-                _ => throw new ArgumentException("El periodo no es válido. Usa 'dia', 'semana' o 'mes'.")
-            };
+                    // Confirmar la transacción
+                    await transaction.CommitAsync();
+
+                    return venta;
+                }
+                catch (Exception ex)
+                {
+                    // Si hay un error, revertimos la transacción
+                    await transaction.RollbackAsync();
+                    throw new Exception("Error al registrar la venta: " + ex.Message, ex);
+                }
+            }
         }
 
-
-        public async Task<GetVentaForMonthVm> GetVentaForMont()
+        public async Task<bool> UpdateVentaSaldo(Venta venta)
         {
-            var month = DateTime.Now.Month;
-            var year = DateTime.Now.Year;
-
-            var ventas = await _dbContext.Ventas
-                .Where(v => v.FechaCompra.Month == month && v.FechaCompra.Year == year)
-                .SelectMany(e => e.DetalleVentas, (venta, DetalleVenta) => DetalleVenta.Costo * DetalleVenta.Cantidad)
-                .SumAsync();
-
-            return new GetVentaForMonthVm
+            try
             {
-                Mes = month,
-                Año = year,
-                TotalVentas = ventas
-            };
-        }
+                var existingVenta = await _dbContext.Ventas
+                    .Include(v => v.DetalleVentas)
+                    .FirstOrDefaultAsync(v => v.VentaId == venta.VentaId);
 
-        public async Task<GetVentaForDayVm> GetVentaForDay()
+                if (existingVenta == null)
+                    return false;
+
+                existingVenta.SaldoPendiente = venta.SaldoPendiente;
+                existingVenta.EstadoVenta = venta.EstadoVenta;
+                existingVenta.Fecha = venta.Fecha;
+
+                await _dbContext.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al actualizar la venta.", ex);
+            }
+        }
+    
+        public async Task<bool> DeleteVenta(string ventaId)
         {
-            // Ajusta la hora al huso horario de México
-            var mexicoTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time (Mexico)");
-            var todayStart = TimeZoneInfo.ConvertTime(DateTime.Today, mexicoTimeZone); // 00:00:00 del día actual en hora local
-            var tomorrowStart = todayStart.AddDays(1); // 00:00:00 del siguiente día en hora local
-
-            var ventas = await _dbContext.Ventas
-                .Where(v => v.FechaCompra >= todayStart && v.FechaCompra < tomorrowStart)
-                .SumAsync(v => v.Neto);
-
-            return new GetVentaForDayVm
+          using (var transaction = await _dbContext.Database.BeginTransactionAsync())
             {
-                Fecha = todayStart.ToString("yyyy-MM-dd"), 
-                TotalVenta = ventas
-            };
+                try
+                {
+                    var venta = await _dbContext.Ventas
+                        .Include(v => v.DetalleVentas)
+                        .FirstOrDefaultAsync(v => v.VentaId == ventaId);
+
+                    if (venta == null)
+                    {
+                        throw new Exception("Venta no encontrada");
+                    }
+
+                    // Revertir el stock de los productos vendidos
+                    foreach (var detalle in venta.DetalleVentas)
+                    {
+                        var producto = await _productoRepository.GetById(detalle.ProductoId);
+                        if (producto != null)
+                        {
+                            // Reponer el stock
+                            await _productoRepository.AgregarStock(detalle.ProductoId, detalle.Cantidad);
+                        }
+                    }
+
+                    // Eliminar los detalles de la venta
+                    _dbContext.VentaDetalle.RemoveRange(venta.DetalleVentas);
+
+                    // Eliminar la venta
+                    _dbContext.Ventas.Remove(venta);
+
+                    // Guardar los cambios en la base de datos
+                    await _dbContext.SaveChangesAsync();
+
+                    // Confirmar la transacción
+                    await transaction.CommitAsync();
+
+                    return true;
+
+                }
+                catch (Exception ex)
+                {
+                    // Si ocurre un error, revertir la transacción
+                    await transaction.RollbackAsync();
+                    throw new Exception("Error al eliminar la venta: " + ex.Message, ex);
+                }
+            }
         }
 
+        public async Task<Venta> GetVentaById(string ventaId)
+        {
+            try
+            {
+                var venta = await _dbContext.Ventas
+                       .Include(v => v.DetalleVentas)
+                       .Include(v => v.Abonos)
+                       .FirstOrDefaultAsync(v => v.VentaId == ventaId);
 
+                if (venta == null)
+                    throw new Exception("Venta no encontrada");
+
+                return venta;
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }
 

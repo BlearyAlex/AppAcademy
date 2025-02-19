@@ -14,8 +14,6 @@ namespace AppAcademy.Application.Features.Productos.Commands.CreateProducto
         public decimal Costo { get; set; }
         public decimal Utilidad { get; set; }
         public decimal Precio => Costo + Utilidad;
-        public decimal DescuentoBase { get; set; }
-        public int Impuesto { get; set; }
         public ProductoEstado EstadoProducto { get; set; }
         public int Stock { get; set; }
         public string? Color { get; set; }

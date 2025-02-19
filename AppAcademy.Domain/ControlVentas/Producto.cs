@@ -21,7 +21,7 @@ namespace AppAcademy.Domain.PuntoDeVenta
         // Relaciones
         public List<Inventario> Inventarios { get; set; } = [];
         public List<EntradaProducto> EntradaProductos { get; set; } = [];
-        public List<DetalleVenta> DetalleVentas { get; set; } = [];
+        public List<VentaDetalle> DetalleVentas { get; set; } = [];
 
         public string? CategoriaId { get; set; }
         public Categoria? Categoria { get; set; }

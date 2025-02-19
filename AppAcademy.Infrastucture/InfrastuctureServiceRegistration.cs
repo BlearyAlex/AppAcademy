@@ -55,6 +55,7 @@ namespace AppAcademy.Infrastucture
             services.AddScoped<IMarcaRepository, MarcaRepository>();
             services.AddScoped<ISalidaRepository, SalidaRepository>();
             services.AddScoped<IVentaRepository, VentaRepository>();
+            services.AddScoped<IAbonoRepository, AbonoRepository>();
             #endregion
 
             #region ControlAcademia

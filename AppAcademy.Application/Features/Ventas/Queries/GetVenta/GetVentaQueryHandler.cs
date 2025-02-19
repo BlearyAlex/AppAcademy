@@ -23,28 +23,7 @@ namespace AppAcademy.Application.Features.Ventas.Queries.GetVenta
 
         public async Task<GetVentaVm> Handle(GetVentaQuery request, CancellationToken cancellationToken)
         {
-            var venta = await _ventaRepository.GetVentaByIdWithProductsAsync(request._VentaId);
-
-            return new GetVentaVm
-            {
-                VentaId = venta.VentaId,
-                FechaCompra = DateTime.Now,
-                EstadoVenta = venta.EstadoVenta,
-                EstadoTipoPago = venta.EstadoTipoPago,
-                ClienteId = venta.ClienteId,
-                Bruto = venta.Bruto,
-                Descuento = venta.Descuento,
-                Neto = venta.Neto,
-                TotalProductos = venta.TotalProductos,
-                DetalleVentas = venta.DetalleVentas.Select(v => new GetDetallesVentaVm
-                {
-                    DetalleVentaId = v.DetalleVentaId,
-                    Cantidad = v.Cantidad,
-                    Costo = v.Costo,
-                    ProductoId = v.ProductoId,
-                    NombreProducto = v.Producto.Nombre
-                }).ToList()
-            };
+            return _mapper.Map<GetVentaVm>(await _ventaRepository.GetById(request._VentaId));
         }
     }
 }

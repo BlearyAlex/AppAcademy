@@ -1,8 +1,6 @@
 ﻿using AppAcademy.Application.Contracts.Persistence;
 using AppAcademy.Application.Features.Productos.Queries.GetAllProductos;
 using AppAcademy.Application.Features.Productos.Queries.GetProductById;
-using AppAcademy.Application.Features.Productos.Queries.GetProductsByName;
-using AppAcademy.Application.Features.Productos.Queries.GetProductsMostSale;
 using AppAcademy.Domain.PuntoDeVenta;
 using AppAcademy.Infrastucture.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -114,21 +112,41 @@ namespace AppAcademy.Infrastucture.Repositories
             return products;
         }
 
-        public async Task<List<GetProductsMostSaleVm>> GetProductsMostSale(CancellationToken cancellationToken)
-        {
-            var products = await _dbContext.DetalleVentas
-                .GroupBy(d => d.ProductoId)
-                .Select(g => new GetProductsMostSaleVm
-                {
-                    ProductoId = g.Key,
-                    ProductoNombre = g.FirstOrDefault().Producto.Nombre,
-                    TotalVendido = g.Sum(d => d.Cantidad)
-                })
-                .OrderByDescending(p => p.TotalVendido)
-                .Take(10)
-                .ToListAsync();
+        // Metodo auxiliares
 
-            return products;
+        public async Task<bool> DescontarStock(string productoId, int cantidad)
+        {
+            var product = await _dbContext.Productos.FirstOrDefaultAsync(p => p.ProductoId == productoId);
+
+            if (product == null)
+                throw new Exception($"Producto con ID {productoId} no encontrado.");
+
+            if (product.Stock < cantidad)
+                throw new Exception($"Stock insuficiente para el producto {product.Nombre}. Disponible: {product.Stock}, requerido: {cantidad}");
+
+            product.Stock -= cantidad;
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> AgregarStock(string productoId, int cantidad)
+        {
+            try
+            {
+                var producto = await _dbContext.Productos.FirstOrDefaultAsync(p => p.ProductoId == productoId);
+                if (producto != null)
+                {
+                    producto.Stock += cantidad;  // Aumenta el stock
+                    await _dbContext.SaveChangesAsync();  // Guarda los cambios
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception)
+            {
+                return false;
+                throw;
+            }
         }
     }
 }

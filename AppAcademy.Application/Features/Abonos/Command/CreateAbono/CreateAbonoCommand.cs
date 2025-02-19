@@ -5,10 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AppAcademy.Application.Features.Ventas.Command.DeleteVenta
+namespace AppAcademy.Application.Features.Abonos.Command.CreateAbono
 {
-    public class DeleteVentaCommand : IRequest<bool>
+    public class CreateAbonoCommand : IRequest<string>
     {
         public string VentaId { get; set; }
+        public decimal MontoAbonado { get; set; }
     }
 }

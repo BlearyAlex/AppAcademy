@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace AppAcademy.Application.Features.Ventas.Command.DeleteVenta
 {
-    public class DeleteVentaCommandHandler : IRequestHandler<DeleteVentaCommand>
+    public class DeleteVentaCommandHandler : IRequestHandler<DeleteVentaCommand, bool>
     {
         private readonly IVentaRepository _repository;
         private readonly IMapper _mapper;
@@ -19,19 +19,24 @@ namespace AppAcademy.Application.Features.Ventas.Command.DeleteVenta
             _logger = logger;
         }
 
-        public async Task Handle(DeleteVentaCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(DeleteVentaCommand request, CancellationToken cancellationToken)
         {
-            var deleteVenta = await _repository.GetById(request.VentaId);
-            if (deleteVenta == null)
+            try
             {
-                _logger.LogError($"{request.VentaId} venta no existe en el sistma");
-                throw new NotFoundException(nameof(deleteVenta), request.VentaId);
+                // Llamamos al repositorio para eliminar la venta
+                var eliminado = await _repository.DeleteVenta(request.VentaId);
+
+                if (!eliminado)
+                {
+                    return false;
+                }
+
+                return true;
             }
-
-            await _repository.DeleteAsync(deleteVenta);
-            _logger.LogInformation($"El {request.VentaId} fue eliminado con exito");
-
-            return;
+            catch (Exception ex)
+            {
+                return false;
+            }
         }
     }
 }

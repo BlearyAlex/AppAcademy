@@ -1,4 +1,5 @@
 ﻿using AppAcademy.Domain.ControlAcademia;
+using AppAcademy.Domain.ControlVentas;
 using AppAcademy.Domain.PuntoDeVenta;
 using AppAcademy.Infrastucture.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -17,7 +18,7 @@ namespace AppAcademy.Infrastucture.Persistence
         public DbSet<Cliente> Clientes { get; set; }
         public DbSet<Corte> Cortes { get; set; }
         public DbSet<DetalleCorte> DetalleCortes { get; set; }
-        public DbSet<DetalleVenta> DetalleVentas { get; set; }
+        public DbSet<VentaDetalle> VentaDetalle { get; set; }
         public DbSet<Entrada> Entradas { get; set; }
         public DbSet<EntradaProducto> EntradaProductos { get; set; }
         public DbSet<Inventario> Inventarios { get; set; }
@@ -26,6 +27,7 @@ namespace AppAcademy.Infrastucture.Persistence
         public DbSet<Proveedor> Proveedores { get; set; }
         public DbSet<Salida> Salidas { get; set; }
         public DbSet<Venta> Ventas { get; set; }
+        public DbSet<Abono> Abono { get; set; } 
 
         // Control Academia
         public DbSet<Colegiatura> Colegiaturas { get; set; }
