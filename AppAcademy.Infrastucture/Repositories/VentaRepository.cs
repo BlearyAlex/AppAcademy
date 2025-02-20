@@ -1,4 +1,6 @@
 ﻿using AppAcademy.Application.Contracts.Persistence;
+using AppAcademy.Application.Features.Ventas.Queries.GetAllVentas;
+using AppAcademy.Application.Features.Ventas.Queries.GetVenta;
 using AppAcademy.Domain.Enum;
 using AppAcademy.Domain.PuntoDeVenta;
 using AppAcademy.Infrastucture.Persistence;
@@ -138,20 +140,53 @@ namespace AppAcademy.Infrastucture.Repositories
             }
         }
 
-        public async Task<Venta> GetVentaById(string ventaId)
+        public async Task<GetVentaVm> GetVentaById(string ventaId)
+
         {
             try
             {
                 var venta = await _dbContext.Ventas
                        .Include(v => v.DetalleVentas)
+                       .ThenInclude(v => v.Producto)
                        .Include(v => v.Abonos)
                        .FirstOrDefaultAsync(v => v.VentaId == ventaId);
 
                 if (venta == null)
                     throw new Exception("Venta no encontrada");
 
-                return venta;
-
+                return new GetVentaVm
+                {
+                    VentaId = venta.VentaId,
+                    Fecha = venta.Fecha,
+                    EstadoVenta = venta.EstadoVenta,
+                    SaldoPendiente = venta.SaldoPendiente,
+                    ClienteId = venta.ClienteId,
+                    Descuento = venta.Descuento,
+                    Total = venta.Total,
+                    Impuesto = venta.Impuesto,
+                    VentaDetalle = venta.DetalleVentas.Select(d => new GetVentaDetalleVm
+                    {
+                        VentaDetalleId = d.VentaDetalleId,
+                        VentaId = d.Venta.VentaId,
+                        Cantidad = d.Cantidad,
+                        PrecioUnitario = d.PrecioUnitario,
+                        Total = d.Total,
+                        Producto = new GetProductoVm
+                        {
+                            ProductoId = d.Producto.ProductoId,
+                            Nombre = d.Producto.Nombre,
+                            Imagen = d.Producto.Imagen,
+                            Precio = d.Producto.Precio
+                        }
+                    }).ToList(),
+                    Abonos = venta.Abonos.Select(a => new GetAbonoVm
+                    {
+                        AbonoId = a.AbonoId,
+                        VentaId = a.Venta.VentaId,
+                        Monto = a.Monto,
+                        Fecha = a.Fecha
+                    }).ToList()
+                };
             }
             catch (Exception)
             {
@@ -159,6 +194,42 @@ namespace AppAcademy.Infrastucture.Repositories
                 throw;
             }
         }
+
+        public async Task<List<GetAllVentasVm>> GetAllVentas()
+        {
+            try
+            {
+               var venta = await _dbContext.Ventas
+                    .Include(v => v.Cliente)
+                    .ToListAsync();
+
+                var result = venta.Select(a => new GetAllVentasVm
+                {
+                    VentaId = a.VentaId,
+                    Fecha = a.Fecha,
+                    EstadoVenta = a.EstadoVenta.ToString(),
+                    SaldoPendiente = a.SaldoPendiente,
+                    Descuento = a.Descuento,
+                    Total = a.Total,
+                    Impuesto = a.Impuesto,
+                    Cliente = a.Cliente != null ? new GetAllVentasClient
+                    {
+                        ClienteId = a.Cliente.ClienteId,
+                        NombreCompleto = a.Cliente.NombreCompleto,
+                        Telefono = a.Cliente.Telefono,
+                    } : null
+                }).ToList();
+
+                return result;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+
     }
 }
 

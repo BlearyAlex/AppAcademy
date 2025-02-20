@@ -17,7 +17,7 @@ namespace AppAcademy.Application.Features.Ventas.Queries.GetAllVentas
 
         public async Task<List<GetAllVentasVm>> Handle(GetAllVentasListQuery request, CancellationToken cancellationToken)
         {
-            return _mapper.Map<List<GetAllVentasVm>>(await _repository.GetAllAsync());
+            return _mapper.Map<List<GetAllVentasVm>>(await _repository.GetAllVentas());
         }
     }
 }

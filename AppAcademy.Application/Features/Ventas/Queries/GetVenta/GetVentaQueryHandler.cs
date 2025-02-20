@@ -23,7 +23,7 @@ namespace AppAcademy.Application.Features.Ventas.Queries.GetVenta
 
         public async Task<GetVentaVm> Handle(GetVentaQuery request, CancellationToken cancellationToken)
         {
-            return _mapper.Map<GetVentaVm>(await _ventaRepository.GetById(request._VentaId));
+            return _mapper.Map<GetVentaVm>(await _ventaRepository.GetVentaById(request._VentaId));
         }
     }
 }
