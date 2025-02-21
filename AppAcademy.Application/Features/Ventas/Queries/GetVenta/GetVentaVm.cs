@@ -8,7 +8,7 @@ namespace AppAcademy.Application.Features.Ventas.Queries.GetVenta
     {
         public string VentaId { get; set; }
         public DateTime? Fecha { get; set; }
-        public VentaEstado EstadoVenta { get; set; }
+        public string EstadoVenta { get; set; }
         public decimal SaldoPendiente { get; set; }
         public string? ClienteId { get; set; }
         public decimal? Descuento { get; set; }

@@ -158,7 +158,7 @@ namespace AppAcademy.Infrastucture.Repositories
                 {
                     VentaId = venta.VentaId,
                     Fecha = venta.Fecha,
-                    EstadoVenta = venta.EstadoVenta,
+                    EstadoVenta = venta.EstadoVenta.ToString(),
                     SaldoPendiente = venta.SaldoPendiente,
                     ClienteId = venta.ClienteId,
                     Descuento = venta.Descuento,
