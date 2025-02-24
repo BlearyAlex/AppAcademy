@@ -18,14 +18,14 @@ namespace AppAcademy.Controllers.ControlVentasController
             _mediator = mediator;
         }
 
-        [HttpPost("abonar")]
+        [HttpPost("Create")]
         public async Task<IActionResult> AbonarVenta([FromBody] CreateAbonoCommand command)
         {
             var result = await _mediator.Send(command);
-            return Ok(result);
+            return Ok(new { message = "Abono creado con éxito", ventaId = result });
         }
 
-        [HttpDelete("delete/{id}")]
+        [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> DeleteAbono(int id)
         {
             try

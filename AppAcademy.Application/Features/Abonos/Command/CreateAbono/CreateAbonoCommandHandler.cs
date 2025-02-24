@@ -35,11 +35,6 @@ namespace AppAcademy.Application.Features.Abonos.Command.CreateAbono
                     return "Venta no encontrada";
                 }
 
-                if (request.MontoAbonado > venta.SaldoPendiente)
-                {
-                    return "El monto abonado no puede ser mayor al saldo pendiente";
-                }
-
                 var abono = new Abono
                 {
                     VentaId = request.VentaId,
@@ -49,14 +44,16 @@ namespace AppAcademy.Application.Features.Abonos.Command.CreateAbono
 
                 await _abonoRepository.CreateAbono(abono);
 
-                venta.SaldoPendiente -= request.MontoAbonado;
-
-                if (venta.SaldoPendiente == 0)
+                if (request.MontoAbonado >= venta.SaldoPendiente)
                 {
+                    venta.SaldoPendiente = 0; // Se liquida la deuda
                     venta.EstadoVenta = VentaEstado.Pagado;
                 }
+                else
+                {
+                    venta.SaldoPendiente -= request.MontoAbonado;
+                }
 
-                // Actualizar la venta después de procesar el abono
                 bool actualizado = await _ventaRepository.UpdateVentaSaldo(venta);
 
                 if (!actualizado)
@@ -65,7 +62,12 @@ namespace AppAcademy.Application.Features.Abonos.Command.CreateAbono
                     return "No se pudo actualizar la venta.";
                 }
 
-                return $"Abono registrado con éxito. Venta ID: {request.VentaId}";
+                // Calcular cambio si el abono fue mayor al saldo
+                decimal cambio = request.MontoAbonado - venta.SaldoPendiente;
+
+                return cambio > 0
+                    ? $"Abono registrado con éxito. Cambio: {cambio:C}"
+                    : $"Abono registrado con éxito. Venta ID: {request.VentaId}";
             }
             catch (Exception)
             {

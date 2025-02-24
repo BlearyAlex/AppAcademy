@@ -24,14 +24,21 @@ namespace AppAcademy.Infrastucture.Repositories
             {
                 try
                 {
-                    // Calcular el total de la venta
-                    decimal total = venta.DetalleVentas.Sum(d => d.PrecioUnitario * d.Cantidad);
-                    decimal totalConDescuento = total - venta.Descuento;
+                    // Calcular el subtotal sumando el precio unitario por la cantidad de cada detalle.
+                    decimal subtotal = venta.DetalleVentas.Sum(d => d.PrecioUnitario * d.Cantidad);
+
+                    // Aplicar el descuento como porcentaje.
+                    decimal descuentoCalculado = subtotal * (venta.Descuento / 100);
+                    decimal totalConDescuento = subtotal - descuentoCalculado;
+
+                    // Calcular el impuesto sobre el total después del descuento.
                     decimal impuestoCalculado = totalConDescuento * (venta.Impuesto / 100);
+
+                    // Total final es la suma del total con descuento más el impuesto.
                     decimal totalFinal = totalConDescuento + impuestoCalculado;
 
                     // Asignar valores calculados a la venta
-                    venta.Total = total;
+                    venta.Total = totalFinal;
                     venta.SaldoPendiente = totalFinal;
                     venta.EstadoVenta = VentaEstado.Pendiente;
                     venta.Fecha = DateTime.Now;
@@ -179,7 +186,9 @@ namespace AppAcademy.Infrastucture.Repositories
                             Precio = d.Producto.Precio
                         }
                     }).ToList(),
-                    Abonos = venta.Abonos.Select(a => new GetAbonoVm
+                    Abonos = venta.Abonos
+                    .OrderByDescending(a => a.Fecha)
+                    .Select(a => new GetAbonoVm
                     {
                         AbonoId = a.AbonoId,
                         VentaId = a.Venta.VentaId,

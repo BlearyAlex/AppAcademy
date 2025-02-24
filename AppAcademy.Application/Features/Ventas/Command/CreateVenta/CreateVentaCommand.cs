@@ -5,7 +5,7 @@ namespace AppAcademy.Application.Features.Ventas.Command.CreateVenta
 {
     public class CreateVentaCommand : IRequest<string>
     {
-        public string ClienteId { get; set; }
+        public string? ClienteId { get; set; }
         public List<VentaDetalleDto> Detalles { get; set; }
         public decimal Descuento { get; set; }
         public decimal Impuesto { get; set; }
