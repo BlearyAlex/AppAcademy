@@ -20,7 +20,7 @@ namespace AppAcademy.Controllers.ControlVentasController
         }
 
         #region GetAll
-        [HttpGet("GetAllClients")]
+        [HttpGet("GetAll")]
         public async Task<ActionResult<IEnumerable<GetAllClientesVm>>> GetAllClientes()
         {
             try
@@ -71,12 +71,14 @@ namespace AppAcademy.Controllers.ControlVentasController
         #endregion
 
         #region CreateClient
-        [HttpPost("CreateClient")]
+        [HttpPost("Create")]
         public async Task<ActionResult<string>> CreateClient([FromBody] CreateClienteCommand command)
         {
             try
             {
-                return await _mediator.Send(command);
+                var result = await _mediator.Send(command);
+                return Ok(new { message = "Cliente creado con éxito", productId = result });
+
             }
             catch (Exception ex)
             {
@@ -86,7 +88,7 @@ namespace AppAcademy.Controllers.ControlVentasController
         #endregion
 
         #region UpdateCliente
-        [HttpPut("UpdateClient")]
+        [HttpPut("Update")]
         public async Task<ActionResult> UpdateClient([FromBody] UpdateClienteCommand command)
         {
             try
@@ -103,7 +105,7 @@ namespace AppAcademy.Controllers.ControlVentasController
         #endregion
 
         #region DeleteClient
-        [HttpDelete("DeleteClient/{id}")]
+        [HttpDelete("Delete/{id}")]
         public async Task<ActionResult> DeleteClient(string id)
         {
             try

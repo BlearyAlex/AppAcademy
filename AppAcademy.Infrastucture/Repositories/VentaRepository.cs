@@ -224,7 +224,8 @@ namespace AppAcademy.Infrastucture.Repositories
                     Cliente = a.Cliente != null ? new GetAllVentasClient
                     {
                         ClienteId = a.Cliente.ClienteId,
-                        NombreCompleto = a.Cliente.NombreCompleto,
+                        Nombre = a.Cliente.Nombre,
+                        Apellido = a.Cliente.Apellido,
                         Telefono = a.Cliente.Telefono,
                     } : null
                 }).ToList();

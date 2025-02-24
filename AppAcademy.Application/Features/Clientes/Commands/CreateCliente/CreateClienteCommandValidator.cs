@@ -6,7 +6,7 @@ namespace AppAcademy.Application.Features.Clientes.Commands.CreateCliente
     {
         public CreateClienteCommandValidator()
         {
-            RuleFor(p => p.NombreCompleto)
+            RuleFor(p => p.Nombre)
                 .NotEmpty()
                 .WithMessage("El campo no puede ir vacio");
 
