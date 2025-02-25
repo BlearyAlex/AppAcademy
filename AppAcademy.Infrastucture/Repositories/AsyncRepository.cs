@@ -37,6 +37,11 @@ namespace AppAcademy.Infrastucture.Repositories
             return await _dbContext.Set<T>().FindAsync(id);
         }
 
+        public async Task<T> GetByIdInt(int id)
+        {
+            return await _dbContext.Set<T>().FindAsync(id);
+        }
+
         public async Task<T> UpdateAsync(T entity)
         {
             _dbContext.Entry(entity).State = EntityState.Modified;

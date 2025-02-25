@@ -13,7 +13,7 @@ namespace AppAcademy.Domain.ControlAcademia
         public int Año { get; set; }
         public bool Pagado { get; set; }  // TRUE = Pagado, FALSE = Pendiente
 
-        public int StudentId { get; set; }
+        public int? StudentId { get; set; }
         public Student Student { get; set; }
     }
 }

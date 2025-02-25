@@ -10,6 +10,5 @@ namespace AppAcademy.Domain.Enum
     {
         Alta,
         Baja
-
     }
 }

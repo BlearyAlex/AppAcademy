@@ -1,4 +1,6 @@
-﻿using AppAcademy.Application.Features.Categorias.Commands.CreateCategoria;
+﻿using AppAcademy.Application.Features.Careers.Queries.GetAllCareers;
+using AppAcademy.Application.Features.Careers.Queries.GetCareer;
+using AppAcademy.Application.Features.Categorias.Commands.CreateCategoria;
 using AppAcademy.Application.Features.Categorias.Commands.UpdateCategoria;
 using AppAcademy.Application.Features.Categorias.Queries.GetAllCategoria;
 using AppAcademy.Application.Features.Categorias.Queries.GetCategoriaById;
@@ -6,10 +8,6 @@ using AppAcademy.Application.Features.Clientes.Commands.CreateCliente;
 using AppAcademy.Application.Features.Clientes.Commands.UpdateCliente;
 using AppAcademy.Application.Features.Clientes.Queries.GetAllCliente;
 using AppAcademy.Application.Features.Clientes.Queries.GetClienteById;
-using AppAcademy.Application.Features.Colegiaturas.Commands.CreateColegiatura;
-using AppAcademy.Application.Features.Colegiaturas.Commands.UpdateColegiatura;
-using AppAcademy.Application.Features.Colegiaturas.Queries.GetAllColegiaturas;
-using AppAcademy.Application.Features.Colegiaturas.Queries.GetColegiatura;
 using AppAcademy.Application.Features.Cortes.Commands.CreateCorte;
 using AppAcademy.Application.Features.Cortes.Commands.UpdateCorte;
 using AppAcademy.Application.Features.Cortes.Queries.GetAllCortes;
@@ -21,11 +19,6 @@ using AppAcademy.Application.Features.EntradasProductos.Command.CreateEntrada;
 using AppAcademy.Application.Features.EntradasProductos.Command.UpdateEntrada;
 using AppAcademy.Application.Features.EntradasProductos.Queries.GetAllEntradas;
 using AppAcademy.Application.Features.EntradasProductos.Queries.GetEntrada;
-using AppAcademy.Application.Features.Estudiantes.Commands.CreateEstudiante;
-using AppAcademy.Application.Features.Estudiantes.Commands.UpdateEstudiante;
-using AppAcademy.Application.Features.Estudiantes.Queries.GetAllEstudiantes;
-using AppAcademy.Application.Features.Estudiantes.Queries.GetEstudianteById;
-using AppAcademy.Application.Features.Estudiantes.Queries.GetEstudianteWithColegiaturas;
 using AppAcademy.Application.Features.Inventarios.Command.CreateInventario;
 using AppAcademy.Application.Features.Inventarios.Command.UpdateInventario;
 using AppAcademy.Application.Features.Inventarios.Queries.GetAllInventarios;
@@ -47,13 +40,14 @@ using AppAcademy.Application.Features.Salidas.Command.CreateSalida;
 using AppAcademy.Application.Features.Salidas.Command.UpdateSalida;
 using AppAcademy.Application.Features.Salidas.Queries.GetAllSalidas;
 using AppAcademy.Application.Features.Salidas.Queries.GetSalida;
+using AppAcademy.Application.Features.Students.Queries.GetAllStudents;
+using AppAcademy.Application.Features.Students.Queries.GetStudent;
 using AppAcademy.Application.Features.Ventas.Command.CreateVenta;
 using AppAcademy.Application.Features.Ventas.Queries.GetAllVentas;
 using AppAcademy.Application.Features.Ventas.Queries.GetVenta;
 using AppAcademy.Domain.ControlAcademia;
 using AppAcademy.Domain.PuntoDeVenta;
 using AutoMapper;
-using static AppAcademy.Application.Features.Colegiaturas.Queries.GetAllColegiaturas.GetAllColegiaturasVm;
 
 namespace AppAcademy.Application.Mapping
 {
@@ -197,31 +191,18 @@ namespace AppAcademy.Application.Mapping
                 .ForMember(dest => dest.EstadoVenta, opt => opt.MapFrom(src => src.EstadoVenta.ToString()));
             #endregion
 
-            #region Estudiantes
-            CreateMap<CreateEstudianteCommand, Student>();
-            CreateMap<UpdateEstudianteCommand, Student>();
-
-            CreateMap<Student, GetAllEstudiantesVm>();
-
-            CreateMap<Student, GetEstudianteByIdVm>()
-                .ForMember(dest => dest.FechaNacimiento, opt => opt.MapFrom(src => src.FechaNacimiento.ToString("yyyy-MM-dd")));
-
-            CreateMap<Student, GetEstudianteWithColegiaturaVm>()
-                .ForMember(dest => dest.Colegiaturas, opt => opt.MapFrom(src => src.Colegiaturas))
-                .ForMember(dest => dest.FechaNacimiento, opt => opt.MapFrom(src => src.FechaNacimiento.ToString("yyyy-MM-dd")));
-
-            CreateMap<Colegiatura, GetColegiaturaWithEstudianteVm>();
-
+            #region Students
+            CreateMap<Student, GetAllStudentsVm>()
+                .ForMember(dest => dest.EstadoEstudiante, opt => opt.MapFrom(src => src.EstadoEstudiante.ToString()));
+            CreateMap<Student, GetStudentVm>()
+                 .ForMember(dest => dest.EstadoEstudiante, opt => opt.MapFrom(src => src.EstadoEstudiante.ToString()));
             #endregion
 
-            #region Colegiatura
-            CreateMap<CreateColegiaturaCommand, Colegiatura>()
-                .ForMember(dest => dest.EstudianteId, opt => opt.MapFrom(src => src.EstudianteId));
-            CreateMap<UpdateColegiaturaCommand, Colegiatura>();
-
-            CreateMap<Colegiatura, GetAllColegiaturasVm>();
-            CreateMap<Colegiatura, GetColegiaturaVm>();
-            CreateMap<Student, EstudianteDto>();
+            #region Career
+            CreateMap<Career, GetAllCareersVm>()
+                .ForMember(dest => dest.Activa, opt => opt.MapFrom(src => src.Activa.ToString()));
+            CreateMap<Career, GetCareerVm>()
+                .ForMember(dest => dest.Activa, opt => opt.MapFrom(src => src.Activa.ToString()));
             #endregion
         }
     }

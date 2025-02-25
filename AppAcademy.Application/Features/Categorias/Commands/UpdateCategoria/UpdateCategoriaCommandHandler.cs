@@ -24,7 +24,7 @@ namespace AppAcademy.Application.Features.Categorias.Commands.UpdateCategoria
         {
             var findCategoria = await _categoriaRepository.GetById(request.CategoriaId);
 
-            if(findCategoria == null)
+            if (findCategoria == null)
             {
                 _logger.LogError($"No se encontro el id de la categoria {request.CategoriaId}");
                 throw new NotFoundException(nameof(Categoria), request.CategoriaId);

@@ -7,7 +7,7 @@
         public DateTime FechaInicio { get; set; }
         public DateTime FechaFin { get; set; }
 
-        public int CareerId { get; set; }
+        public int? CareerId { get; set; }
         public virtual Career Career { get; set; }
     }
 }

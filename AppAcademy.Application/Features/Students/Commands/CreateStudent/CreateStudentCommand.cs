@@ -1,8 +1,9 @@
 ﻿using AppAcademy.Domain.Enum;
+using MediatR;
 
-namespace AppAcademy.Domain.ControlAcademia
+namespace AppAcademy.Application.Features.Students.Commands.CreateStudent
 {
-    public class Student
+    public class CreateStudentCommand : IRequest<int>
     {
         public int StudentId { get; set; }
         public string Nombre { get; set; }
@@ -14,10 +15,6 @@ namespace AppAcademy.Domain.ControlAcademia
         public DateTime FechaIngreso { get; set; }
         public EstudianteEstado EstadoEstudiante { get; set; }
 
-        public int? CareerId { get; set; }
-        public virtual Career Career { get; set; }
-
-        public virtual List<Payment> Payments { get; set; }
-        public virtual List<Permission> Permissions { get; set; }
+        public int CareerId { get; set; }
     }
 }

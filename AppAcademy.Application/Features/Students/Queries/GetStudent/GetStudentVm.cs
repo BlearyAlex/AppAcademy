@@ -1,8 +1,8 @@
 ﻿using AppAcademy.Domain.Enum;
 
-namespace AppAcademy.Domain.ControlAcademia
+namespace AppAcademy.Application.Features.Students.Queries.GetStudent
 {
-    public class Student
+    public class GetStudentVm
     {
         public int StudentId { get; set; }
         public string Nombre { get; set; }
@@ -12,12 +12,8 @@ namespace AppAcademy.Domain.ControlAcademia
         public string? Direccion { get; set; }
         public string? ImageUrl { get; set; }
         public DateTime FechaIngreso { get; set; }
-        public EstudianteEstado EstadoEstudiante { get; set; }
+        public string EstadoEstudiante { get; set; }
 
-        public int? CareerId { get; set; }
-        public virtual Career Career { get; set; }
-
-        public virtual List<Payment> Payments { get; set; }
-        public virtual List<Permission> Permissions { get; set; }
+        public int CareerId { get; set; }
     }
 }

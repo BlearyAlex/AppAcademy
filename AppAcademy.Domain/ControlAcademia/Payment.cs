@@ -15,7 +15,7 @@ namespace AppAcademy.Domain.ControlAcademia
         public decimal MontoPagado { get; set; }
         public string MetodoPago { get; set; }  // Efectivo, Tarjeta, Transferencia
 
-        public int StudentId { get; set; }
+        public int? StudentId { get; set; }
         public virtual Student Student { get; set; }
     }
 }
