@@ -38,7 +38,7 @@ namespace AppAcademy.Application.Features.Estudiantes.Commands.CreateEstudiante
 
             }
 
-            var student = _mapper.Map<Estudiante>(request);
+            var student = _mapper.Map<Student>(request);
 
             var newStudent = await _estudianteRepository.AddAsync(student);
 

@@ -30,12 +30,7 @@ namespace AppAcademy.Infrastucture.Persistence
         public DbSet<Abono> Abono { get; set; } 
 
         // Control Academia
-        public DbSet<Colegiatura> Colegiaturas { get; set; }
-        public DbSet<Estudiante> Estudiantes { get; set;}
-        public DbSet<Materia> Materias { get; set; }
-        public DbSet<MaterialAdeudo> MaterialAdeudos { get; set; }
-        public DbSet<Materia_Estudiante> MateriaEstudiantes { get; set; }
-
+        public DbSet<Student> Estudiantes { get; set;}
         // Auth
         public DbSet<RefreshToken> RefreshTokens { get; set; }
 

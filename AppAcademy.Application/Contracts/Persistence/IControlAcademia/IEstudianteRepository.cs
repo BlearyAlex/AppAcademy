@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace AppAcademy.Application.Contracts.Persistence.IControlAcademia
 {
-    public interface IEstudianteRepository : IAsyncRepository<Estudiante>
+    public interface IEstudianteRepository : IAsyncRepository<Student>
     {
-        Task<Estudiante> GetEstudianteWithColegiatura(string studentId);
+        Task<Student> GetEstudianteWithColegiatura(string studentId);
     }
 }

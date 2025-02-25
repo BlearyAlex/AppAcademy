@@ -5,13 +5,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
 {
-    public class EstudianteRepository : AsyncRepository<Estudiante>, IEstudianteRepository
+    public class EstudianteRepository : AsyncRepository<Student>, IEstudianteRepository
     {
         public EstudianteRepository(AppAcademyDbContext dbContext) : base(dbContext)
         {
         }
 
-        public async Task<Estudiante> GetEstudianteWithColegiatura(string studentId) 
+        public async Task<Student> GetEstudianteWithColegiatura(string studentId) 
         {
             var student = await _dbContext.Estudiantes
                 .Include(e => e.Colegiaturas)

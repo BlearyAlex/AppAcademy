@@ -198,15 +198,15 @@ namespace AppAcademy.Application.Mapping
             #endregion
 
             #region Estudiantes
-            CreateMap<CreateEstudianteCommand, Estudiante>();
-            CreateMap<UpdateEstudianteCommand, Estudiante>();
+            CreateMap<CreateEstudianteCommand, Student>();
+            CreateMap<UpdateEstudianteCommand, Student>();
 
-            CreateMap<Estudiante, GetAllEstudiantesVm>();
+            CreateMap<Student, GetAllEstudiantesVm>();
 
-            CreateMap<Estudiante, GetEstudianteByIdVm>()
+            CreateMap<Student, GetEstudianteByIdVm>()
                 .ForMember(dest => dest.FechaNacimiento, opt => opt.MapFrom(src => src.FechaNacimiento.ToString("yyyy-MM-dd")));
 
-            CreateMap<Estudiante, GetEstudianteWithColegiaturaVm>()
+            CreateMap<Student, GetEstudianteWithColegiaturaVm>()
                 .ForMember(dest => dest.Colegiaturas, opt => opt.MapFrom(src => src.Colegiaturas))
                 .ForMember(dest => dest.FechaNacimiento, opt => opt.MapFrom(src => src.FechaNacimiento.ToString("yyyy-MM-dd")));
 
@@ -221,7 +221,7 @@ namespace AppAcademy.Application.Mapping
 
             CreateMap<Colegiatura, GetAllColegiaturasVm>();
             CreateMap<Colegiatura, GetColegiaturaVm>();
-            CreateMap<Estudiante, EstudianteDto>();
+            CreateMap<Student, EstudianteDto>();
             #endregion
         }
     }
