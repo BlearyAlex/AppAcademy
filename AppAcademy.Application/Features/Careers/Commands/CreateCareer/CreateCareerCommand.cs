@@ -6,7 +6,7 @@ namespace AppAcademy.Application.Features.Careers.Commands.CreateCareer
     {
         public int CareerId { get; set; }
         public string Nombre { get; set; }
-        public int DuracionSemestres { get; set; }
+        public int DuracionMeses { get; set; }
         public decimal CostoMensual { get; set; }
         public bool Activa { get; set; }
     }

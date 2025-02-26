@@ -61,6 +61,11 @@ namespace AppAcademy.Infrastucture
             #region ControlAcademia
             services.AddScoped<IStudentRepository, StudentRepository>();
             services.AddScoped<ICareerRepository, CareerRepository>();
+            services.AddScoped<IAcademicCycleRepository, AcademicCycleRepository>();
+            services.AddScoped<IPaymentRepository, PaymentRepository>();
+            services.AddScoped<IPermissionRepository, PermissionRepository>();
+            services.AddScoped<IStudentPaymentStatusRepository, StudentPaymentStatusRepository>();
+            services.AddScoped<IStudentPermissionRepository, StudentPermissionRepository>();
             #endregion
 
             #region Auth

@@ -1,0 +1,35 @@
+﻿using AppAcademy.Application.Contracts.Persistence.IControlAcademia;
+using AppAcademy.Domain.ControlAcademia;
+using MediatR;
+using Microsoft.Extensions.Logging;
+
+namespace AppAcademy.Application.Features.Payments.Commands.CreatePayment
+{
+    public class CreatePaymentCommandHandler : IRequestHandler<CreatePaymentCommand, int>
+    {
+        private readonly IPaymentRepository _paymentRepository;
+        private readonly ILogger<CreatePaymentCommandHandler> _logger;
+
+        public CreatePaymentCommandHandler(IPaymentRepository paymentRepository, ILogger<CreatePaymentCommandHandler> logger)
+        {
+            _paymentRepository = paymentRepository;
+            _logger = logger;
+        }
+
+        public async Task<int> Handle(CreatePaymentCommand request, CancellationToken cancellationToken)
+        {
+            var payment = new Payment
+            {
+                FechaPago = DateTime.Now,
+                MesPagado = request.MesPagado,
+                AñoPagado = request.AñoPagado,
+                MontoPagado = request.MontoPagado,
+                StudentId = request.StudentId,
+            };
+
+            var newPayment = await _paymentRepository.AddAsync(payment);
+
+            return newPayment.PaymentId;
+        }
+    }
+}

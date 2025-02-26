@@ -1,34 +1,34 @@
-﻿using AppAcademy.Application.Features.Careers.Commands.CreateCareer;
-using AppAcademy.Application.Features.Careers.Commands.DeleteCareer;
-using AppAcademy.Application.Features.Careers.Commands.UpdateCareer;
-using AppAcademy.Application.Features.Careers.Queries.GetAllCareers;
-using AppAcademy.Application.Features.Careers.Queries.GetCareer;
+﻿using AppAcademy.Application.Features.StudentPaymentStatuses.Commands.CreateStudentPaymentStatus;
+using AppAcademy.Application.Features.StudentPaymentStatuses.Commands.DeleteStudentPaymentStatus;
+using AppAcademy.Application.Features.StudentPaymentStatuses.Commands.UpdateStudentPaymentStatus;
+using AppAcademy.Application.Features.StudentPaymentStatuses.Queries.GetAllStudentPaymentStatuses;
+using AppAcademy.Application.Features.StudentPaymentStatuses.Queries.GetStudentPaymentStatus;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppAcademy.Controllers.ControlAcademias
 {
-    [Route("api/v1/[controller]")]
+    [Route("api/v1[controller]")]
     [ApiController]
-    public class CareerController : ControllerBase
+    public class StudentPaymentStatusController : ControllerBase
     {
         private readonly IMediator _mediator;
 
-        public CareerController(IMediator mediator)
+        public StudentPaymentStatusController(IMediator mediator)
         {
             _mediator = mediator;
         }
 
         #region Create
         [HttpPost("Create")]
-        public async Task<ActionResult<int>> Create([FromBody] CreateCareerCommand command)
+        public async Task<ActionResult<int>> Create([FromBody] CreateStudentPaymentStatusComand command)
         {
             try
             {
                 var result = await _mediator.Send(command);
 
-                return Ok(new { message = "Carrera creada exitosamente.", careerId = result });
+                return Ok(new { message = "Creado exitosamente.", careerId = result });
             }
             catch (Exception ex)
             {
@@ -39,7 +39,7 @@ namespace AppAcademy.Controllers.ControlAcademias
 
         #region Update
         [HttpPut("Update")]
-        public async Task<ActionResult> Update([FromBody] UpdateCareerCommand command)
+        public async Task<ActionResult> Update([FromBody] UpdateStudentPaymentStatusCommand command)
         {
             try
             {
@@ -60,9 +60,9 @@ namespace AppAcademy.Controllers.ControlAcademias
         {
             try
             {
-                var command = new DeleteCareerCommand
+                var command = new DeleteStudentPaymentStatusCommand
                 {
-                    CareerId = id
+                    StudentPaymentStatusId = id
                 };
 
                 await _mediator.Send(command);
@@ -71,7 +71,7 @@ namespace AppAcademy.Controllers.ControlAcademias
             }
             catch (KeyNotFoundException)
             {
-                return NotFound($"Carrera con ID {id} no encontrada.");
+                return NotFound($"Student Payment con ID {id} no encontrada.");
             }
             catch (Exception ex)
             {
@@ -82,19 +82,19 @@ namespace AppAcademy.Controllers.ControlAcademias
 
         #region GetAll
         [HttpGet("GetAll")]
-        public async Task<ActionResult<IEnumerable<GetAllCareersVm>>> GetAll()
+        public async Task<ActionResult<IEnumerable<GetAllStudentPaymentStatusesVm>>> GetAll()
         {
             try
             {
-                var query = new GetAllCareerListQuery();
-                var careers = await _mediator.Send(query);
+                var query = new GetAllStudentPaymentStatusesQuery();
+                var studentPayment = await _mediator.Send(query);
 
-                if (careers == null || !careers.Any())
+                if (studentPayment == null || !studentPayment.Any())
                 {
-                    return NotFound("No se encontraron carreras.");
+                    return NotFound("No se encontraron.");
                 }
 
-                return Ok(careers);
+                return Ok(studentPayment);
             }
             catch (Exception ex)
             {
@@ -105,24 +105,24 @@ namespace AppAcademy.Controllers.ControlAcademias
 
         #region GetById
         [HttpGet("GetById/{id}")]
-        public async Task<ActionResult<GetCareerVm>> GetById(int id)
+        public async Task<ActionResult<GetStudentPaymentStatusVm>> GetById(int id)
         {
             try
             {
-                var command = new GetCareerQuery(id);
+                var command = new GetStudentPaymentStatusQuery(id);
 
-                var career = await _mediator.Send(command);
+                var studentPayment = await _mediator.Send(command);
 
-                if (career == null)
+                if (studentPayment == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(career);
+                return Ok(studentPayment);
             }
             catch (KeyNotFoundException)
             {
-                return NotFound($"Carrera con ID {id} no encontrada.");
+                return NotFound($"Student Payment con ID {id} no encontrada.");
             }
             catch (Exception ex)
             {

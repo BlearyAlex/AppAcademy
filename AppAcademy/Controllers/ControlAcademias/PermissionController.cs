@@ -1,8 +1,8 @@
-﻿using AppAcademy.Application.Features.Careers.Commands.CreateCareer;
-using AppAcademy.Application.Features.Careers.Commands.DeleteCareer;
-using AppAcademy.Application.Features.Careers.Commands.UpdateCareer;
-using AppAcademy.Application.Features.Careers.Queries.GetAllCareers;
-using AppAcademy.Application.Features.Careers.Queries.GetCareer;
+﻿using AppAcademy.Application.Features.Permissions.Commands.CreatePermission;
+using AppAcademy.Application.Features.Permissions.Commands.DeletePermission;
+using AppAcademy.Application.Features.Permissions.Commands.UpdatePermission;
+using AppAcademy.Application.Features.Permissions.Queries.GetAllPermissions;
+using AppAcademy.Application.Features.Permissions.Queries.GetPermission;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,24 +11,24 @@ namespace AppAcademy.Controllers.ControlAcademias
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class CareerController : ControllerBase
+    public class PermissionController : ControllerBase
     {
         private readonly IMediator _mediator;
 
-        public CareerController(IMediator mediator)
+        public PermissionController(IMediator mediator)
         {
             _mediator = mediator;
         }
 
         #region Create
         [HttpPost("Create")]
-        public async Task<ActionResult<int>> Create([FromBody] CreateCareerCommand command)
+        public async Task<ActionResult<int>> Create([FromBody] CreatePermissionCommand command)
         {
             try
             {
                 var result = await _mediator.Send(command);
 
-                return Ok(new { message = "Carrera creada exitosamente.", careerId = result });
+                return Ok(new { message = "Permiso creado exitosamente.", careerId = result });
             }
             catch (Exception ex)
             {
@@ -39,7 +39,7 @@ namespace AppAcademy.Controllers.ControlAcademias
 
         #region Update
         [HttpPut("Update")]
-        public async Task<ActionResult> Update([FromBody] UpdateCareerCommand command)
+        public async Task<ActionResult> Update([FromBody] UpdatePermissionCommand command)
         {
             try
             {
@@ -60,9 +60,9 @@ namespace AppAcademy.Controllers.ControlAcademias
         {
             try
             {
-                var command = new DeleteCareerCommand
+                var command = new DeletePermissionCommand
                 {
-                    CareerId = id
+                    PermissionId = id
                 };
 
                 await _mediator.Send(command);
@@ -71,7 +71,7 @@ namespace AppAcademy.Controllers.ControlAcademias
             }
             catch (KeyNotFoundException)
             {
-                return NotFound($"Carrera con ID {id} no encontrada.");
+                return NotFound($"Permiso con ID {id} no encontrada.");
             }
             catch (Exception ex)
             {
@@ -82,19 +82,19 @@ namespace AppAcademy.Controllers.ControlAcademias
 
         #region GetAll
         [HttpGet("GetAll")]
-        public async Task<ActionResult<IEnumerable<GetAllCareersVm>>> GetAll()
+        public async Task<ActionResult<IEnumerable<GetAllPermissionsVm>>> GetAll()
         {
             try
             {
-                var query = new GetAllCareerListQuery();
-                var careers = await _mediator.Send(query);
+                var query = new GetAllPermissionsListQuery();
+                var permissions = await _mediator.Send(query);
 
-                if (careers == null || !careers.Any())
+                if (permissions == null || !permissions.Any())
                 {
-                    return NotFound("No se encontraron carreras.");
+                    return NotFound("No se encontraron permisos.");
                 }
 
-                return Ok(careers);
+                return Ok(permissions);
             }
             catch (Exception ex)
             {
@@ -105,24 +105,24 @@ namespace AppAcademy.Controllers.ControlAcademias
 
         #region GetById
         [HttpGet("GetById/{id}")]
-        public async Task<ActionResult<GetCareerVm>> GetById(int id)
+        public async Task<ActionResult<GetPermissionVm>> GetById(int id)
         {
             try
             {
-                var command = new GetCareerQuery(id);
+                var command = new GetPermissionQuery(id);
 
-                var career = await _mediator.Send(command);
+                var permission = await _mediator.Send(command);
 
-                if (career == null)
+                if (permission == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(career);
+                return Ok(permission);
             }
             catch (KeyNotFoundException)
             {
-                return NotFound($"Carrera con ID {id} no encontrada.");
+                return NotFound($"Permiso con ID {id} no encontrada.");
             }
             catch (Exception ex)
             {

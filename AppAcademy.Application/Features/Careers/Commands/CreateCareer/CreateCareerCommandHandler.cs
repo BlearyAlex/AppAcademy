@@ -18,7 +18,7 @@ namespace AppAcademy.Application.Features.Careers.Commands.CreateCareer
             var career = new Career
             {
                 Nombre = request.Nombre,
-                DuracionSemestres = request.DuracionSemestres,
+                DuracionMeses = request.DuracionMeses,
                 CostoMensual = request.CostoMensual,
                 Activa = request.Activa,
             };

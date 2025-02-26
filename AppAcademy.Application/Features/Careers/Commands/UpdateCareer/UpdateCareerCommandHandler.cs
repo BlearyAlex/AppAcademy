@@ -28,7 +28,7 @@ namespace AppAcademy.Application.Features.Careers.Commands.UpdateCareer
             }
 
             findCareer.Nombre = request.Nombre;
-            findCareer.DuracionSemestres = request.DuracionSemestres;
+            findCareer.DuracionMeses = request.DuracionMeses;
             findCareer.CostoMensual = request.CostoMensual;
             findCareer.Activa = request.Activa;
 

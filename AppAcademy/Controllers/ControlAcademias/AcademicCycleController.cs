@@ -1,4 +1,9 @@
-﻿using AppAcademy.Application.Features.Careers.Commands.CreateCareer;
+﻿using AppAcademy.Application.Features.AcademicCycles.Commands.CreateCycle;
+using AppAcademy.Application.Features.AcademicCycles.Commands.DeleteCycle;
+using AppAcademy.Application.Features.AcademicCycles.Commands.UpdateCycle;
+using AppAcademy.Application.Features.AcademicCycles.Queries.GetAllCycles;
+using AppAcademy.Application.Features.AcademicCycles.Queries.GetCycle;
+using AppAcademy.Application.Features.Careers.Commands.CreateCareer;
 using AppAcademy.Application.Features.Careers.Commands.DeleteCareer;
 using AppAcademy.Application.Features.Careers.Commands.UpdateCareer;
 using AppAcademy.Application.Features.Careers.Queries.GetAllCareers;
@@ -11,24 +16,25 @@ namespace AppAcademy.Controllers.ControlAcademias
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class CareerController : ControllerBase
+    public class AcademicCycleController : ControllerBase
     {
         private readonly IMediator _mediator;
 
-        public CareerController(IMediator mediator)
+        public AcademicCycleController(IMediator mediator)
         {
             _mediator = mediator;
         }
 
+
         #region Create
         [HttpPost("Create")]
-        public async Task<ActionResult<int>> Create([FromBody] CreateCareerCommand command)
+        public async Task<ActionResult<int>> Create([FromBody] CreateCycleCommand command)
         {
             try
             {
                 var result = await _mediator.Send(command);
 
-                return Ok(new { message = "Carrera creada exitosamente.", careerId = result });
+                return Ok(new { message = "Ciclo Academico creado exitosamente.", academicCycleId = result });
             }
             catch (Exception ex)
             {
@@ -39,7 +45,7 @@ namespace AppAcademy.Controllers.ControlAcademias
 
         #region Update
         [HttpPut("Update")]
-        public async Task<ActionResult> Update([FromBody] UpdateCareerCommand command)
+        public async Task<ActionResult> Update([FromBody] UpdateCycleCommand command)
         {
             try
             {
@@ -60,9 +66,9 @@ namespace AppAcademy.Controllers.ControlAcademias
         {
             try
             {
-                var command = new DeleteCareerCommand
+                var command = new DeleteCycleCommand
                 {
-                    CareerId = id
+                    AcademicCycleId = id
                 };
 
                 await _mediator.Send(command);
@@ -71,7 +77,7 @@ namespace AppAcademy.Controllers.ControlAcademias
             }
             catch (KeyNotFoundException)
             {
-                return NotFound($"Carrera con ID {id} no encontrada.");
+                return NotFound($"Ciclo Academico con ID {id} no encontrada.");
             }
             catch (Exception ex)
             {
@@ -82,19 +88,19 @@ namespace AppAcademy.Controllers.ControlAcademias
 
         #region GetAll
         [HttpGet("GetAll")]
-        public async Task<ActionResult<IEnumerable<GetAllCareersVm>>> GetAll()
+        public async Task<ActionResult<IEnumerable<GetAllCyclesVm>>> GetAll()
         {
             try
             {
-                var query = new GetAllCareerListQuery();
-                var careers = await _mediator.Send(query);
+                var query = new GetAllCyclesListQuery();
+                var cycles = await _mediator.Send(query);
 
-                if (careers == null || !careers.Any())
+                if (cycles == null || !cycles.Any())
                 {
-                    return NotFound("No se encontraron carreras.");
+                    return NotFound("No se encontraron ciclos academicos.");
                 }
 
-                return Ok(careers);
+                return Ok(cycles);
             }
             catch (Exception ex)
             {
@@ -105,11 +111,11 @@ namespace AppAcademy.Controllers.ControlAcademias
 
         #region GetById
         [HttpGet("GetById/{id}")]
-        public async Task<ActionResult<GetCareerVm>> GetById(int id)
+        public async Task<ActionResult<GetCycleVm>> GetById(int id)
         {
             try
             {
-                var command = new GetCareerQuery(id);
+                var command = new GetCycleQuery(id);
 
                 var career = await _mediator.Send(command);
 
@@ -122,7 +128,7 @@ namespace AppAcademy.Controllers.ControlAcademias
             }
             catch (KeyNotFoundException)
             {
-                return NotFound($"Carrera con ID {id} no encontrada.");
+                return NotFound($"Ciclo Academico con ID {id} no encontrada.");
             }
             catch (Exception ex)
             {

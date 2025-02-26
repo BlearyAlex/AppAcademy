@@ -3,32 +3,37 @@ using AppAcademy.Application.Features.Careers.Commands.DeleteCareer;
 using AppAcademy.Application.Features.Careers.Commands.UpdateCareer;
 using AppAcademy.Application.Features.Careers.Queries.GetAllCareers;
 using AppAcademy.Application.Features.Careers.Queries.GetCareer;
+using AppAcademy.Application.Features.StudentPermissions.Commands.CreateStudentPermission;
+using AppAcademy.Application.Features.StudentPermissions.Commands.DeleteStudentPermission;
+using AppAcademy.Application.Features.StudentPermissions.Commands.UpdateStudentPermission;
+using AppAcademy.Application.Features.StudentPermissions.Queries.GetAllStudentPermissions;
+using AppAcademy.Application.Features.StudentPermissions.Queries.GetStudentPermission;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppAcademy.Controllers.ControlAcademias
 {
-    [Route("api/v1/[controller]")]
+    [Route("api/v1[controller]")]
     [ApiController]
-    public class CareerController : ControllerBase
+    public class StudentPermissionController : ControllerBase
     {
         private readonly IMediator _mediator;
 
-        public CareerController(IMediator mediator)
+        public StudentPermissionController(IMediator mediator)
         {
             _mediator = mediator;
         }
 
         #region Create
         [HttpPost("Create")]
-        public async Task<ActionResult<int>> Create([FromBody] CreateCareerCommand command)
+        public async Task<ActionResult<int>> Create([FromBody] CreateStudentPermissionCommand command)
         {
             try
             {
                 var result = await _mediator.Send(command);
 
-                return Ok(new { message = "Carrera creada exitosamente.", careerId = result });
+                return Ok(new { message = "Student Permission creada exitosamente.", careerId = result });
             }
             catch (Exception ex)
             {
@@ -39,7 +44,7 @@ namespace AppAcademy.Controllers.ControlAcademias
 
         #region Update
         [HttpPut("Update")]
-        public async Task<ActionResult> Update([FromBody] UpdateCareerCommand command)
+        public async Task<ActionResult> Update([FromBody] UpdateStudentPermissionCommand command)
         {
             try
             {
@@ -60,9 +65,9 @@ namespace AppAcademy.Controllers.ControlAcademias
         {
             try
             {
-                var command = new DeleteCareerCommand
+                var command = new DeleteStudentPermissionCommand
                 {
-                    CareerId = id
+                    StudentPermissionId = id
                 };
 
                 await _mediator.Send(command);
@@ -71,7 +76,7 @@ namespace AppAcademy.Controllers.ControlAcademias
             }
             catch (KeyNotFoundException)
             {
-                return NotFound($"Carrera con ID {id} no encontrada.");
+                return NotFound($"Student Permission con ID {id} no encontrada.");
             }
             catch (Exception ex)
             {
@@ -82,19 +87,19 @@ namespace AppAcademy.Controllers.ControlAcademias
 
         #region GetAll
         [HttpGet("GetAll")]
-        public async Task<ActionResult<IEnumerable<GetAllCareersVm>>> GetAll()
+        public async Task<ActionResult<IEnumerable<GetAllStudentPermissionsVm>>> GetAll()
         {
             try
             {
-                var query = new GetAllCareerListQuery();
-                var careers = await _mediator.Send(query);
+                var query = new GetAllStudentPermissionsListQuery();
+                var studentPayments = await _mediator.Send(query);
 
-                if (careers == null || !careers.Any())
+                if (studentPayments == null || !studentPayments.Any())
                 {
-                    return NotFound("No se encontraron carreras.");
+                    return NotFound("No se encontraron students payments.");
                 }
 
-                return Ok(careers);
+                return Ok(studentPayments);
             }
             catch (Exception ex)
             {
@@ -105,24 +110,24 @@ namespace AppAcademy.Controllers.ControlAcademias
 
         #region GetById
         [HttpGet("GetById/{id}")]
-        public async Task<ActionResult<GetCareerVm>> GetById(int id)
+        public async Task<ActionResult<GetStudentPermissionVm>> GetById(int id)
         {
             try
             {
-                var command = new GetCareerQuery(id);
+                var command = new GetStudentPermissionQuery(id);
 
-                var career = await _mediator.Send(command);
+                var studentPayment = await _mediator.Send(command);
 
-                if (career == null)
+                if (studentPayment == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(career);
+                return Ok(studentPayment);
             }
             catch (KeyNotFoundException)
             {
-                return NotFound($"Carrera con ID {id} no encontrada.");
+                return NotFound($"Student Payment con ID {id} no encontrada.");
             }
             catch (Exception ex)
             {
