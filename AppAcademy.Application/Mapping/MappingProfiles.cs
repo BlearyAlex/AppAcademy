@@ -1,4 +1,6 @@
-﻿using AppAcademy.Application.Features.Careers.Queries.GetAllCareers;
+﻿using AppAcademy.Application.Features.AcademicCycles.Queries.GetAllCycles;
+using AppAcademy.Application.Features.AcademicCycles.Queries.GetCycle;
+using AppAcademy.Application.Features.Careers.Queries.GetAllCareers;
 using AppAcademy.Application.Features.Careers.Queries.GetCareer;
 using AppAcademy.Application.Features.Categorias.Commands.CreateCategoria;
 using AppAcademy.Application.Features.Categorias.Commands.UpdateCategoria;
@@ -27,6 +29,10 @@ using AppAcademy.Application.Features.Marcas.Command.CreateMarca;
 using AppAcademy.Application.Features.Marcas.Command.UpdateMarca;
 using AppAcademy.Application.Features.Marcas.Queries.GetAllMarcas;
 using AppAcademy.Application.Features.Marcas.Queries.GetMarca;
+using AppAcademy.Application.Features.Payments.Queries.GetAllPayments;
+using AppAcademy.Application.Features.Payments.Queries.GetPayment;
+using AppAcademy.Application.Features.Permissions.Queries.GetAllPermissions;
+using AppAcademy.Application.Features.Permissions.Queries.GetPermission;
 using AppAcademy.Application.Features.Productos.Commands.CreateProducto;
 using AppAcademy.Application.Features.Productos.Commands.UpdateProducto;
 using AppAcademy.Application.Features.Productos.Queries.GetAllProductos;
@@ -203,6 +209,21 @@ namespace AppAcademy.Application.Mapping
                 .ForMember(dest => dest.Activa, opt => opt.MapFrom(src => src.Activa.ToString()));
             CreateMap<Career, GetCareerVm>()
                 .ForMember(dest => dest.Activa, opt => opt.MapFrom(src => src.Activa.ToString()));
+            #endregion
+
+            #region AcademicCycle
+            CreateMap<AcademicCycle, GetAllCyclesVm>();
+            CreateMap<AcademicCycle, GetCycleVm>();
+            #endregion
+
+            #region Payment
+            CreateMap<Payment, GetAllPaymentsVm>();
+            CreateMap<Payment, GetPaymentVm>();
+            #endregion
+
+            #region Permission
+            CreateMap<Permission, GetAllPermissionsVm>();
+            CreateMap<Permission, GetPermissionVm>();
             #endregion
         }
     }

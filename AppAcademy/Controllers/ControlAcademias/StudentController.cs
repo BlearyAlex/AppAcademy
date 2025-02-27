@@ -26,13 +26,18 @@ namespace AppAcademy.Controllers.ControlAcademias
 
         #region Create
         [HttpPost("Create")]
-        public async Task<ActionResult<int>> Create([FromBody] CreateStudentCommand command)
+        public async Task<ActionResult<int>> Create([FromForm] CreateStudentCommand command)
         {
             try
             {
+                if (command.ImageFile != null && (command.ImageFile.Length == 0 || !IsValidImage(command.ImageFile)))
+                {
+                    return BadRequest("El archivo de la imagen no es valido.");
+                }
+
                 var result = await _mediator.Send(command);
 
-                return Ok(new { message = "Estudiante creada exitosamente.", studentId = result });
+                return Ok(new { message = "Student creado con éxito", studentId = result });
             }
             catch (Exception ex)
             {
@@ -134,5 +139,15 @@ namespace AppAcademy.Controllers.ControlAcademias
             }
         }
         #endregion
+
+        private bool IsValidImage(IFormFile image)
+        {
+            // Aquí podrías agregar validación del tipo de archivo y tamaño
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+            var extension = Path.GetExtension(image.FileName).ToLower();
+
+            return allowedExtensions.Contains(extension);
+
+        }
     }
 }
