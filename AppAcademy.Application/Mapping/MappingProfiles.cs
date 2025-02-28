@@ -201,6 +201,7 @@ namespace AppAcademy.Application.Mapping
             CreateMap<Student, GetAllStudentsVm>()
                 .ForMember(dest => dest.EstadoEstudiante, opt => opt.MapFrom(src => src.EstadoEstudiante.ToString()));
             CreateMap<Student, GetStudentVm>()
+                 .ForMember(dest => dest.EstadoEstudiante, opt => opt.MapFrom(src => src.EstadoEstudiante.ToString()))
                  .ForMember(dest => dest.EstadoEstudiante, opt => opt.MapFrom(src => src.EstadoEstudiante.ToString()));
             #endregion
 

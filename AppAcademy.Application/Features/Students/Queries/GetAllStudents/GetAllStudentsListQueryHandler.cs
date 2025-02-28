@@ -20,7 +20,7 @@ namespace AppAcademy.Application.Features.Students.Queries.GetAllStudents
 
         public async Task<List<GetAllStudentsVm>> Handle(GetAllStudentsListQuery request, CancellationToken cancellationToken)
         {
-            var studentsList = await _studentRepository.GetAllAsync();
+            var studentsList = await _studentRepository.GetAllStudentsWithCareers();
 
             return _mapper.Map<List<GetAllStudentsVm>>(studentsList);
         }

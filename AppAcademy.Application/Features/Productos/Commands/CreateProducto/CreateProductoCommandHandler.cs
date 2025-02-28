@@ -49,7 +49,7 @@ namespace AppAcademy.Application.Features.Productos.Commands.CreateProducto
                 Precio = request.Precio,
                 EstadoProducto = request.EstadoProducto,
                 Stock = request.Stock,
-                FechaRegistro = DateTime.Now,
+                FechaRegistro = DateTime.UtcNow,
                 CategoriaId = request.CategoriaId,
                 MarcaId = request.MarcaId,
                 ProveedorId = request.ProveedorId

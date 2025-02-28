@@ -12,8 +12,14 @@ namespace AppAcademy.Application.Features.Students.Queries.GetStudent
         public string? Direccion { get; set; }
         public string? ImageUrl { get; set; }
         public DateTime FechaIngreso { get; set; }
-        public string EstadoEstudiante { get; set; }
+        public EstudianteEstado EstadoEstudiante { get; set; }
 
+        public GetCareerById Career { get; set; }
+    }
+
+    public class GetCareerById
+    {
         public int CareerId { get; set; }
+        public string Nombre { get; set; }
     }
 }

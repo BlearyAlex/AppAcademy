@@ -17,7 +17,7 @@ namespace AppAcademy.Application.Features.Students.Queries.GetStudent
 
         public async Task<GetStudentVm> Handle(GetStudentQuery request, CancellationToken cancellationToken)
         {
-            var student = await _studentRepository.GetByIdInt(request._StudentId);
+            var student = await _studentRepository.GetStudentsByIdWithCareer(request._StudentId);
 
             return _mapper.Map<GetStudentVm>(student);
         }

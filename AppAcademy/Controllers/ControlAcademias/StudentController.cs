@@ -48,7 +48,7 @@ namespace AppAcademy.Controllers.ControlAcademias
 
         #region Update
         [HttpPut("Update")]
-        public async Task<ActionResult> Update([FromBody] UpdateStudentCommand command)
+        public async Task<ActionResult> Update([FromForm] UpdateStudentCommand command)
         {
             try
             {
@@ -84,7 +84,7 @@ namespace AppAcademy.Controllers.ControlAcademias
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.InnerException}");
             }
         }
         #endregion
