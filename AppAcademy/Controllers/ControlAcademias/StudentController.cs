@@ -6,6 +6,7 @@ using AppAcademy.Application.Features.Students.Commands.CreateStudent;
 using AppAcademy.Application.Features.Students.Commands.DeleteStudent;
 using AppAcademy.Application.Features.Students.Commands.UpdateStudent;
 using AppAcademy.Application.Features.Students.Queries.GetAllStudents;
+using AppAcademy.Application.Features.Students.Queries.GetGanttData;
 using AppAcademy.Application.Features.Students.Queries.GetStudent;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -132,6 +133,30 @@ namespace AppAcademy.Controllers.ControlAcademias
             catch (KeyNotFoundException)
             {
                 return NotFound($"Categoría con ID {id} no encontrada.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        #endregion
+
+        #region GetGanttByStudentId
+        [HttpGet("GetGantt")]
+        public async Task<ActionResult<GetStudentCardVm>> GetGantt()
+        {
+            try
+            {
+                var command = new GetGanttDataListQuery();
+
+                var gantt = await _mediator.Send(command);
+
+                if (gantt == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(gantt);
             }
             catch (Exception ex)
             {

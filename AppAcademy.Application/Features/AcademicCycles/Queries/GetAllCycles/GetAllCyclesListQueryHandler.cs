@@ -20,7 +20,7 @@ namespace AppAcademy.Application.Features.AcademicCycles.Queries.GetAllCycles
 
         public async Task<List<GetAllCyclesVm>> Handle(GetAllCyclesListQuery request, CancellationToken cancellationToken)
         {
-            var cyclesList = await _academicCycleRepository.GetAllAsync();
+            var cyclesList = await _academicCycleRepository.GetAllCyclesWithCareer();
 
             return _mapper.Map<List<GetAllCyclesVm>>(cyclesList);
         }

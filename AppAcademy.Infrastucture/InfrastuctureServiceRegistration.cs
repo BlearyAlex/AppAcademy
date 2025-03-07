@@ -66,6 +66,7 @@ namespace AppAcademy.Infrastucture
             services.AddScoped<IPermissionRepository, PermissionRepository>();
             services.AddScoped<IStudentPaymentStatusRepository, StudentPaymentStatusRepository>();
             services.AddScoped<IStudentPermissionRepository, StudentPermissionRepository>();
+            services.AddScoped<IAbonoAcademyRepository, AbonoAcademyRepository>();
             #endregion
 
             #region Auth

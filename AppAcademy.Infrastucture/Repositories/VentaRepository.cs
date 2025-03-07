@@ -20,7 +20,7 @@ namespace AppAcademy.Infrastucture.Repositories
 
         public async Task<Venta> CreateVenta(Venta venta)
         {
-           using (var transaction = await _dbContext.Database.BeginTransactionAsync())
+            using (var transaction = await _dbContext.Database.BeginTransactionAsync())
             {
                 try
                 {
@@ -96,10 +96,10 @@ namespace AppAcademy.Infrastucture.Repositories
                 throw new Exception("Error al actualizar la venta.", ex);
             }
         }
-    
+
         public async Task<bool> DeleteVenta(string ventaId)
         {
-          using (var transaction = await _dbContext.Database.BeginTransactionAsync())
+            using (var transaction = await _dbContext.Database.BeginTransactionAsync())
             {
                 try
                 {
@@ -208,9 +208,9 @@ namespace AppAcademy.Infrastucture.Repositories
         {
             try
             {
-               var venta = await _dbContext.Ventas
-                    .Include(v => v.Cliente)
-                    .ToListAsync();
+                var venta = await _dbContext.Ventas
+                     .Include(v => v.Cliente)
+                     .ToListAsync();
 
                 var result = venta.Select(a => new GetAllVentasVm
                 {
@@ -237,9 +237,9 @@ namespace AppAcademy.Infrastucture.Repositories
 
                 throw;
             }
+
+
         }
-
-
     }
 }
 

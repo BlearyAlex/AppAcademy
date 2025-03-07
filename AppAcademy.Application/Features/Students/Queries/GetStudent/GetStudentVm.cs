@@ -21,5 +21,6 @@ namespace AppAcademy.Application.Features.Students.Queries.GetStudent
     {
         public int CareerId { get; set; }
         public string Nombre { get; set; }
+        public string Color { get; set; }
     }
 }

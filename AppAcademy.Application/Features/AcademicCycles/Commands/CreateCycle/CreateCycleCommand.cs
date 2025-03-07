@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using AppAcademy.Domain.ControlAcademia;
+using MediatR;
 
 namespace AppAcademy.Application.Features.AcademicCycles.Commands.CreateCycle
 {
@@ -6,6 +7,7 @@ namespace AppAcademy.Application.Features.AcademicCycles.Commands.CreateCycle
     {
         public int AcademicCycleId { get; set; }
         public int NumeroCiclo { get; set; }
+        public string Color { get; set; }
         public DateTime FechaInicio { get; set; }
         public DateTime FechaFin { get; set; }
 

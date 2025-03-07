@@ -33,6 +33,7 @@ namespace AppAcademy.Infrastucture.Persistence
         public DbSet<Student> Students { get; set;}
         public DbSet<Career> Careers { get; set; }
         public DbSet<Payment> Payments { get; set; }
+        public DbSet<AbonoAcademy> AbonoAcademy { get; set; }
         public DbSet<AcademicCycle> AcademicCycles { get; set; }
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<StudentPaymentStatus> StudentPaymentStatuses { get; set; }

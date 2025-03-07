@@ -8,6 +8,7 @@ namespace AppAcademy.Application.Features.Careers.Commands.CreateCareer
         public string Nombre { get; set; }
         public int DuracionMeses { get; set; }
         public decimal CostoMensual { get; set; }
+        public string Color { get; set; }
         public bool Activa { get; set; }
     }
 }

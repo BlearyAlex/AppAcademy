@@ -29,6 +29,7 @@ namespace AppAcademy.Application.Features.AcademicCycles.Commands.UpdateCycle
 
             findCycle.NumeroCiclo = request.NumeroCiclo;
             findCycle.FechaInicio = request.FechaInicio;
+            findCycle.Color = request.Color;
             findCycle.FechaFin = request.FechaFin;
             findCycle.CareerId = request.CareerId;
 

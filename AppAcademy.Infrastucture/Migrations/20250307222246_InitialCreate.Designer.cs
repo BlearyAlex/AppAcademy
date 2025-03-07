@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppAcademy.Infrastucture.Migrations
 {
     [DbContext(typeof(AppAcademyDbContext))]
-    [Migration("20250227170056_InitialCreate")]
+    [Migration("20250307222246_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -25,6 +25,35 @@ namespace AppAcademy.Infrastucture.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("AppAcademy.Domain.ControlAcademia.AbonoAcademy", b =>
+                {
+                    b.Property<int>("AbonoAcademyId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AbonoAcademyId"));
+
+                    b.Property<DateTime>("FechaAbono")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Monto")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("PaymentId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StudentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("AbonoAcademyId");
+
+                    b.HasIndex("PaymentId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("AbonoAcademy");
+                });
+
             modelBuilder.Entity("AppAcademy.Domain.ControlAcademia.AcademicCycle", b =>
                 {
                     b.Property<int>("AcademicCycleId")
@@ -35,6 +64,10 @@ namespace AppAcademy.Infrastucture.Migrations
 
                     b.Property<int?>("CareerId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("FechaFin")
                         .HasColumnType("datetime2");
@@ -63,11 +96,11 @@ namespace AppAcademy.Infrastucture.Migrations
                     b.Property<bool>("Activa")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Color")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal>("CostoMensual")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("DuracionMeses")
-                        .HasColumnType("int");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -86,7 +119,16 @@ namespace AppAcademy.Infrastucture.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentId"));
 
-                    b.Property<int>("AñoPagado")
+                    b.Property<int>("AnioPagado")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CareerId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Descuento")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("EstadoVenta")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("FechaPago")
@@ -95,13 +137,18 @@ namespace AppAcademy.Infrastucture.Migrations
                     b.Property<int>("MesPagado")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("MontoPagado")
+                    b.Property<decimal>("SaldoPendiente")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("StudentId")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("Total")
+                        .HasColumnType("decimal(18,2)");
+
                     b.HasKey("PaymentId");
+
+                    b.HasIndex("CareerId");
 
                     b.HasIndex("StudentId");
 
@@ -859,10 +906,25 @@ namespace AppAcademy.Infrastucture.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("AppAcademy.Domain.ControlAcademia.AbonoAcademy", b =>
+                {
+                    b.HasOne("AppAcademy.Domain.ControlAcademia.Payment", "Payment")
+                        .WithMany("AbonosAcademy")
+                        .HasForeignKey("PaymentId");
+
+                    b.HasOne("AppAcademy.Domain.ControlAcademia.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId");
+
+                    b.Navigation("Payment");
+
+                    b.Navigation("Student");
+                });
+
             modelBuilder.Entity("AppAcademy.Domain.ControlAcademia.AcademicCycle", b =>
                 {
                     b.HasOne("AppAcademy.Domain.ControlAcademia.Career", "Career")
-                        .WithMany()
+                        .WithMany("AcademicCycles")
                         .HasForeignKey("CareerId");
 
                     b.Navigation("Career");
@@ -870,9 +932,15 @@ namespace AppAcademy.Infrastucture.Migrations
 
             modelBuilder.Entity("AppAcademy.Domain.ControlAcademia.Payment", b =>
                 {
+                    b.HasOne("AppAcademy.Domain.ControlAcademia.Career", "Career")
+                        .WithMany()
+                        .HasForeignKey("CareerId");
+
                     b.HasOne("AppAcademy.Domain.ControlAcademia.Student", "Student")
                         .WithMany("Payments")
                         .HasForeignKey("StudentId");
+
+                    b.Navigation("Career");
 
                     b.Navigation("Student");
                 });
@@ -887,7 +955,7 @@ namespace AppAcademy.Infrastucture.Migrations
             modelBuilder.Entity("AppAcademy.Domain.ControlAcademia.Student", b =>
                 {
                     b.HasOne("AppAcademy.Domain.ControlAcademia.Career", "Career")
-                        .WithMany("Estudiantes")
+                        .WithMany("Students")
                         .HasForeignKey("CareerId");
 
                     b.Navigation("Career");
@@ -945,7 +1013,7 @@ namespace AppAcademy.Infrastucture.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("AppAcademy.Domain.PuntoDeVenta.Producto", "Producto")
-                        .WithMany("EntradaProductos")
+                        .WithMany()
                         .HasForeignKey("ProductoId");
 
                     b.Navigation("Entrada");
@@ -956,7 +1024,7 @@ namespace AppAcademy.Infrastucture.Migrations
             modelBuilder.Entity("AppAcademy.Domain.PuntoDeVenta.Inventario", b =>
                 {
                     b.HasOne("AppAcademy.Domain.PuntoDeVenta.Producto", "Producto")
-                        .WithMany("Inventarios")
+                        .WithMany()
                         .HasForeignKey("ProductoId");
 
                     b.Navigation("Producto");
@@ -1072,7 +1140,14 @@ namespace AppAcademy.Infrastucture.Migrations
 
             modelBuilder.Entity("AppAcademy.Domain.ControlAcademia.Career", b =>
                 {
-                    b.Navigation("Estudiantes");
+                    b.Navigation("AcademicCycles");
+
+                    b.Navigation("Students");
+                });
+
+            modelBuilder.Entity("AppAcademy.Domain.ControlAcademia.Payment", b =>
+                {
+                    b.Navigation("AbonosAcademy");
                 });
 
             modelBuilder.Entity("AppAcademy.Domain.ControlAcademia.Permission", b =>
@@ -1115,10 +1190,6 @@ namespace AppAcademy.Infrastucture.Migrations
             modelBuilder.Entity("AppAcademy.Domain.PuntoDeVenta.Producto", b =>
                 {
                     b.Navigation("DetalleVentas");
-
-                    b.Navigation("EntradaProductos");
-
-                    b.Navigation("Inventarios");
                 });
 
             modelBuilder.Entity("AppAcademy.Domain.PuntoDeVenta.Proveedor", b =>

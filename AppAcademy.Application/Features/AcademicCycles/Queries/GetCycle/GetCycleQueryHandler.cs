@@ -17,7 +17,7 @@ namespace AppAcademy.Application.Features.AcademicCycles.Queries.GetCycle
 
         public async Task<GetCycleVm> Handle(GetCycleQuery request, CancellationToken cancellationToken)
         {
-            var cycle = await _repository.GetByIdInt(request._AcademicCycleId);
+            var cycle = await _repository.GetCycleWithCareer(request._AcademicCycleId);
 
             return _mapper.Map<GetCycleVm>(cycle);
         }

@@ -58,8 +58,8 @@ namespace AppAcademy.Infrastucture.Migrations
                     CareerId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DuracionMeses = table.Column<int>(type: "int", nullable: false),
                     CostoMensual = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Color = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Activa = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -310,6 +310,7 @@ namespace AppAcademy.Infrastucture.Migrations
                     AcademicCycleId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     NumeroCiclo = table.Column<int>(type: "int", nullable: false),
+                    Color = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FechaInicio = table.Column<DateTime>(type: "datetime2", nullable: false),
                     FechaFin = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CareerId = table.Column<int>(type: "int", nullable: true)
@@ -441,13 +442,22 @@ namespace AppAcademy.Infrastucture.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     FechaPago = table.Column<DateTime>(type: "datetime2", nullable: false),
                     MesPagado = table.Column<int>(type: "int", nullable: false),
-                    AñoPagado = table.Column<int>(type: "int", nullable: false),
-                    MontoPagado = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    StudentId = table.Column<int>(type: "int", nullable: true)
+                    AnioPagado = table.Column<int>(type: "int", nullable: false),
+                    Total = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    SaldoPendiente = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Descuento = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    EstadoVenta = table.Column<int>(type: "int", nullable: false),
+                    StudentId = table.Column<int>(type: "int", nullable: true),
+                    CareerId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Payments", x => x.PaymentId);
+                    table.ForeignKey(
+                        name: "FK_Payments_Careers_CareerId",
+                        column: x => x.CareerId,
+                        principalTable: "Careers",
+                        principalColumn: "CareerId");
                     table.ForeignKey(
                         name: "FK_Payments_Students_StudentId",
                         column: x => x.StudentId,
@@ -594,6 +604,32 @@ namespace AppAcademy.Infrastucture.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AbonoAcademy",
+                columns: table => new
+                {
+                    AbonoAcademyId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FechaAbono = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Monto = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PaymentId = table.Column<int>(type: "int", nullable: true),
+                    StudentId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AbonoAcademy", x => x.AbonoAcademyId);
+                    table.ForeignKey(
+                        name: "FK_AbonoAcademy_Payments_PaymentId",
+                        column: x => x.PaymentId,
+                        principalTable: "Payments",
+                        principalColumn: "PaymentId");
+                    table.ForeignKey(
+                        name: "FK_AbonoAcademy_Students_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Students",
+                        principalColumn: "StudentId");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "StudentPermissions",
                 columns: table => new
                 {
@@ -623,6 +659,16 @@ namespace AppAcademy.Infrastucture.Migrations
                 name: "IX_Abono_VentaId",
                 table: "Abono",
                 column: "VentaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AbonoAcademy_PaymentId",
+                table: "AbonoAcademy",
+                column: "PaymentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AbonoAcademy_StudentId",
+                table: "AbonoAcademy",
+                column: "StudentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AcademicCycles_CareerId",
@@ -687,6 +733,11 @@ namespace AppAcademy.Infrastucture.Migrations
                 name: "IX_Inventarios_ProductoId",
                 table: "Inventarios",
                 column: "ProductoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Payments_CareerId",
+                table: "Payments",
+                column: "CareerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Payments_StudentId",
@@ -761,6 +812,9 @@ namespace AppAcademy.Infrastucture.Migrations
                 name: "Abono");
 
             migrationBuilder.DropTable(
+                name: "AbonoAcademy");
+
+            migrationBuilder.DropTable(
                 name: "AcademicCycles");
 
             migrationBuilder.DropTable(
@@ -788,9 +842,6 @@ namespace AppAcademy.Infrastucture.Migrations
                 name: "Inventarios");
 
             migrationBuilder.DropTable(
-                name: "Payments");
-
-            migrationBuilder.DropTable(
                 name: "RefreshTokens");
 
             migrationBuilder.DropTable(
@@ -804,6 +855,9 @@ namespace AppAcademy.Infrastucture.Migrations
 
             migrationBuilder.DropTable(
                 name: "VentaDetalle");
+
+            migrationBuilder.DropTable(
+                name: "Payments");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

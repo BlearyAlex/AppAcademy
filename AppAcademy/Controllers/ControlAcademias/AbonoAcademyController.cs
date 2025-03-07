@@ -1,25 +1,26 @@
 ﻿using AppAcademy.Application.Features.Abonos.Command.CreateAbono;
 using AppAcademy.Application.Features.Abonos.Command.DeleteAbono;
-using AppAcademy.Application.Features.Ventas.Command.DeleteVenta;
+using AppAcademy.Application.Features.AbonosAcademy.Commands.CreateAbonoAcademy;
+using AppAcademy.Application.Features.AbonosAcademy.Commands.DeleteAbonoAcademy;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AppAcademy.Controllers.ControlVentasController
+namespace AppAcademy.Controllers.ControlAcademias
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class AbonoController : ControllerBase
+    public class AbonoAcademyController : ControllerBase
     {
         private readonly IMediator _mediator;
 
-        public AbonoController(IMediator mediator)
+        public AbonoAcademyController(IMediator mediator)
         {
             _mediator = mediator;
         }
 
         [HttpPost("Create")]
-        public async Task<IActionResult> AbonarVenta([FromBody] CreateAbonoCommand command)
+        public async Task<IActionResult> AbonarPago([FromBody] CreateAbonoAcademyCommand command)
         {
             var result = await _mediator.Send(command);
             return Ok(new { message = "Abono creado con éxito", ventaId = result });
@@ -30,9 +31,9 @@ namespace AppAcademy.Controllers.ControlVentasController
         {
             try
             {
-                var command = new DeleteAbonoCommand
+                var command = new DeleteAbonoAcademyCommand
                 {
-                    AbonoId = id
+                    AbonoAcademyId = id
                 };
 
                 await _mediator.Send(command);

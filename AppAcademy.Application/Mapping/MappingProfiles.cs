@@ -29,8 +29,6 @@ using AppAcademy.Application.Features.Marcas.Command.CreateMarca;
 using AppAcademy.Application.Features.Marcas.Command.UpdateMarca;
 using AppAcademy.Application.Features.Marcas.Queries.GetAllMarcas;
 using AppAcademy.Application.Features.Marcas.Queries.GetMarca;
-using AppAcademy.Application.Features.Payments.Queries.GetAllPayments;
-using AppAcademy.Application.Features.Payments.Queries.GetPayment;
 using AppAcademy.Application.Features.Permissions.Queries.GetAllPermissions;
 using AppAcademy.Application.Features.Permissions.Queries.GetPermission;
 using AppAcademy.Application.Features.Productos.Commands.CreateProducto;
@@ -218,8 +216,7 @@ namespace AppAcademy.Application.Mapping
             #endregion
 
             #region Payment
-            CreateMap<Payment, GetAllPaymentsVm>();
-            CreateMap<Payment, GetPaymentVm>();
+           
             #endregion
 
             #region Permission

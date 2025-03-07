@@ -20,10 +20,10 @@ namespace AppAcademy.Application.Features.Payments.Commands.CreatePayment
         {
             var payment = new Payment
             {
-                FechaPago = DateTime.Now,
+                FechaPago = DateTime.UtcNow,
                 MesPagado = request.MesPagado,
-                AñoPagado = request.AñoPagado,
-                MontoPagado = request.MontoPagado,
+                AnioPagado = request.AnioPagado,
+                Descuento = request.Descuento,
                 StudentId = request.StudentId,
             };
 

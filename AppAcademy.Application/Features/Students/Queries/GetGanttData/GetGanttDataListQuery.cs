@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AppAcademy.Application.Features.Payments.Queries.GetAllPayments
+namespace AppAcademy.Application.Features.Students.Queries.GetGanttData
 {
-    public class GetAllPaymentListQuery : IRequest<List<GetAllPaymentsVm>>
+    public class GetGanttDataListQuery : IRequest<List<GetStudentCardVm>>
     {
     }
 }

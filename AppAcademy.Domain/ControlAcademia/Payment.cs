@@ -1,14 +1,24 @@
-﻿namespace AppAcademy.Domain.ControlAcademia
+﻿using AppAcademy.Domain.Enum;
+
+namespace AppAcademy.Domain.ControlAcademia
 {
     public class Payment
     {
         public int PaymentId { get; set; }
         public DateTime FechaPago { get; set; }
-        public int MesPagado { get; set; }  // 1 = Enero, 2 = Febrero...
-        public int AñoPagado { get; set; }
-        public decimal MontoPagado { get; set; }
+        public MesEstado MesPagado { get; set; }  
+        public int AnioPagado { get; set; }
+        public decimal Total { get; set; }
+        public decimal SaldoPendiente { get; set; }
+        public decimal Descuento { get; set; }
+        public VentaEstado EstadoVenta { get; set; }
 
         public int? StudentId { get; set; }
         public Student Student { get; set; }
+
+        public int? CareerId { get; set; }
+        public Career Career { get; set; }
+
+        public virtual List<AbonoAcademy> AbonosAcademy { get; set; }
     }
 }

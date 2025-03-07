@@ -28,8 +28,8 @@ namespace AppAcademy.Application.Features.Careers.Commands.UpdateCareer
             }
 
             findCareer.Nombre = request.Nombre;
-            findCareer.DuracionMeses = request.DuracionMeses;
             findCareer.CostoMensual = request.CostoMensual;
+            findCareer.Color = request.Color;
             findCareer.Activa = request.Activa;
 
             await _careerRepository.UpdateAsync(findCareer);

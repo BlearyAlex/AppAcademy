@@ -12,17 +12,49 @@ namespace AppAcademy.Infrastucture.Repositories
         {
         }
 
-        public async Task<Abono> CreateAbono(Abono abono)
+        public async Task<bool> CreateAbono(string ventaId, decimal montoAbonado)
         {
-            try
+            if (montoAbonado <= 0) return false;
+
+            using (var transaction = await _dbContext.Database.BeginTransactionAsync())
             {
-                await _dbContext.Abono.AddAsync(abono);
-                await _dbContext.SaveChangesAsync();
-                return abono;
-            }
-            catch (Exception)
-            {
-                throw;
+                try
+                {
+                    var venta = await _dbContext.Ventas.FindAsync(ventaId);
+                    if (venta == null) return false;
+
+                    var abono = new Abono
+                    {
+                        VentaId = ventaId,
+                        Monto = montoAbonado,
+                        Fecha = DateTime.Now
+                    };
+
+                    await _dbContext.Abono.AddAsync(abono);
+                    await _dbContext.SaveChangesAsync();
+
+                    // Ajustar saldo pendiente
+                    if (montoAbonado >= venta.SaldoPendiente)
+                    {
+                        venta.SaldoPendiente = 0;
+                        venta.EstadoVenta = VentaEstado.Pagado;
+                    }
+                    else
+                    {
+                        venta.SaldoPendiente -= montoAbonado;
+                    }
+
+                    await _dbContext.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return true;
+
+                }
+                catch (Exception)
+                {
+                    await transaction.RollbackAsync();
+                    throw;
+                }
             }
         }
 

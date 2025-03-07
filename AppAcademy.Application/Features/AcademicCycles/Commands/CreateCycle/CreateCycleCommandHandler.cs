@@ -22,6 +22,7 @@ namespace AppAcademy.Application.Features.AcademicCycles.Commands.CreateCycle
             {
                 NumeroCiclo = request.NumeroCiclo,
                 FechaInicio = request.FechaInicio,
+                Color = request.Color,
                 FechaFin = request.FechaFin,
                 CareerId = request.CareerId,
             };

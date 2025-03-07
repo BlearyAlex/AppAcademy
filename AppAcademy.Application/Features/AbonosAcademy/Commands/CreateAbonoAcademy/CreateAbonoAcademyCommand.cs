@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AppAcademy.Application.Features.Abonos.Command.CreateAbono
+namespace AppAcademy.Application.Features.AbonosAcademy.Commands.CreateAbonoAcademy
 {
-    public class CreateAbonoCommand : IRequest<bool>
+    public class CreateAbonoAcademyCommand : IRequest<bool>
     {
-        public string VentaId { get; set; }
+        public int PaymentId { get; set; }
         public decimal MontoAbonado { get; set; }
     }
 }
