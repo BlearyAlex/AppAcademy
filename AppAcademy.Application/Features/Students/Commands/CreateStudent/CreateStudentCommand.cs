@@ -17,6 +17,6 @@ namespace AppAcademy.Application.Features.Students.Commands.CreateStudent
         public DateTime FechaIngreso { get; set; }
         public EstudianteEstado EstadoEstudiante { get; set; }
 
-        public int CareerId { get; set; }
+        public int? CareerId { get; set; }
     }
 }

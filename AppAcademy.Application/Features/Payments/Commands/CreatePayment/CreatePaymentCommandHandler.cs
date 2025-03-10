@@ -24,7 +24,10 @@ namespace AppAcademy.Application.Features.Payments.Commands.CreatePayment
                 MesPagado = request.MesPagado,
                 AnioPagado = request.AnioPagado,
                 Descuento = request.Descuento,
+                Total = request.Total,
+                SaldoPendiente = request.SaldoPendiente,
                 StudentId = request.StudentId,
+                CareerId = request.CareerId,
             };
 
             var newPayment = await _paymentRepository.AddAsync(payment);

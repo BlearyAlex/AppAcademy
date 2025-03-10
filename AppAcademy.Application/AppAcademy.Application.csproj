@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Contracts\Persistence\Auth\" />
-    <Folder Include="Features\Payments\Queries\" />
     <Folder Include="Models\" />
   </ItemGroup>
 

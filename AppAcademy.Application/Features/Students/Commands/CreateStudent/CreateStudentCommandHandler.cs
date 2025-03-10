@@ -6,12 +6,12 @@ using Microsoft.Extensions.Logging;
 
 namespace AppAcademy.Application.Features.Students.Commands.CreateStudent
 {
-    public class CreateCareerCommandHandler : IRequestHandler<CreateStudentCommand, int>
+    public class CreateStudentCommandHandler : IRequestHandler<CreateStudentCommand, int>
     {
         private readonly IStudentRepository _studentRepository;
-        private readonly ILogger<CreateCareerCommandHandler> _logger;
+        private readonly ILogger<CreateStudentCommandHandler> _logger;
 
-        public CreateCareerCommandHandler(IStudentRepository studentRepository, ILogger<CreateCareerCommandHandler> logger)
+        public CreateStudentCommandHandler(IStudentRepository studentRepository, ILogger<CreateStudentCommandHandler> logger)
         {
             _studentRepository = studentRepository;
             _logger = logger;

@@ -1,5 +1,7 @@
 ﻿using AppAcademy.Application.Contracts.Persistence.IControlAcademia;
 using AppAcademy.Application.Features.Payments.Commands.CreatePayment;
+using AppAcademy.Application.Features.Payments.Queries.GetPayment;
+using AppAcademy.Application.Features.Payments.Queries.GetPayments;
 using AppAcademy.Domain.ControlAcademia;
 using AppAcademy.Domain.Enum;
 using AppAcademy.Infrastucture.Persistence;
@@ -86,6 +88,109 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
             catch (Exception ex)
             {
                 throw new Exception("Error al actualizar pago.", ex);
+            }
+        }
+
+        public async Task<List<GetPaymentsVm>> GetPayments()
+        {
+            try
+            {
+                var payments = await _dbContext.Payments
+                    .Include(p => p.Career)
+                    .Include(p => p.Student)
+                    .Include(p => p.AbonosAcademy)
+                    .Select(p => new GetPaymentsVm
+                    {
+                        PaymentId = p.PaymentId,
+                        FechaPago = p.FechaPago,
+                        MesPagado = p.MesPagado.ToString(),
+                        AnioPagado = p.AnioPagado,
+                        Total = p.Total,
+                        SaldoPendiente = p.SaldoPendiente,
+                        EstadoVenta = p.EstadoVenta.ToString(),
+                        Career = p.Career != null
+                            ? new GetPaymentWithCareer
+                            {
+                                CareerId = p.Career.CareerId,
+                                Nombre = p.Career.Nombre,
+                                Color = p.Career.Color
+                            }
+                            : null,
+                        Student = p.Student != null
+                            ? new GetPaymentWithStudent
+                            {
+                                StudentId = p.Student.StudentId,
+                                Nombre = p.Student.Nombre,
+                                Apellido = p.Student.Apellido
+                            }
+                            : null,
+                        Abonos = p.AbonosAcademy != null
+                        ? p.AbonosAcademy.Select(a => new GetPaymentWithAbono
+                        {
+                            AbonoAcademyId = a.AbonoAcademyId,
+                            Monto = a.Monto,
+                            Fecha = a.FechaAbono
+                        }).ToList()
+                        : new List<GetPaymentWithAbono>()
+                    }).ToListAsync();
+
+                return payments;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al traer los pagos.", ex);
+            }
+        }
+
+        public async Task<GetPaymentVm> GetPayment(int paymentId)
+        {
+            try
+            {
+                var payment = await _dbContext.Payments
+                    .Include(p => p.Career)
+                    .Include(p => p.Student)
+                    .Include(p => p.AbonosAcademy)
+                    .Where(p => p.PaymentId == paymentId)
+                    .Select(p => new GetPaymentVm
+                    {
+                        PaymentId = p.PaymentId,
+                        FechaPago = p.FechaPago,
+                        MesPagado = p.MesPagado.ToString(),
+                        AnioPagado = p.AnioPagado,
+                        Total = p.Total,
+                        SaldoPendiente = p.SaldoPendiente,
+                        EstadoVenta = p.EstadoVenta.ToString(),
+                        Career = p.Career != null
+                            ? new GetPaymentWithCareer
+                            {
+                                CareerId = p.Career.CareerId,
+                                Nombre = p.Career.Nombre,
+                                Color = p.Career.Color
+                            }
+                            : null,
+                        Student = p.Student != null
+                            ? new GetPaymentWithStudent
+                            {
+                                StudentId = p.Student.StudentId,
+                                Nombre = p.Student.Nombre,
+                                Apellido = p.Student.Apellido
+                            }
+                            : null,
+                        Abonos = p.AbonosAcademy != null
+                        ? p.AbonosAcademy.Select(a => new GetPaymentWithAbono
+                        {
+                            AbonoAcademyId = a.AbonoAcademyId,
+                            Monto = a.Monto,
+                            Fecha = a.FechaAbono
+                        }).ToList()
+                        : new List<GetPaymentWithAbono>()
+                    }).FirstOrDefaultAsync();
+
+                return payment;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al traer el pago.", ex);
             }
         }
     }

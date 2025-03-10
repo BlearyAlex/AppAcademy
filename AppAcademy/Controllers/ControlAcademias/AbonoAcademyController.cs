@@ -22,8 +22,16 @@ namespace AppAcademy.Controllers.ControlAcademias
         [HttpPost("Create")]
         public async Task<IActionResult> AbonarPago([FromBody] CreateAbonoAcademyCommand command)
         {
-            var result = await _mediator.Send(command);
-            return Ok(new { message = "Abono creado con éxito", ventaId = result });
+            try
+            {
+                var result = await _mediator.Send(command);
+                return Ok(new { message = "Abono creado con éxito", paymentId = result });
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         [HttpDelete("Delete/{id}")]

@@ -15,5 +15,7 @@ namespace AppAcademy.Application.Features.Payments.Commands.CreatePayment
         public MesEstado MesPagado { get; set; }
         public int AnioPagado { get; set; }
         public decimal Descuento { get; set; }
+        public decimal Total { get; set; }
+        public decimal SaldoPendiente { get; set; }
     }
 }
