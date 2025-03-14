@@ -17,6 +17,9 @@ namespace AppAcademy.Domain.ControlAcademia
         public int? CareerId { get; set; }
         public virtual Career Career { get; set; }
 
+        public int? AcademicCycleId { get; set; }
+        public virtual AcademicCycle AcademicCycle { get; set; }
+
         public virtual List<Payment> Payments { get; set; }
         public virtual List<Permission> Permissions { get; set; }
     }

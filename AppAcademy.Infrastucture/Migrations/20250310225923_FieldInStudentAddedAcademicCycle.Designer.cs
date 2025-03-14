@@ -4,6 +4,7 @@ using AppAcademy.Infrastucture.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppAcademy.Infrastucture.Migrations
 {
     [DbContext(typeof(AppAcademyDbContext))]
-    partial class AppAcademyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250310225923_FieldInStudentAddedAcademicCycle")]
+    partial class FieldInStudentAddedAcademicCycle
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -631,10 +634,6 @@ namespace AppAcademy.Infrastucture.Migrations
 
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Folio")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Impuesto")
                         .HasColumnType("decimal(18,2)");

@@ -97,6 +97,7 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
             {
                 var payments = await _dbContext.Payments
                     .Include(p => p.Career)
+                    .ThenInclude(p => p.AcademicCycles)
                     .Include(p => p.Student)
                     .Include(p => p.AbonosAcademy)
                     .Select(p => new GetPaymentsVm
@@ -121,7 +122,8 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
                             {
                                 StudentId = p.Student.StudentId,
                                 Nombre = p.Student.Nombre,
-                                Apellido = p.Student.Apellido
+                                Apellido = p.Student.Apellido,
+                                AcademicCyleId = p.Student.AcademicCycleId ?? 0
                             }
                             : null,
                         Abonos = p.AbonosAcademy != null

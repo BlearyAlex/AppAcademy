@@ -14,6 +14,7 @@ namespace AppAcademy.Application.Features.Ventas.Queries.GetVenta
         public decimal? Descuento { get; set; }
         public decimal Total { get; set; }
         public decimal Impuesto { get; set; }
+        public string Folio { get; set; }
 
         public List<GetVentaDetalleVm> VentaDetalle { get; set; }
         public List<GetAbonoVm> Abonos { get; set; }

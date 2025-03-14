@@ -41,7 +41,8 @@ namespace AppAcademy.Infrastucture.Repositories
                     venta.Total = totalFinal;
                     venta.SaldoPendiente = totalFinal;
                     venta.EstadoVenta = VentaEstado.Pendiente;
-                    venta.Fecha = DateTime.Now;
+                    venta.Fecha = DateTime.UtcNow;
+                    venta.Folio = await GenerateFolioAsync();
 
                     // Descontar el stock de los productos
                     foreach (var detalle in venta.DetalleVentas)
@@ -171,6 +172,7 @@ namespace AppAcademy.Infrastucture.Repositories
                     Descuento = venta.Descuento,
                     Total = venta.Total,
                     Impuesto = venta.Impuesto,
+                    Folio = venta.Folio,
                     VentaDetalle = venta.DetalleVentas.Select(d => new GetVentaDetalleVm
                     {
                         VentaDetalleId = d.VentaDetalleId,
@@ -221,6 +223,7 @@ namespace AppAcademy.Infrastucture.Repositories
                     Descuento = a.Descuento,
                     Total = a.Total,
                     Impuesto = a.Impuesto,
+                    Folio = a.Folio,
                     Cliente = a.Cliente != null ? new GetAllVentasClient
                     {
                         ClienteId = a.Cliente.ClienteId,
@@ -240,6 +243,25 @@ namespace AppAcademy.Infrastucture.Repositories
 
 
         }
+
+        #region Private Methods
+        private async Task<string> GenerateFolioAsync()
+        {
+            int anio = DateTime.Now.Year;
+            var ultimaVenta = await _dbContext.Ventas
+                .Where(v => v.Fecha.Year == anio)
+                .OrderByDescending(v => v.Folio)
+                .FirstOrDefaultAsync();
+
+            int numeroNumero = 1;
+            if (ultimaVenta != null && int.TryParse(ultimaVenta.Folio.Split('-').Last(), out int ultimoNumero))
+            {
+                numeroNumero = ultimoNumero + 1;
+            }
+
+            return $"{anio}-{numeroNumero:D4}";
+        }
+        #endregion
     }
 }
 

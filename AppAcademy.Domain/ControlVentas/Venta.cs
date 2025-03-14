@@ -15,6 +15,7 @@ namespace AppAcademy.Domain.PuntoDeVenta
         public decimal SaldoPendiente { get; set; }
         public decimal Descuento { get; set; }
         public decimal Impuesto { get; set; }
+        public string Folio { get; set; }
         public VentaEstado EstadoVenta { get; set; }
         public List<VentaDetalle> DetalleVentas { get; set; } = new List<VentaDetalle>();
         public List<Abono> Abonos { get; set; }

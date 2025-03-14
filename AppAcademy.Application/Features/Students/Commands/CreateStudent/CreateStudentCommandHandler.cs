@@ -45,6 +45,7 @@ namespace AppAcademy.Application.Features.Students.Commands.CreateStudent
                 FechaIngreso = DateTime.Now,
                 EstadoEstudiante = request.EstadoEstudiante,
                 CareerId = request.CareerId,
+                AcademicCycleId = request.AcademicCycleId,
             };
 
             var newStudent = await _studentRepository.AddAsync(student);

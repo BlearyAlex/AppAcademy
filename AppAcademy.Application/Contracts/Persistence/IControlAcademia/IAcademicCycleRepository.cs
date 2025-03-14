@@ -8,5 +8,6 @@ namespace AppAcademy.Application.Contracts.Persistence.IControlAcademia
     {
         Task<List<GetAllCyclesVm>> GetAllCyclesWithCareer();
         Task<GetCycleVm> GetCycleWithCareer(int cycleId);
+        Task<List<(int mes, int anio)>> GetMonthsAvailable(int studentId, AcademicCycle cycle);
     }
 }

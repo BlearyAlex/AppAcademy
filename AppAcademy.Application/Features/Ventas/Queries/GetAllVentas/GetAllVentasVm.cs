@@ -13,6 +13,7 @@ namespace AppAcademy.Application.Features.Ventas.Queries.GetAllVentas
         public decimal? Descuento { get; set; }
         public decimal Total { get; set; }
         public decimal Impuesto { get; set; }
+        public string Folio { get; set; }
     }
 
     public class GetAllVentasClient

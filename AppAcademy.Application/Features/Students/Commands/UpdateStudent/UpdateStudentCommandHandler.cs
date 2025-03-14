@@ -52,6 +52,7 @@ namespace AppAcademy.Application.Features.Students.Commands.UpdateStudent
             findStudent.Direccion = request.Direccion;
             findStudent.EstadoEstudiante = request.EstadoEstudiante;
             findStudent.CareerId = request.CareerId;
+            findStudent.AcademicCycleId = request.AcademicCyleId;
 
             await _studentRepository.UpdateAsync(findStudent);
 

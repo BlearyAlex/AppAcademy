@@ -73,5 +73,39 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
                 throw;
             }
         }
+
+        public async Task<List<(int mes, int anio)>> GetMonthsAvailable(int studentId, AcademicCycle cycle)
+        {
+            // Generar la lista de meses en el ciclo académico
+            var mesesDelCiclo = new List<(int mes, int anio)>();
+            DateTime fechaActual = cycle.FechaInicio;
+            while (fechaActual <= cycle.FechaFin)
+            {
+                mesesDelCiclo.Add((fechaActual.Month, fechaActual.Year));
+                fechaActual = fechaActual.AddMonths(1);
+            }
+
+            // Obtener los pagos registrados del estudiante en el ciclo académico
+            var pagosAnon = await _dbContext.Payments
+                .Where(p => p.StudentId == studentId &&
+                            p.FechaPago >= cycle.FechaInicio &&
+                            p.FechaPago <= cycle.FechaFin)
+                .Select(p => new { Mes = (int)p.MesPagado, p.AnioPagado })
+                .ToListAsync();
+
+            // Convertir a una lista de tuplas (int, int)
+            var pagosRegistradosTuples = pagosAnon.Select(p => (p.Mes, p.AnioPagado)).ToList();
+
+            // Crear un HashSet para hacer búsquedas eficientes
+            var pagosRegistradosSet = new HashSet<(int, int)>(pagosRegistradosTuples);
+
+            // Filtrar los meses disponibles (que aún no se han pagado)
+            var mesesDisponibles = mesesDelCiclo
+                .Where(m => !pagosRegistradosSet.Contains(m))
+                .ToList();
+
+            return mesesDisponibles;
+        }
+
     }
 }

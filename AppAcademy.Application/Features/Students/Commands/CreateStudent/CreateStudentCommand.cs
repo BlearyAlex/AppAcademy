@@ -18,5 +18,6 @@ namespace AppAcademy.Application.Features.Students.Commands.CreateStudent
         public EstudianteEstado EstadoEstudiante { get; set; }
 
         public int? CareerId { get; set; }
+        public int? AcademicCycleId { get; set; }
     }
 }

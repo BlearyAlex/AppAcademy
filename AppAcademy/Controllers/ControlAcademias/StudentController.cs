@@ -141,9 +141,9 @@ namespace AppAcademy.Controllers.ControlAcademias
         }
         #endregion
 
-        #region GetGanttByStudentId
-        [HttpGet("GetGantt")]
-        public async Task<ActionResult<GetStudentCardVm>> GetGantt()
+        #region GetStudentsWithMonths
+        [HttpGet("GetStudentsWithMonths")]
+        public async Task<ActionResult<GetStudentCardVm>> GetStudentsWithMonthsGetGantt()
         {
             try
             {

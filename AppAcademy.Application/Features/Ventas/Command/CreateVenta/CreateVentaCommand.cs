@@ -9,6 +9,7 @@ namespace AppAcademy.Application.Features.Ventas.Command.CreateVenta
         public List<VentaDetalleDto> Detalles { get; set; }
         public decimal Descuento { get; set; }
         public decimal Impuesto { get; set; }
+        public string? Folio { get; set; }
     }
 
     public class VentaDetalleDto

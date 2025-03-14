@@ -26,7 +26,7 @@ namespace AppAcademy.Application.Features.Categorias.Commands.CreateCategoria
                 Nombre = request.Nombre,
                 Color = request.Color,
                 Description = request.Description,
-                FechaRegistro = DateTime.Now,
+                FechaRegistro = DateTime.UtcNow,
             };
 
             var newCategoria = await _categoriaRepository.AddAsync(categoria);

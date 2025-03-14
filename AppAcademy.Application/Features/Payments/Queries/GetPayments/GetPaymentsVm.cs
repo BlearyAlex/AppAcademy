@@ -26,6 +26,7 @@ namespace AppAcademy.Application.Features.Payments.Queries.GetPayments
         public int StudentId { get; set; }
         public string Nombre { get; set; }
         public string Apellido { get; set; }
+        public int AcademicCyleId { get; set; }
     }
 
     public class GetPaymentWithCareer

@@ -19,7 +19,7 @@ namespace AppAcademy.Application.Features.Productos.Queries.GetAllProductos
         {
             var productList = await _productoRepository.GetAllProductos();
 
-            return _mapper.Map<List<GetAllProductosVm>>(productList);
+            return productList;
         }
     }
 }

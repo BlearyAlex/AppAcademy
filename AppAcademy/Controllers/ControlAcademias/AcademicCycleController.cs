@@ -3,6 +3,7 @@ using AppAcademy.Application.Features.AcademicCycles.Commands.DeleteCycle;
 using AppAcademy.Application.Features.AcademicCycles.Commands.UpdateCycle;
 using AppAcademy.Application.Features.AcademicCycles.Queries.GetAllCycles;
 using AppAcademy.Application.Features.AcademicCycles.Queries.GetCycle;
+using AppAcademy.Application.Features.AcademicCycles.Queries.GetMonthsAvailables;
 using AppAcademy.Application.Features.Careers.Commands.CreateCareer;
 using AppAcademy.Application.Features.Careers.Commands.DeleteCareer;
 using AppAcademy.Application.Features.Careers.Commands.UpdateCareer;
@@ -136,5 +137,21 @@ namespace AppAcademy.Controllers.ControlAcademias
             }
         }
         #endregion
+
+        [HttpGet("available-months/{studentId}/{academicCycleId}")]
+        public async Task<IActionResult> GetAvailableMonths(int studentId, int academicCycleId)
+        {
+            try
+            {
+                var query = new GetAvailableMonthsQuery(studentId, academicCycleId);
+                var result = await _mediator.Send(query);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                // Podrías personalizar la respuesta dependiendo del tipo de excepción
+                return BadRequest(new { error = ex.Message });
+            }
+        }
     }
 }
