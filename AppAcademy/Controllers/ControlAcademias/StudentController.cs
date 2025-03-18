@@ -1,4 +1,5 @@
-﻿using AppAcademy.Application.Features.Categorias.Commands.DeleteCategoria;
+﻿using AppAcademy.Application.Exceptions;
+using AppAcademy.Application.Features.Categorias.Commands.DeleteCategoria;
 using AppAcademy.Application.Features.Categorias.Commands.UpdateCategoria;
 using AppAcademy.Application.Features.Categorias.Queries.GetAllCategoria;
 using AppAcademy.Application.Features.Categorias.Queries.GetCategoriaById;
@@ -9,6 +10,7 @@ using AppAcademy.Application.Features.Students.Queries.GetAllStudents;
 using AppAcademy.Application.Features.Students.Queries.GetGanttData;
 using AppAcademy.Application.Features.Students.Queries.GetStudent;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,6 +18,7 @@ namespace AppAcademy.Controllers.ControlAcademias
 {
     [Route("api/v1/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin, User")]
     public class StudentController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -35,6 +38,14 @@ namespace AppAcademy.Controllers.ControlAcademias
                 {
                     return BadRequest("El archivo de la imagen no es valido.");
                 }
+
+                var userName = User.Identity?.Name;
+                if (string.IsNullOrEmpty(userName))
+                {
+                    return Unauthorized("Usuario no autenticado");
+                }
+
+                command.UserName = userName;
 
                 var result = await _mediator.Send(command);
 
@@ -70,25 +81,38 @@ namespace AppAcademy.Controllers.ControlAcademias
         {
             try
             {
+                var userName = User.Identity?.Name;
+                if (string.IsNullOrEmpty(userName))
+                {
+                    return Unauthorized("Usuario no autenticado.");
+                }
+
                 var command = new DeleteStudentCommand
                 {
-                    StudentId = id
+                    StudentId = id,
+                    UserName = userName
                 };
 
-                await _mediator.Send(command);
+                var result = await _mediator.Send(command);
+
+                if (!result)
+                {
+                    return NotFound($"Estudiante con ID {id} no encontrado.");
+                }
 
                 return NoContent();
             }
-            catch (KeyNotFoundException)
+            catch (NotFoundException ex)
             {
-                return NotFound($"Estudiante con ID {id} no encontrada.");
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.InnerException}");
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.Message}");
             }
         }
         #endregion
+
 
         #region GetAll
         [HttpGet("GetAll")]

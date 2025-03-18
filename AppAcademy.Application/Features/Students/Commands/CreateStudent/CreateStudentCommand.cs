@@ -19,5 +19,8 @@ namespace AppAcademy.Application.Features.Students.Commands.CreateStudent
 
         public int? CareerId { get; set; }
         public int? AcademicCycleId { get; set; }
+
+
+        public string UserName { get; set; } = string.Empty;
     }
 }

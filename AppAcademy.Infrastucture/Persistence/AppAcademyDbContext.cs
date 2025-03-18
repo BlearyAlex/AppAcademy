@@ -1,6 +1,7 @@
 ﻿using AppAcademy.Domain.ControlAcademia;
 using AppAcademy.Domain.ControlVentas;
 using AppAcademy.Domain.PuntoDeVenta;
+using AppAcademy.Infrastucture.Historicos;
 using AppAcademy.Infrastucture.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -38,6 +39,9 @@ namespace AppAcademy.Infrastucture.Persistence
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<StudentPaymentStatus> StudentPaymentStatuses { get; set; }
         public DbSet<StudentPermission> StudentPermissions { get; set; }
+
+        // Historicos
+        public DbSet<Bitacora> Bitacora { get; set; }
 
         // Auth
         public DbSet<RefreshToken> RefreshTokens { get; set; }
