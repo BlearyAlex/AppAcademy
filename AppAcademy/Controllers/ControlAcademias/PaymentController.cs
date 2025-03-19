@@ -26,6 +26,14 @@ namespace AppAcademy.Controllers.ControlAcademias
         {
             try
             {
+                var userName = User.Identity?.Name;
+                if (string.IsNullOrEmpty(userName))
+                {
+                    return Unauthorized("Usuario no autenticado");
+                }
+
+                command.UserName = userName;
+
                 var result = await _mediator.Send(command);
 
                 return Ok(new { message = "Pago creado exitosamente.", paymentId = result });
@@ -90,12 +98,24 @@ namespace AppAcademy.Controllers.ControlAcademias
         {
             try
             {
+                var userName = User.Identity?.Name;
+                if (string.IsNullOrEmpty(userName))
+                {
+                    return Unauthorized("Usuario no autenticado.");
+                }
+
                 var command = new DeletePaymentCommand
                 {
-                    PaymentId = id
+                    PaymentId = id,
+                    UserName = userName
                 };
 
-                await _mediator.Send(command);
+                var result = await _mediator.Send(command);
+
+                if (!result)
+                {
+                    return NotFound($"Estudiante con ID {id} no encontrado.");
+                }
 
                 return NoContent();
             }

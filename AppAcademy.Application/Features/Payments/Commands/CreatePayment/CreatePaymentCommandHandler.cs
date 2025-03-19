@@ -30,7 +30,7 @@ namespace AppAcademy.Application.Features.Payments.Commands.CreatePayment
                 CareerId = request.CareerId,
             };
 
-            var newPayment = await _paymentRepository.AddAsync(payment);
+            var newPayment = await _paymentRepository.CreatePayment(payment, request.UserName);
 
             return newPayment.PaymentId;
         }

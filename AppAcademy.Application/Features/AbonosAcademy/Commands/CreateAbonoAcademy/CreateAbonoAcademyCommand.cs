@@ -11,5 +11,7 @@ namespace AppAcademy.Application.Features.AbonosAcademy.Commands.CreateAbonoAcad
     {
         public int PaymentId { get; set; }
         public decimal MontoAbonado { get; set; }
+
+        public string UserName { get; set; } = string.Empty;
     }
 }

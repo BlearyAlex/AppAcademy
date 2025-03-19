@@ -21,7 +21,7 @@ namespace AppAcademy.Application.Features.AbonosAcademy.Commands.CreateAbonoAcad
 
         public async Task<bool> Handle(CreateAbonoAcademyCommand request, CancellationToken cancellationToken)
         {
-            return await _abonoAcademyRepository.CreateAbonoAcademy(request.PaymentId, request.MontoAbonado);
+            return await _abonoAcademyRepository.CreateAbonoAcademy(request.PaymentId, request.MontoAbonado, request.UserName);
         }
     }
 }

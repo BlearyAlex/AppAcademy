@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace AppAcademy.Application.Features.Payments.Commands.DeletePayment
 {
-    public class DeletePaymentCommandHandler : IRequestHandler<DeletePaymentCommand>
+    public class DeletePaymentCommandHandler : IRequestHandler<DeletePaymentCommand, bool>
     {
         private readonly IPaymentRepository _paymentRepository;
         private readonly ILogger<DeletePaymentCommandHandler> _logger;
@@ -16,18 +16,9 @@ namespace AppAcademy.Application.Features.Payments.Commands.DeletePayment
             _logger = logger;
         }
 
-        public async Task Handle(DeletePaymentCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(DeletePaymentCommand request, CancellationToken cancellationToken)
         {
-            var findPayment = await _paymentRepository.GetByIdInt(request.PaymentId);
-            if (findPayment == null)
-            {
-                _logger.LogError($"{request.PaymentId} pago no existe en el sistema");
-                throw new NotFoundException(nameof(findPayment), request.PaymentId);
-            }
-
-            await _paymentRepository.DeleteAsync(findPayment);
-
-            return;
+            return await _paymentRepository.DeletePayment(request, request.UserName);
         }
     }
 }

@@ -24,13 +24,21 @@ namespace AppAcademy.Controllers.ControlAcademias
         {
             try
             {
+                var userName = User.Identity?.Name;
+                if (string.IsNullOrEmpty(userName))
+                {
+                    return Unauthorized("Usuario no autenticado");
+                }
+
+                command.UserName = userName;
+
                 var result = await _mediator.Send(command);
+
                 return Ok(new { message = "Abono creado con éxito", paymentId = result });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.InnerException}");
             }
         }
 
@@ -39,12 +47,25 @@ namespace AppAcademy.Controllers.ControlAcademias
         {
             try
             {
+                var userName = User.Identity?.Name;
+                if (string.IsNullOrEmpty(userName))
+                {
+                    return Unauthorized("Usuario no autenticado.");
+                }
+
                 var command = new DeleteAbonoAcademyCommand
                 {
-                    AbonoAcademyId = id
+                    AbonoAcademyId = id,
+                    UserName = userName
                 };
 
-                await _mediator.Send(command);
+                var result = await _mediator.Send(command);
+
+                if (!result)
+                {
+                    return NotFound($"Abono Academico con ID {id} no encontrado.");
+                }
+
                 return NoContent();
             }
             catch (KeyNotFoundException)

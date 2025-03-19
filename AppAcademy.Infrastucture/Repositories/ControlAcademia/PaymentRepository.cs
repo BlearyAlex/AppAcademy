@@ -1,11 +1,17 @@
 ﻿using AppAcademy.Application.Contracts.Persistence.IControlAcademia;
+using AppAcademy.Application.Exceptions;
 using AppAcademy.Application.Features.Payments.Commands.CreatePayment;
+using AppAcademy.Application.Features.Payments.Commands.DeletePayment;
 using AppAcademy.Application.Features.Payments.Queries.GetPayment;
 using AppAcademy.Application.Features.Payments.Queries.GetPayments;
 using AppAcademy.Domain.ControlAcademia;
 using AppAcademy.Domain.Enum;
+using AppAcademy.Infrastucture.Historicos;
+using AppAcademy.Infrastucture.Identity;
 using AppAcademy.Infrastucture.Persistence;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System.Transactions;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
@@ -13,11 +19,16 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
 {
     public class PaymentRepository : AsyncRepository<Payment>, IPaymentRepository
     {
-        public PaymentRepository(AppAcademyDbContext dbContext) : base(dbContext)
+        private readonly UserManager<AppUser> _userManager;
+        private readonly ILogger<PaymentRepository> _logger;
+
+        public PaymentRepository(AppAcademyDbContext dbContext, UserManager<AppUser> userManager, ILogger<PaymentRepository> logger) : base(dbContext)
         {
+            _userManager = userManager;
+            _logger = logger;
         }
 
-        public async Task<Payment> CreatePayment(Payment payment)
+        public async Task<Payment> CreatePayment(Payment payment, string userName)
         {
             using (var transaction = await _dbContext.Database.BeginTransactionAsync())
             {
@@ -41,9 +52,13 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
                         throw new Exception("Ya existe un pago registrado para este mes y año.");
                     }
 
+                    // Obtener datos del estudiante
+                    var student = await _dbContext.Students.FindAsync(payment.StudentId);
+                    if (student == null) throw new Exception("Estudiante no encontrado");
+
                     // Calcular total con descuento
                     decimal descuentoCalculado = career.CostoMensual * (payment.Descuento / 100);
-                    decimal totalFinal = career.CostoMensual - descuentoCalculado;
+                    decimal totalFinal = Math.Max(career.CostoMensual - descuentoCalculado, 0);
 
                     // Asignar valores
                     payment.Total = totalFinal;
@@ -53,6 +68,20 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
 
                     // Guardar el pago
                     await _dbContext.Payments.AddAsync(payment);
+
+                    var usuario = await _userManager.FindByNameAsync(userName);
+                    if (usuario == null) throw new Exception("Usuario no encontrado");
+
+                    var bitacora = new Bitacora
+                    {
+                        UsuarioId = usuario.Id,
+                        Fecha = DateTime.UtcNow,
+                        Descripcion = $"Se registró un nuevo pago para el estudiante {student.Nombre} por un total de: {payment.Total}",
+                        ReferenciaId = payment.PaymentId.ToString(),
+                        TipoReferencia = "Payment"
+                    };
+
+                    await _dbContext.Bitacora.AddAsync(bitacora);
                     await _dbContext.SaveChangesAsync();
 
                     await transaction.CommitAsync();
@@ -60,8 +89,9 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
                 }
                 catch (Exception ex)
                 {
+                    _logger.LogError(ex, "Error al registrar el pago para el estudiante {StudentId}", payment.StudentId);
                     await transaction.RollbackAsync();
-                    throw new Exception("Error al registrar el pago: " + ex.Message, ex);
+                    throw;
                 }
             }
         }
@@ -194,6 +224,37 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
             {
                 throw new Exception("Error al traer el pago.", ex);
             }
+        }
+
+        public async Task<bool> DeletePayment(DeletePaymentCommand payment, string userName)
+        {
+            var findPayment = await _dbContext.Payments.FindAsync(payment.PaymentId);
+
+            if (findPayment == null)
+            {
+                _logger.LogError($"{payment.PaymentId} pago no existe en el sistema");
+                throw new NotFoundException(nameof(findPayment), payment.PaymentId);
+            }
+
+            _dbContext.Remove(findPayment);
+
+            var usuario = await _userManager.FindByNameAsync(userName);
+            if (usuario == null) throw new Exception("Pago no encontrado");
+
+            var bitacora = new Bitacora
+            {
+                UsuarioId = usuario.Id,
+                Fecha = DateTime.UtcNow,
+                Descripcion = $"Se elimino el pago: {findPayment.PaymentId} para el estudiante {findPayment.Student.Nombre}",
+                ReferenciaId = findPayment.PaymentId.ToString(),
+                TipoReferencia = "Payment"
+            };
+
+            _dbContext.Bitacora.Add(bitacora);
+
+            await _dbContext.SaveChangesAsync();
+
+            return true;
         }
     }
 }

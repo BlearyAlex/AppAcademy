@@ -18,7 +18,7 @@ namespace AppAcademy.Controllers.ControlAcademias
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin, User")]
+    //[Authorize(Roles = "Admin, User")]
     public class StudentController : ControllerBase
     {
         private readonly IMediator _mediator;

@@ -17,5 +17,7 @@ namespace AppAcademy.Application.Features.Payments.Commands.CreatePayment
         public decimal Descuento { get; set; }
         public decimal Total { get; set; }
         public decimal SaldoPendiente { get; set; }
+
+        public string UserName { get; set; } = string.Empty;
     }
 }

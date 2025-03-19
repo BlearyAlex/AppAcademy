@@ -19,7 +19,7 @@ namespace AppAcademy.Application.Features.AbonosAcademy.Commands.DeleteAbonoAcad
 
         public async Task<bool> Handle(DeleteAbonoAcademyCommand request, CancellationToken cancellationToken)
         {
-            return await _abonoAcademyRepository.DeleteAbono(request.AbonoAcademyId);  
+            return await _abonoAcademyRepository.DeleteAbono(request.AbonoAcademyId, request.UserName);  
         }
     }
 }

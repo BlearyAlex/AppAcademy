@@ -9,7 +9,7 @@ namespace AppAcademy.Application.Contracts.Persistence.IControlAcademia
 {
     public interface IAbonoAcademyRepository : IAsyncRepository<AbonoAcademy>
     {
-        Task<bool> CreateAbonoAcademy(int paymentId, decimal montoAbonado);
-        Task<bool> DeleteAbono(int abonoId);
+        Task<bool> CreateAbonoAcademy(int paymentId, decimal montoAbonado, string userName);
+        Task<bool> DeleteAbono(int abonoId, string userName);
     }
 }
