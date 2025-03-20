@@ -36,7 +36,8 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
                     {
                         PaymentId = paymentId,
                         Monto = montoAbonado,
-                        FechaAbono = DateTime.UtcNow
+                        FechaAbono = DateTime.UtcNow,
+                        StudentId = payment.StudentId,
                     };
 
                     await _dbContext.AddAsync(abono);
