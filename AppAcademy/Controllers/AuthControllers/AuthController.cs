@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -47,14 +48,14 @@ namespace AppAcademy.Controllers.AuthControllers
                 return BadRequest(result.Errors);
 
             // Asignar el rol (si no lo manda, se pone "User" por defecto)
-            string role = string.IsNullOrEmpty(model.Role) ? "User" : model.Role;
+            string roleName = string.IsNullOrEmpty(model.Role) ? "User" : model.Role;
 
-            if (!await _roleManager.RoleExistsAsync(role))
+            if (!await _roleManager.RoleExistsAsync(roleName))
                 return BadRequest("El rol no existe.");
 
-            await _userManager.AddToRoleAsync(user, role);
+            await _userManager.AddToRoleAsync(user, roleName);
 
-            return Ok("Usuario registrado con éxito.");
+            return Ok(new { message = "Usuario registrado con éxito." });
         }
 
         [HttpPost("login")]
@@ -108,6 +109,107 @@ namespace AppAcademy.Controllers.AuthControllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        [HttpGet("users")]
+        public async Task<IActionResult> GetUsers()
+        {
+            var users = await _userManager.Users
+                .Select(user => new
+                {
+                    user.Id,
+                    user.UserName,
+                    user.Email,
+                    user.FullName,
+                    Rol = _userManager.GetRolesAsync(user).Result
+                })
+                .ToListAsync();
+
+            return Ok(users);
+        }
+
+        [HttpPut("update-user/{userId}")]
+        public async Task<IActionResult> UpdateUser(string userId, [FromBody] UpdateUserModel model)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return NotFound("Usuario no encontrado.");
+
+            user.UserName = model.UserName;
+            user.FullName = model.FullName;
+            user.Email = model.Email;
+
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded)
+                return BadRequest(updateResult.Errors);
+
+            // Si se envia una nueva contrasena, intentamos cambiarla.
+            if (!string.IsNullOrEmpty(model.Password))
+            {
+                var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var passwordResult = await _userManager.ResetPasswordAsync(user, resetToken, model.Password);
+
+                if (!passwordResult.Succeeded)
+                    return BadRequest(passwordResult.Errors);
+            }
+
+            // Si envía un nuevo rol, lo actualizamos
+            if (!string.IsNullOrEmpty(model.Role))
+            {
+                // Verificar si el rol existe
+                if (!await _roleManager.RoleExistsAsync(model.Role))
+                    return BadRequest("El rol especificado no existe.");
+
+                // Obtener los roles actuales del usuario
+                var currentRoles = await _userManager.GetRolesAsync(user);
+
+                // Remover los roles anteriores y asignar el nuevo
+                await _userManager.RemoveFromRolesAsync(user, currentRoles);
+                await _userManager.AddToRoleAsync(user, model.Role);
+            }
+
+            return Ok(new { message = "Usuario actualizado con éxito." });
+        }
+
+        [HttpGet("get-user/{userId}")]
+        public async Task<IActionResult> GetUserById(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return NotFound("Usuario no encontrado.");
+            }
+
+            var userModel = new
+            {
+                user.Id,
+                user.UserName,
+                user.FullName,
+                user.Email,
+                Role = await GetUserRoleAsync(user),
+            };
+
+            return Ok(userModel);
+        }
+
+        [HttpDelete("delete-user/{userId}")]
+        public async Task<IActionResult> DeleteUser(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound("Usuario no encontrado.");
+            }
+
+            // Eliminar el usuario
+            var result = await _userManager.DeleteAsync(user);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            return Ok(new { message = "Usuario eliminado con éxito." });
         }
 
         [HttpGet("get-roles")]
