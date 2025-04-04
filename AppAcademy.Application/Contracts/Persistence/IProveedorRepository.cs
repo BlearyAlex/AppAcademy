@@ -4,5 +4,6 @@ namespace AppAcademy.Application.Contracts.Persistence
 {
     public interface IProveedorRepository : IAsyncRepository<Proveedor>
     {
+        Task<bool> ProveedorTieneProductosActivos(string proveedorId);
     }
 }

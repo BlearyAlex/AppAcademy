@@ -1,4 +1,5 @@
-﻿using AppAcademy.Application.Features.Productos.Commands.CreateProducto;
+﻿using AppAcademy.Application.Contracts.Persistence;
+using AppAcademy.Application.Features.Productos.Commands.CreateProducto;
 using AppAcademy.Application.Features.Productos.Commands.DeleteProducto;
 using AppAcademy.Application.Features.Productos.Commands.UpdateProducto;
 using AppAcademy.Application.Features.Productos.Queries.GetAllProductos;
@@ -15,10 +16,12 @@ namespace AppAcademy.Controllers.ControlVentasController
     public class ProductoController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IProductoRepository _productoRepository;
 
-        public ProductoController(IMediator mediator)
+        public ProductoController(IMediator mediator, IProductoRepository productoRepository)
         {
             _mediator = mediator;
+            _productoRepository = productoRepository;
         }
 
         #region GetAll
@@ -175,6 +178,11 @@ namespace AppAcademy.Controllers.ControlVentasController
         {
             try
             {
+                if (await _productoRepository.ProductoTieneVentasActivas(id))
+                {
+                    return Conflict(new { message = "No se puede eliminar el producto porque tiene ventas asociadas." });
+                }
+
                 var command = new DeleteProductoCommand
                 {
                     ProductoId = id
@@ -186,15 +194,16 @@ namespace AppAcademy.Controllers.ControlVentasController
             }
             catch (KeyNotFoundException)
             {
-                return NotFound($"Categoría con ID {id} no encontrada.");
+                return NotFound($"Producto con ID {id} no encontrada.");
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.InnerException}");
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex}");
             }
         }
         #endregion
 
+        #region IsValidImage
         private bool IsValidImage(IFormFile image)
         {
             // Aquí podrías agregar validación del tipo de archivo y tamaño
@@ -204,5 +213,6 @@ namespace AppAcademy.Controllers.ControlVentasController
             return allowedExtensions.Contains(extension);
 
         }
+        #endregion
     }
 }

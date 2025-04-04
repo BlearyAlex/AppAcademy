@@ -2,23 +2,27 @@
 using AppAcademy.Application.Features.Ventas.Queries.GetAllVentas;
 using AppAcademy.Application.Features.Ventas.Queries.GetVenta;
 using AppAcademy.Domain.Enum;
+using AppAcademy.Domain.Logs;
 using AppAcademy.Domain.PuntoDeVenta;
+using AppAcademy.Infrastucture.Identity;
 using AppAcademy.Infrastucture.Persistence;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Globalization;
 
 namespace AppAcademy.Infrastucture.Repositories
 {
     public class VentaRepository : AsyncRepository<Venta>, IVentaRepository
     {
         private readonly IProductoRepository _productoRepository;
+        private readonly UserManager<AppUser> _userManager;
 
-        public VentaRepository(AppAcademyDbContext dbContext, IProductoRepository productoRepository) : base(dbContext)
+        public VentaRepository(AppAcademyDbContext dbContext, IProductoRepository productoRepository, UserManager<AppUser> userManager) : base(dbContext)
         {
             _productoRepository = productoRepository;
+            _userManager = userManager;
         }
 
-        public async Task<Venta> CreateVenta(Venta venta)
+        public async Task<Venta> CreateVenta(Venta venta, string userName)
         {
             using (var transaction = await _dbContext.Database.BeginTransactionAsync())
             {
@@ -56,8 +60,22 @@ namespace AppAcademy.Infrastucture.Repositories
                     }
 
                     // Agregar la venta a la base de datos
-                    await _dbContext.Ventas.AddAsync(venta);
-                    await _dbContext.SaveChangesAsync();  // Guardar la venta en la base de datos
+                    await AddAsync(venta);
+
+                    var usuario = await _userManager.FindByNameAsync(userName);
+                    if (usuario == null) throw new Exception("Usuario no encontrado.");
+
+                    var bitacora = new Bitacora
+                    {
+                        UsuarioId = usuario.Id,
+                        Fecha = DateTime.UtcNow,
+                        Descripcion = $"Se registró un nueva venta con Folio: {venta.Folio} por un Total: ${venta.Total}.00 por el Usuario: {usuario.UserName}",
+                        ReferenciaId = venta.VentaId.ToString(),
+                        TipoReferencia = "Venta Nueva"
+                    };
+
+                    _dbContext.Bitacora.Add(bitacora);
+                    await _dbContext.SaveChangesAsync(); 
 
                     // Confirmar la transacción
                     await transaction.CommitAsync();
@@ -98,7 +116,7 @@ namespace AppAcademy.Infrastucture.Repositories
             }
         }
 
-        public async Task<bool> DeleteVenta(string ventaId)
+        public async Task<bool> DeleteVenta(string ventaId, string userName)
         {
             using (var transaction = await _dbContext.Database.BeginTransactionAsync())
             {
@@ -106,6 +124,7 @@ namespace AppAcademy.Infrastucture.Repositories
                 {
                     var venta = await _dbContext.Ventas
                         .Include(v => v.DetalleVentas)
+                        .Include(v => v.Abonos)
                         .FirstOrDefaultAsync(v => v.VentaId == ventaId);
 
                     if (venta == null)
@@ -130,7 +149,27 @@ namespace AppAcademy.Infrastucture.Repositories
                     // Eliminar la venta
                     _dbContext.Ventas.Remove(venta);
 
-                    // Guardar los cambios en la base de datos
+                    var usuario = await _userManager.FindByNameAsync(userName);
+                    if (usuario == null) throw new Exception("Usuario no encontrado.");
+
+                    // Mensaje dinamico de bitacora
+                    string mensajeBitacora = $"Se eliminó la venta con Folio: {venta.Folio} de un Total: ${venta.Total}.00 por el Usuario: {usuario.UserName}.";
+                    if (venta.Abonos.Any())
+                    {
+                        decimal totalAbonado = venta.Abonos.Sum(a => a.Monto);
+                        mensajeBitacora += $" La venta tenía {venta.Abonos.Count} abonos de un Total: ${totalAbonado}.";
+                    }
+
+                    var bitacora = new Bitacora
+                    {
+                        UsuarioId = usuario.Id,
+                        Fecha = DateTime.UtcNow,
+                        Descripcion = mensajeBitacora,
+                        ReferenciaId = venta.VentaId.ToString(),
+                        TipoReferencia = "Venta Eliminada"
+                    };
+
+                    _dbContext.Bitacora.Add(bitacora);
                     await _dbContext.SaveChangesAsync();
 
                     // Confirmar la transacción

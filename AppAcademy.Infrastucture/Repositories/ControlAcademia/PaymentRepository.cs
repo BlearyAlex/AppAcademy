@@ -6,14 +6,12 @@ using AppAcademy.Application.Features.Payments.Queries.GetPayment;
 using AppAcademy.Application.Features.Payments.Queries.GetPayments;
 using AppAcademy.Domain.ControlAcademia;
 using AppAcademy.Domain.Enum;
-using AppAcademy.Infrastucture.Historicos;
+using AppAcademy.Domain.Logs;
 using AppAcademy.Infrastucture.Identity;
 using AppAcademy.Infrastucture.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Transactions;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
 {
@@ -76,7 +74,7 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
                     {
                         UsuarioId = usuario.Id,
                         Fecha = DateTime.UtcNow,
-                        Descripcion = $"Se registró un nuevo pago para el estudiante {student.Nombre} por un total de: {payment.Total}",
+                        Descripcion = $"Se registró un nuevo pago por el usuario {usuario.UserName} para el estudiante {student.Nombre + " " + student.Apellido} por un total de: {payment.Total}",
                         ReferenciaId = payment.PaymentId.ToString(),
                         TipoReferencia = "Payment"
                     };
@@ -236,16 +234,20 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
                 throw new NotFoundException(nameof(findPayment), payment.PaymentId);
             }
 
+            // Obtener datos del estudiante
+            var student = await _dbContext.Students.FindAsync(findPayment.StudentId);
+            if (student == null) throw new Exception("Estudiante no encontrado");
+
             _dbContext.Remove(findPayment);
 
             var usuario = await _userManager.FindByNameAsync(userName);
-            if (usuario == null) throw new Exception("Pago no encontrado");
+            if (usuario == null) throw new Exception("Usuario no encontrado");
 
             var bitacora = new Bitacora
             {
                 UsuarioId = usuario.Id,
                 Fecha = DateTime.UtcNow,
-                Descripcion = $"Se elimino el pago: {findPayment.PaymentId} para el estudiante {findPayment.Student.Nombre}",
+                Descripcion = $"Se elimino el registro del pago del mes: {findPayment.MesPagado} para el estudiante {student.Nombre + " " + student.Apellido} por el usuario {usuario.UserName}",
                 ReferenciaId = findPayment.PaymentId.ToString(),
                 TipoReferencia = "Payment"
             };

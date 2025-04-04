@@ -114,6 +114,11 @@ namespace AppAcademy.Infrastucture.Repositories
             return products;
         }
 
+        public async Task<bool> ProductoTieneVentasActivas(string productoId)
+        {
+            return await _dbContext.VentaDetalle.AnyAsync(vd => vd.ProductoId == productoId);
+        }
+
         // Metodo auxiliares
 
         public async Task<bool> DescontarStock(string productoId, int cantidad)

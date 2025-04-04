@@ -38,7 +38,7 @@ namespace AppAcademy.Application.Features.Ventas.Command.CreateVenta
                     }).ToList()
                 };
 
-                var nuevaVenta = await _ventaRepository.CreateVenta(venta);
+                var nuevaVenta = await _ventaRepository.CreateVenta(venta, request.UserName);
 
                 return $"Venta creada exitosamente. ID: {nuevaVenta.VentaId}";
             }

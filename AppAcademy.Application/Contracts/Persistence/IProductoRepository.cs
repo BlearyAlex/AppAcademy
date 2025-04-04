@@ -10,6 +10,7 @@ namespace AppAcademy.Application.Contracts.Persistence
         Task<List<Producto>> GetProductsByCategoria(string categoria);
         Task<GetProductByIdVm> GetProductById(string productoId);
         Task<List<Producto>> GetProductsByName(string producto);
+        Task<bool> ProductoTieneVentasActivas(string productoId);
 
         // Metodo auxiliares
         Task<bool> DescontarStock(string productoId, int cantidad);

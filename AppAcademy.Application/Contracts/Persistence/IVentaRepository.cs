@@ -7,9 +7,9 @@ namespace AppAcademy.Application.Contracts.Persistence
 {
     public interface IVentaRepository : IAsyncRepository<Venta>
     {
-        Task<Venta> CreateVenta(Venta venta);
+        Task<Venta> CreateVenta(Venta venta, string userName);
         Task<bool> UpdateVentaSaldo(Venta venta);
-        Task<bool> DeleteVenta(string ventaId);
+        Task<bool> DeleteVenta(string ventaId, string userName);
         Task<GetVentaVm> GetVentaById(string ventaId);
         Task<List<GetAllVentasVm>> GetAllVentas();
     }

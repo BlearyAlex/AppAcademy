@@ -10,5 +10,7 @@ namespace AppAcademy.Application.Features.Abonos.Command.DeleteAbono
     public class DeleteAbonoCommand : IRequest<string>
     {
         public int AbonoId { get; set; }
+
+        public string UserName { get; set; } = string.Empty;
     }
 }

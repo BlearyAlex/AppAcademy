@@ -21,22 +21,7 @@ namespace AppAcademy.Application.Features.Ventas.Command.DeleteVenta
 
         public async Task<bool> Handle(DeleteVentaCommand request, CancellationToken cancellationToken)
         {
-            try
-            {
-                // Llamamos al repositorio para eliminar la venta
-                var eliminado = await _repository.DeleteVenta(request.VentaId);
-
-                if (!eliminado)
-                {
-                    return false;
-                }
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
+            return await _repository.DeleteVenta(request.VentaId, request.UserName);  
         }
     }
 }

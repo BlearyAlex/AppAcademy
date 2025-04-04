@@ -1,18 +1,26 @@
 ﻿using AppAcademy.Application.Contracts.Persistence;
 using AppAcademy.Domain.ControlVentas;
 using AppAcademy.Domain.Enum;
+using AppAcademy.Domain.Logs;
+using AppAcademy.Infrastucture.Identity;
 using AppAcademy.Infrastucture.Persistence;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace AppAcademy.Infrastucture.Repositories
 {
     public class AbonoRepository : AsyncRepository<Abono>, IAbonoRepository
     {
-        public AbonoRepository(AppAcademyDbContext dbContext) : base(dbContext)
+        private readonly UserManager<AppUser> _userManager;
+        private readonly IBitacoraRepository _bitacoraRepository;
+
+        public AbonoRepository(AppAcademyDbContext dbContext, UserManager<AppUser> userManager, IBitacoraRepository bitacoraRepository) : base(dbContext)
         {
+            _userManager = userManager;
+            _bitacoraRepository = bitacoraRepository;
         }
 
-        public async Task<bool> CreateAbono(string ventaId, decimal montoAbonado)
+        public async Task<bool> CreateAbono(string ventaId, decimal montoAbonado, string userName)
         {
             if (montoAbonado <= 0) return false;
 
@@ -44,6 +52,21 @@ namespace AppAcademy.Infrastucture.Repositories
                         venta.SaldoPendiente -= montoAbonado;
                     }
 
+                    var usuario = await _userManager.FindByNameAsync(userName);
+                    if (usuario == null) throw new Exception("Usuario no encontrado");
+
+
+                    var bitacora = new Bitacora
+                    {
+                        UsuarioId = usuario.Id,
+                        Fecha = DateTime.UtcNow,
+                        Descripcion = $"Se registró un nuevo abono para la venta con Folio: {venta.Folio} por un total de {montoAbonado} por el usuario {usuario.UserName}",
+                        ReferenciaId = abono.AbonoId.ToString(),
+                        TipoReferencia = "Abono"
+                    };
+
+                    await _dbContext.Bitacora.AddAsync(bitacora);
+
                     await _dbContext.SaveChangesAsync();
                     await transaction.CommitAsync();
 
@@ -58,7 +81,7 @@ namespace AppAcademy.Infrastucture.Repositories
             }
         }
 
-        public async Task<bool> DeleteAbono(int abonoId)
+        public async Task<bool> DeleteAbono(int abonoId, string userName)
         {
             try
             {
@@ -87,6 +110,20 @@ namespace AppAcademy.Infrastucture.Repositories
                 venta.EstadoVenta = venta.SaldoPendiente > 0 ? VentaEstado.Pendiente : VentaEstado.Pagado;
 
                 _dbContext.Ventas.Update(venta);
+
+                var usuario = await _userManager.FindByNameAsync(userName);
+                if (usuario == null) throw new Exception("Usuario no encontrado");
+
+                var bitacora = new Bitacora
+                {
+                    UsuarioId = usuario.Id,
+                    Fecha = DateTime.UtcNow,
+                    Descripcion = $"Se eliminó un abono de {abono.Monto} para la venta con Folio: {venta.Folio} por el usuario {usuario.UserName}",
+                    ReferenciaId = abono.AbonoId.ToString(),
+                    TipoReferencia = "Abono"
+                };
+
+                await _dbContext.Bitacora.AddAsync(bitacora);
                 await _dbContext.SaveChangesAsync();
 
                 return true;

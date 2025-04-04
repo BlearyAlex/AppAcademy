@@ -21,8 +21,24 @@ namespace AppAcademy.Controllers.ControlVentasController
         [HttpPost("Create")]
         public async Task<IActionResult> AbonarVenta([FromBody] CreateAbonoCommand command)
         {
-            var result = await _mediator.Send(command);
-            return Ok(new { message = "Abono creado con éxito", ventaId = result });
+            try
+            {
+                var userName = User.Identity?.Name;
+                if (string.IsNullOrEmpty(userName))
+                {
+                    return Unauthorized("Usuario no autenticado");
+                }
+
+                command.UserName = userName;
+
+                var result = await _mediator.Send(command);
+
+                return Ok(new { message = "Abono creado con éxito", abonoId = result });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex}");
+            }
         }
 
         [HttpDelete("Delete/{id}")]
@@ -30,12 +46,20 @@ namespace AppAcademy.Controllers.ControlVentasController
         {
             try
             {
+                var userName = User.Identity?.Name;
+                if (string.IsNullOrEmpty(userName))
+                {
+                    return Unauthorized("Usuario no autenticado.");
+                }
+
                 var command = new DeleteAbonoCommand
                 {
-                    AbonoId = id
+                    AbonoId = id,
+                    UserName = userName
                 };
 
-                await _mediator.Send(command);
+                var result = await _mediator.Send(command);
+
                 return NoContent();
             }
             catch (KeyNotFoundException)
@@ -44,7 +68,7 @@ namespace AppAcademy.Controllers.ControlVentasController
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex}");
             }
         }
     }

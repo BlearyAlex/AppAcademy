@@ -1,7 +1,7 @@
 ﻿using AppAcademy.Application.Contracts.Persistence.IControlAcademia;
 using AppAcademy.Domain.ControlAcademia;
 using AppAcademy.Domain.Enum;
-using AppAcademy.Infrastucture.Historicos;
+using AppAcademy.Domain.Logs;
 using AppAcademy.Infrastucture.Identity;
 using AppAcademy.Infrastucture.Persistence;
 using Microsoft.AspNetCore.Identity;

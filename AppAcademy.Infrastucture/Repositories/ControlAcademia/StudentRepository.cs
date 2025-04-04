@@ -6,10 +6,9 @@ using AppAcademy.Application.Features.Students.Queries.GetAllStudents;
 using AppAcademy.Application.Features.Students.Queries.GetGanttData;
 using AppAcademy.Application.Features.Students.Queries.GetStudent;
 using AppAcademy.Domain.ControlAcademia;
-using AppAcademy.Infrastucture.Historicos;
+using AppAcademy.Domain.Logs;
 using AppAcademy.Infrastucture.Identity;
 using AppAcademy.Infrastucture.Persistence;
-using Azure.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -171,7 +170,7 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
             {
                 UsuarioId = usuario.Id,
                 Fecha = DateTime.UtcNow,
-                Descripcion = $"Se registró un nuevo estudiante: {newStudent.Nombre} {newStudent.Apellido}",
+                Descripcion = $"Se registró un nuevo estudiante: {newStudent.Nombre + " " + newStudent.Apellido} por el usuario {usuario.UserName}",
                 ReferenciaId = newStudent.StudentId.ToString(),
                 TipoReferencia = "Student"
             };
@@ -225,7 +224,7 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
             {
                 UsuarioId = usuario.Id,
                 Fecha = DateTime.UtcNow,
-                Descripcion = $"Se elimino un estudiante: {findStudent.Nombre} {findStudent.Apellido}",
+                Descripcion = $"Se elimino el estudiante: {findStudent.Nombre + " " + findStudent.Apellido} por el usuario {usuario.UserName}",
                 ReferenciaId = findStudent.StudentId.ToString(),
                 TipoReferencia = "Student"
             };

@@ -1,7 +1,7 @@
 ﻿using AppAcademy.Domain.ControlAcademia;
 using AppAcademy.Domain.ControlVentas;
+using AppAcademy.Domain.Logs;
 using AppAcademy.Domain.PuntoDeVenta;
-using AppAcademy.Infrastucture.Historicos;
 using AppAcademy.Infrastucture.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

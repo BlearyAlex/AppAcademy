@@ -1,7 +1,4 @@
-﻿using AppAcademy.Application.Features.Categorias.Commands.CreateCategoria;
-using AppAcademy.Application.Features.Categorias.Commands.DeleteCategoria;
-using AppAcademy.Application.Features.Categorias.Commands.UpdateCategoria;
-using AppAcademy.Application.Features.Categorias.Queries.GetCategoriaById;
+﻿using AppAcademy.Application.Contracts.Persistence;
 using AppAcademy.Application.Features.Proveedores.Commands.CreateProveedor;
 using AppAcademy.Application.Features.Proveedores.Commands.DeleteProveedor;
 using AppAcademy.Application.Features.Proveedores.Commands.UpdateProveedor;
@@ -17,10 +14,12 @@ namespace AppAcademy.Controllers.ControlVentasController
     public class ProveedorController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IProveedorRepository _proveedorRepository;
 
-        public ProveedorController(IMediator mediator)
+        public ProveedorController(IMediator mediator, IProveedorRepository proveedorRepository)
         {
             _mediator = mediator;
+            _proveedorRepository = proveedorRepository;
         }
 
         #region GetAll
@@ -114,6 +113,11 @@ namespace AppAcademy.Controllers.ControlVentasController
         {
             try
             {
+                if (await _proveedorRepository.ProveedorTieneProductosActivos(id))
+                {
+                    return Conflict(new { message = "No se puede eliminar el proveedor porque tiene productos asociados." });
+                }
+
                 var command = new DeleteProveedorCommand
                 {
                     ProveedorId = id

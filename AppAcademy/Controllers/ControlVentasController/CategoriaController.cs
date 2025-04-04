@@ -1,4 +1,5 @@
-﻿using AppAcademy.Application.Features.Categorias.Commands.CreateCategoria;
+﻿using AppAcademy.Application.Contracts.Persistence;
+using AppAcademy.Application.Features.Categorias.Commands.CreateCategoria;
 using AppAcademy.Application.Features.Categorias.Commands.DeleteCategoria;
 using AppAcademy.Application.Features.Categorias.Commands.UpdateCategoria;
 using AppAcademy.Application.Features.Categorias.Queries.GetAllCategoria;
@@ -13,10 +14,12 @@ namespace AppAcademy.Controllers.ControlVentasController
     public class CategoriaController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly ICategoriaRepository _categoriaRepository;
 
-        public CategoriaController(IMediator mediator)
+        public CategoriaController(IMediator mediator, ICategoriaRepository categoriaRepository)
         {
             _mediator = mediator;
+            _categoriaRepository = categoriaRepository;
         }
 
         #region GetAll
@@ -110,6 +113,11 @@ namespace AppAcademy.Controllers.ControlVentasController
         {
             try
             {
+                if (await _categoriaRepository.CategoriaTieneProductosActivos(id))
+                {
+                    return Conflict(new { message = "No se puede eliminar la categoria porque tiene productos asociados." });
+                }
+
                 var command = new DeleteCategoriaCommand
                 {
                     CategoriaId = id
@@ -125,7 +133,7 @@ namespace AppAcademy.Controllers.ControlVentasController
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex}");
             }
         }
         #endregion

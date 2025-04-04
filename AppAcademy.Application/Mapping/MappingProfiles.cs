@@ -1,5 +1,6 @@
 ﻿using AppAcademy.Application.Features.AcademicCycles.Queries.GetAllCycles;
 using AppAcademy.Application.Features.AcademicCycles.Queries.GetCycle;
+using AppAcademy.Application.Features.Bitacora.Queries.GetBitacoras;
 using AppAcademy.Application.Features.Careers.Queries.GetAllCareers;
 using AppAcademy.Application.Features.Careers.Queries.GetCareer;
 using AppAcademy.Application.Features.Categorias.Commands.CreateCategoria;
@@ -50,6 +51,7 @@ using AppAcademy.Application.Features.Ventas.Command.CreateVenta;
 using AppAcademy.Application.Features.Ventas.Queries.GetAllVentas;
 using AppAcademy.Application.Features.Ventas.Queries.GetVenta;
 using AppAcademy.Domain.ControlAcademia;
+using AppAcademy.Domain.Logs;
 using AppAcademy.Domain.PuntoDeVenta;
 using AutoMapper;
 
@@ -222,6 +224,10 @@ namespace AppAcademy.Application.Mapping
             #region Permission
             CreateMap<Permission, GetAllPermissionsVm>();
             CreateMap<Permission, GetPermissionVm>();
+            #endregion
+
+            #region Bitacora
+            CreateMap<Bitacora, GetBitacorasVm>();
             #endregion
         }
     }

@@ -113,7 +113,6 @@ namespace AppAcademy.Controllers.ControlAcademias
         }
         #endregion
 
-
         #region GetAll
         [HttpGet("GetAll")]
         public async Task<ActionResult<IEnumerable<GetAllStudentsVm>>> GetAll()

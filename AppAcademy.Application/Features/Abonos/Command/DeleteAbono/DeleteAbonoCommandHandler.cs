@@ -22,7 +22,7 @@ namespace AppAcademy.Application.Features.Abonos.Command.DeleteAbono
             try
             {
                 // Llamar al repositorio para eliminar el abono
-                bool eliminado = await _abonoRepository.DeleteAbono(request.AbonoId);
+                bool eliminado = await _abonoRepository.DeleteAbono(request.AbonoId, request.UserName);
 
                 if (eliminado)
                 {

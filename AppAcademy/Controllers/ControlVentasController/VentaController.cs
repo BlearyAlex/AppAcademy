@@ -1,17 +1,15 @@
-﻿using AppAcademy.Application.Features.Entradas.Commands.CreateEntrada;
-using AppAcademy.Application.Features.Entradas.Commands.DeleteEntrada;
-using AppAcademy.Application.Features.Entradas.Commands.UpdateEntrada;
-using AppAcademy.Application.Features.Entradas.Queries.GetEntrada;
-using AppAcademy.Application.Features.Ventas.Command.CreateVenta;
+﻿using AppAcademy.Application.Features.Ventas.Command.CreateVenta;
 using AppAcademy.Application.Features.Ventas.Command.DeleteVenta;
 using AppAcademy.Application.Features.Ventas.Queries.GetAllVentas;
 using AppAcademy.Application.Features.Ventas.Queries.GetVenta;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppAcademy.Controllers.ControlVentasController
 {
+    [Authorize]
     [Route("api/v1/[controller]")]
     [ApiController]
     public class VentaController : ControllerBase
@@ -65,12 +63,21 @@ namespace AppAcademy.Controllers.ControlVentasController
         {
             try
             {
+                var userName = User.Identity?.Name;
+                if (string.IsNullOrEmpty(userName))
+                {
+                    return Unauthorized("Usuario no autenticado");
+                }
+
+                command.UserName = userName;
+
                 var result = await _mediator.Send(command);
-                return Ok(new { message = result });
+
+                return Ok(new { message = "Venta creado con éxito", ventaId = result });
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.InnerException}");
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex}");
             }
         }
         #endregion
@@ -81,12 +88,25 @@ namespace AppAcademy.Controllers.ControlVentasController
         {
             try
             {
+                var userName = User.Identity?.Name;
+                if (string.IsNullOrEmpty(userName))
+                {
+                    return Unauthorized("Usuario no autenticado.");
+                }
+
                 var command = new DeleteVentaCommand
                 {
-                    VentaId = id
+                    VentaId = id,
+                    UserName = userName
                 };
 
-                await _mediator.Send(command);
+                var result = await _mediator.Send(command);
+
+                if (!result)
+                {
+                    return NotFound($"Venta con ID {id} no encontrado.");
+                }
+
                 return NoContent();
             }
             catch (KeyNotFoundException)
@@ -95,7 +115,7 @@ namespace AppAcademy.Controllers.ControlVentasController
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex}");
             }
         }
         #endregion

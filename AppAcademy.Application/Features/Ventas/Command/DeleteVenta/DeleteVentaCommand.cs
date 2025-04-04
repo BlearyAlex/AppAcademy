@@ -10,5 +10,7 @@ namespace AppAcademy.Application.Features.Ventas.Command.DeleteVenta
     public class DeleteVentaCommand : IRequest<bool>
     {
         public string VentaId { get; set; }
+
+        public string UserName { get; set; } = string.Empty;
     }
 }

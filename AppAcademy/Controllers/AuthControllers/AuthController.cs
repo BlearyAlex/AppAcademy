@@ -85,7 +85,7 @@ namespace AppAcademy.Controllers.AuthControllers
                     // Crear el token JWT
                     var token = new JwtSecurityToken(
                         claims: claims,
-                        expires: DateTime.UtcNow.AddHours(1),
+                        expires: DateTime.UtcNow.AddSeconds(10),
                         signingCredentials: creds
                     );
 

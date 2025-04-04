@@ -1,13 +1,10 @@
-﻿using AppAcademy.Application.Features.Categorias.Commands.CreateCategoria;
-using AppAcademy.Application.Features.Categorias.Commands.DeleteCategoria;
-using AppAcademy.Application.Features.Categorias.Commands.UpdateCategoria;
+﻿using AppAcademy.Application.Contracts.Persistence;
 using AppAcademy.Application.Features.Marcas.Command.CreateMarca;
 using AppAcademy.Application.Features.Marcas.Command.DeleteMarca;
 using AppAcademy.Application.Features.Marcas.Command.UpdateMarca;
 using AppAcademy.Application.Features.Marcas.Queries.GetAllMarcas;
 using AppAcademy.Application.Features.Marcas.Queries.GetMarca;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppAcademy.Controllers.ControlVentasController
@@ -17,10 +14,12 @@ namespace AppAcademy.Controllers.ControlVentasController
     public class MarcaController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IMarcaRepository _marcaRepository;
 
-        public MarcaController(IMediator mediator)
+        public MarcaController(IMediator mediator, IMarcaRepository marcaRepository)
         {
             _mediator = mediator;
+            _marcaRepository = marcaRepository;
         }
 
         #region GetAll
@@ -109,6 +108,11 @@ namespace AppAcademy.Controllers.ControlVentasController
         {
             try
             {
+                if (await _marcaRepository.MarcaTieneProductosActivos(id))
+                {
+                    return Conflict(new { message = "No se puede eliminar la marca porque tiene productos asociados." });
+                }
+
                 var command = new DeleteMarcaCommand
                 {
                     MarcaId = id

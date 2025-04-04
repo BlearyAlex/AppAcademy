@@ -10,6 +10,8 @@ namespace AppAcademy.Application.Features.Ventas.Command.CreateVenta
         public decimal Descuento { get; set; }
         public decimal Impuesto { get; set; }
         public string? Folio { get; set; }
+
+        public string UserName { get; set; } = string.Empty;
     }
 
     public class VentaDetalleDto
