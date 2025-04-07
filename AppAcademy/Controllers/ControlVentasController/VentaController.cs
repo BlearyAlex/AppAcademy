@@ -1,10 +1,10 @@
-﻿using AppAcademy.Application.Features.Ventas.Command.CreateVenta;
+﻿using AppAcademy.Application.Contracts.Persistence;
+using AppAcademy.Application.Features.Ventas.Command.CreateVenta;
 using AppAcademy.Application.Features.Ventas.Command.DeleteVenta;
 using AppAcademy.Application.Features.Ventas.Queries.GetAllVentas;
 using AppAcademy.Application.Features.Ventas.Queries.GetVenta;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppAcademy.Controllers.ControlVentasController
@@ -15,17 +15,21 @@ namespace AppAcademy.Controllers.ControlVentasController
     public class VentaController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IVentaRepository _ventaRepository;
+        private readonly ILogger<VentaController> _logger;
 
-        public VentaController(IMediator mediator)
+        public VentaController(IMediator mediator, IVentaRepository ventaRepository, ILogger<VentaController> logger)
         {
             _mediator = mediator;
+            _ventaRepository = ventaRepository;
+            _logger = logger;
         }
 
         #region GetAllVentas
         [HttpGet("GetAllVentas")]
         public async Task<ActionResult<IEnumerable<GetAllVentasVm>>> GetAllVentas()
         {
-            try 
+            try
             {
                 var query = new GetAllVentasListQuery();
                 var entradas = await _mediator.Send(query);
@@ -116,6 +120,27 @@ namespace AppAcademy.Controllers.ControlVentasController
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex}");
+            }
+        }
+        #endregion
+
+        #region SalesPerDay
+        public async Task<IActionResult> SalesPerDay(DateTime startDate, DateTime endDate)
+        {
+            try
+            {
+                var salesPeroDay = await _ventaRepository.SalesPerDay(startDate, endDate);
+                if (salesPeroDay == null || !salesPeroDay.Any())
+                {
+                    return NoContent();
+                }
+
+                return Ok(salesPeroDay);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener las ventas por día: {Message}", ex.Message);
+                return StatusCode(500, "Ocurrió un error al obtener las ventas por día.");
             }
         }
         #endregion

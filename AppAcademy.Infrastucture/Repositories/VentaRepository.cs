@@ -1,4 +1,5 @@
 ﻿using AppAcademy.Application.Contracts.Persistence;
+using AppAcademy.Application.DTOs.Venta;
 using AppAcademy.Application.Features.Ventas.Queries.GetAllVentas;
 using AppAcademy.Application.Features.Ventas.Queries.GetVenta;
 using AppAcademy.Domain.Enum;
@@ -282,6 +283,25 @@ namespace AppAcademy.Infrastucture.Repositories
 
 
         }
+
+        #region DirectMethods
+        public async Task<List<SalesPerDayViewModel>> SalesPerDay(DateTime startDate, DateTime endDate)
+        {
+            var resultado = await _dbContext.Ventas
+                .Where(v => v.Fecha >= startDate && v.Fecha <= endDate)
+                .GroupBy(v => v.Fecha.Date)
+                .Select(g => new SalesPerDayViewModel
+                {
+                    Fecha = g.Key.ToString("yyyy-MM-dd"),
+                    Total = g.Sum(v => v.TotalFinal)
+                })
+                .OrderBy(x => x.Fecha)
+                .ToListAsync();
+
+            return resultado;
+
+        }
+        #endregion
 
         #region Private Methods
         private async Task<string> GenerateFolioAsync()

@@ -1,8 +1,6 @@
 ﻿using AppAcademy.Application.DTOs;
 using AppAcademy.Infrastucture.Identity;
 using AppAcademy.Infrastucture.Repositories.Auth;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -42,7 +40,7 @@ namespace AppAcademy.Controllers.AuthControllers
                 Email = model.Email,
                 FullName = model.FullName
             };
-
+             
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
