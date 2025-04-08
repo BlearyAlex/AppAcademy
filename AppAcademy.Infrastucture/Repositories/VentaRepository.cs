@@ -9,6 +9,8 @@ using AppAcademy.Infrastucture.Identity;
 using AppAcademy.Infrastucture.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System.Globalization;
 
 namespace AppAcademy.Infrastucture.Repositories
 {
@@ -16,11 +18,13 @@ namespace AppAcademy.Infrastucture.Repositories
     {
         private readonly IProductoRepository _productoRepository;
         private readonly UserManager<AppUser> _userManager;
+        private readonly ILogger<VentaRepository> _logger;
 
-        public VentaRepository(AppAcademyDbContext dbContext, IProductoRepository productoRepository, UserManager<AppUser> userManager) : base(dbContext)
+        public VentaRepository(AppAcademyDbContext dbContext, IProductoRepository productoRepository, UserManager<AppUser> userManager, ILogger<VentaRepository> logger) : base(dbContext)
         {
             _productoRepository = productoRepository;
             _userManager = userManager;
+            _logger = logger;
         }
 
         public async Task<Venta> CreateVenta(Venta venta, string userName)
@@ -285,21 +289,116 @@ namespace AppAcademy.Infrastucture.Repositories
         }
 
         #region DirectMethods
-        public async Task<List<SalesPerDayViewModel>> SalesPerDay(DateTime startDate, DateTime endDate)
+        public async Task<List<SalesByCategory>> GetSalesByCategory(DateTime startDate, DateTime endDate)
         {
-            var resultado = await _dbContext.Ventas
-                .Where(v => v.Fecha >= startDate && v.Fecha <= endDate)
-                .GroupBy(v => v.Fecha.Date)
-                .Select(g => new SalesPerDayViewModel
+            var query = _dbContext.VentaDetalle
+                  .Where(vd => vd.Venta!.Fecha >= startDate && vd.Venta.Fecha <= endDate)
+                  .Where(vd => vd.Venta.EstadoVenta != VentaEstado.Cancelado)
+                  .Include(vd => vd.Producto!)
+                      .ThenInclude(p => p.Categoria!);
+
+            var detalles = await query.ToListAsync();
+            _logger.LogInformation("Detalles filtrados: {Count}", detalles.Count);
+
+            if (!detalles.Any())
+                return new List<SalesByCategory> { };
+
+            var result = detalles
+                .GroupBy(vd => vd.Producto!.Categoria!.Nombre)
+                .Select(g => new SalesByCategory
                 {
-                    Fecha = g.Key.ToString("yyyy-MM-dd"),
-                    Total = g.Sum(v => v.TotalFinal)
+                    Categoria = g.Key,
+                    Total = g.Sum(vd => vd.Total)
                 })
-                .OrderBy(x => x.Fecha)
+                .ToList();
+
+            return result;
+        }
+
+        public async Task<List<TopSellingProducts>> TopSellingProducts(DateTime startDate, DateTime endDate)
+        {
+            var topProducts = await _dbContext.VentaDetalle
+                .Where(vd => vd.Venta!.Fecha >= startDate && vd.Venta.Fecha <= endDate)
+                .Where(vd => vd.Venta.EstadoVenta != VentaEstado.Cancelado)
+                .Include(vd => vd.Producto)
+                .GroupBy(vd => new { vd.ProductoId, vd.Producto!.Nombre })
+                .Select(g => new TopSellingProducts
+                {
+                    Producto = g.Key.Nombre,
+                    CantidadVendida = g.Sum(vd => vd.Cantidad)
+                })
+                .OrderByDescending(x => x.CantidadVendida)
+                .Take(5)
                 .ToListAsync();
 
-            return resultado;
+            if (topProducts == null || !topProducts.Any())
+                return new List<TopSellingProducts> { };
 
+            return topProducts;
+        }
+
+        public async Task<List<SalesByRank>> GetSalesByDateRange(DateTime startDate, DateTime endDate)
+        {
+            var sales = await _dbContext.Ventas
+                .Where(v => v.Fecha >= startDate && v.Fecha <= endDate && (v.EstadoVenta != VentaEstado.Cancelado || v.EstadoVenta == null))
+                .Select(v => new SalesByRank
+                {
+                    VentaId = v.VentaId,
+                    Fecha = v.Fecha,
+                    Total = v.TotalFinal,
+                })
+                .ToListAsync();
+
+            return sales;
+        }
+
+        public async Task<List<SalesPerWeekViewModel>> GetSalesPerWeek(DateTime currentDate)
+        {
+            // Rango por defecto: mes actual
+            var now = DateTime.Now;
+            var startDate = new DateTime(now.Year, now.Month, 1);
+            var endDate = startDate.AddMonths(1).AddDays(-1);
+
+            var filteredSales = _dbContext.Ventas
+                .Where(s => s.Fecha>= startDate && s.Fecha <= endDate)
+                .ToList(); // Se carga en memoria para agrupar por semana con método local
+
+            var salesByWeek = filteredSales
+                .GroupBy(s => GetWeeksStartDate(s.Fecha))
+                .Select(g => new SalesPerWeekViewModel
+                {
+                    WeekStart = g.Key,
+                    TotalSales = g.Sum(s => s.Total),
+                    SalesCount = g.Count()
+                })
+                .OrderBy(x => x.WeekStart)
+                .ToList();
+
+            return salesByWeek;
+        }
+
+        public async Task<List<SalesPerMonthViewModel>> GetSalesPerMonth()
+        {
+            var now = DateTime.Now;
+            var startDate = now.AddMonths(-11);
+            var endDate = now;
+
+            var filteredSales = await _dbContext.Ventas
+                .Where(s => s.Fecha >= startDate && s.Fecha <= endDate)
+                .ToListAsync();
+
+            var salesByMonth = filteredSales
+                .GroupBy(s => new {s.Fecha.Year, s.Fecha.Month})
+                .Select(g => new SalesPerMonthViewModel
+                {
+                    MonthName = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMMM yyyy", new CultureInfo("es-ES")),
+                    TotalSales = g.Sum(s => s.Total),
+                    SalesCount = g.Count()
+                })
+                .OrderBy(x => x.MonthName)
+                .ToList();
+
+            return salesByMonth;
         }
         #endregion
 
@@ -320,6 +419,14 @@ namespace AppAcademy.Infrastucture.Repositories
 
             return $"{anio}-{numeroNumero:D4}";
         }
+
+        private DateTime GetWeeksStartDate(DateTime date)
+        {
+            // Suponiendo que la semana empieza el lunes
+            int diff = date.DayOfWeek == DayOfWeek.Sunday ? 6 : ((int)date.DayOfWeek - 1);
+            return date.AddDays(-diff).Date;
+        }
+
         #endregion
     }
 }
