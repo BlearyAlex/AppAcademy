@@ -1,16 +1,24 @@
 ﻿using AppAcademy.Application.Contracts.Persistence;
+using AppAcademy.Application.DTOs.Venta;
 using AppAcademy.Application.Features.Productos.Queries.GetAllProductos;
 using AppAcademy.Application.Features.Productos.Queries.GetProductById;
+using AppAcademy.Application.ViewModel.Categoria;
+using AppAcademy.Application.ViewModel.Producto;
+using AppAcademy.Domain.Enum;
 using AppAcademy.Domain.PuntoDeVenta;
 using AppAcademy.Infrastucture.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace AppAcademy.Infrastucture.Repositories
 {
     public class ProductoRepository : AsyncRepository<Producto>, IProductoRepository
     {
-        public ProductoRepository(AppAcademyDbContext dbContext) : base(dbContext)
+        private readonly ILogger<ProductoRepository> _logger;
+
+        public ProductoRepository(AppAcademyDbContext dbContext, ILogger<ProductoRepository> logger) : base(dbContext)
         {
+            _logger = logger;
         }
 
         public async Task<List<GetAllProductosVm>> GetAllProductos()
@@ -119,8 +127,103 @@ namespace AppAcademy.Infrastucture.Repositories
             return await _dbContext.VentaDetalle.AnyAsync(vd => vd.ProductoId == productoId);
         }
 
-        // Metodo auxiliares
+        #region DirectMethods
+        public async Task<List<SalesEvolutionByProducto>> GetSalesEvolutionByProducto(DateTime startDate, DateTime endDate)
+        {
+            var query = _dbContext.VentaDetalle
+                   .Where(vd => vd.Venta!.Fecha >= startDate && vd.Venta.Fecha <= endDate)
+                   .Where(vd => vd.Venta.EstadoVenta != VentaEstado.Cancelado)
+                   .Include(vd => vd.Producto!);
 
+            var detalles = await _dbContext.VentaDetalle
+                    .Where(vd => vd.Venta != null &&
+                                 vd.Producto != null &&
+                                 vd.Venta.Fecha >= startDate &&
+                                 vd.Venta.Fecha <= endDate &&
+                                 vd.Venta.EstadoVenta != VentaEstado.Cancelado)
+                    .Include(vd => vd.Venta)
+                    .Include(vd => vd.Producto!)
+                    .ToListAsync();
+
+            _logger.LogInformation("Detalles filtrados: {Count}", detalles.Count);
+
+            if (!detalles.Any())
+                return new List<SalesEvolutionByProducto>();
+
+            var result = detalles
+                    .GroupBy(vd => new
+                    {
+                        Fecha = vd.Venta!.Fecha.Date,
+                        Producto = vd.Producto!.Nombre ?? "Producto Sin Nombre"
+                    })
+                    .Select(g => new SalesEvolutionByProducto
+                    {
+                        Fecha = g.Key.Fecha,
+                        Producto = g.Key.Producto,
+                        Total = g.Sum(vd => vd.Total),
+                        Color = g.First().Producto.Color
+                    })
+                    .OrderBy(r => r.Fecha)
+                    .ToList();
+
+            return result;
+        }
+
+        public async Task<List<HighlightedProducto>> GetHighlightedProducto(DateTime startDate, DateTime endDate)
+        {
+            var query = _dbContext.VentaDetalle
+                .Where(vd => vd.Venta!.Fecha >= startDate && vd.Venta.Fecha <= endDate)
+                .Where(vd => vd.Venta.EstadoVenta != VentaEstado.Cancelado)
+                .Include(vd => vd.Producto!);
+
+            var detalles = await query.ToListAsync();
+            _logger.LogInformation("Detalles filtrados: {Count}", detalles.Count);
+
+            if (!detalles.Any())
+                return new List<HighlightedProducto>();
+
+            var result = detalles
+                .GroupBy(vd => vd.Producto!.Nombre)
+                .Select(g => new HighlightedProducto
+                {
+                    Producto = g.Key,
+                    Total = g.Sum(vd => vd.Total),
+                    Color = g.First().Producto.Color
+                })
+                .OrderByDescending(c => c.Total)
+                .ToList();
+
+            return result;
+        }
+
+        public async Task<List<SalesByProducto>> GetSalesByProducto(DateTime startDate, DateTime endDate)
+        {
+            var query = _dbContext.VentaDetalle
+                  .Where(vd => vd.Venta!.Fecha >= startDate && vd.Venta.Fecha <= endDate)
+                  .Where(vd => vd.Venta.EstadoVenta != VentaEstado.Cancelado)
+                  .Include(vd => vd.Producto!);
+
+            var detalles = await query.ToListAsync();
+            _logger.LogInformation("Detalles filtrados: {Count}", detalles.Count);
+
+            if (!detalles.Any())
+                return new List<SalesByProducto> { };
+
+            var result = detalles
+                .GroupBy(vd => vd.Producto!.Nombre)
+                .Select(g => new SalesByProducto
+                {
+                    Producto= g.Key,
+                    Total = g.Sum(vd => vd.Total),
+                    Color = g.First().Producto.Color
+                })
+                .ToList();
+
+            return result;
+        }
+        #endregion
+
+        #region Metodo auxiliares
         public async Task<bool> DescontarStock(string productoId, int cantidad)
         {
             var product = await _dbContext.Productos.FirstOrDefaultAsync(p => p.ProductoId == productoId);
@@ -135,7 +238,6 @@ namespace AppAcademy.Infrastucture.Repositories
             await _dbContext.SaveChangesAsync();
             return true;
         }
-
         public async Task<bool> AgregarStock(string productoId, int cantidad)
         {
             try
@@ -155,5 +257,6 @@ namespace AppAcademy.Infrastucture.Repositories
                 throw;
             }
         }
+        #endregion
     }
 }

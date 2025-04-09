@@ -5,6 +5,7 @@ using AppAcademy.Application.Features.Productos.Commands.UpdateProducto;
 using AppAcademy.Application.Features.Productos.Queries.GetAllProductos;
 using AppAcademy.Application.Features.Productos.Queries.GetProductById;
 using AppAcademy.Application.Features.Productos.Queries.GetProductsByName;
+using AppAcademy.Infrastucture.Repositories;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,11 +18,13 @@ namespace AppAcademy.Controllers.ControlVentasController
     {
         private readonly IMediator _mediator;
         private readonly IProductoRepository _productoRepository;
+        private readonly ILogger<ProductoController> _logger;
 
-        public ProductoController(IMediator mediator, IProductoRepository productoRepository)
+        public ProductoController(IMediator mediator, IProductoRepository productoRepository, ILogger<ProductoController> logger)
         {
             _mediator = mediator;
             _productoRepository = productoRepository;
+            _logger = logger;
         }
 
         #region GetAll
@@ -199,6 +202,72 @@ namespace AppAcademy.Controllers.ControlVentasController
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex}");
+            }
+        }
+        #endregion
+
+        #region GetSalesByProducto
+        [HttpGet("sales-per-product")]
+        public async Task<IActionResult> GetSalesByProduct(DateTime startDate, DateTime endDate)
+        {
+            try
+            {
+                var salesByProduct = await _productoRepository.GetSalesByProducto(startDate, endDate);
+                if (salesByProduct == null || !salesByProduct.Any())
+                {
+                    return NoContent();
+                }
+
+                return Ok(salesByProduct);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener las ventas por productos: {Message}", ex.Message);
+                return StatusCode(500, "Ocurrió un error al obtener las ventas por productos.");
+            }
+        }
+        #endregion
+
+        #region GetSalesEvolutionByProduct
+        [HttpGet("evolution-product")]
+        public async Task<IActionResult> GetSalesEvolutionByProduct(DateTime startDate, DateTime endDate)
+        {
+            try
+            {
+                var result = await _productoRepository.GetSalesEvolutionByProducto(startDate, endDate);
+                if (result == null || !result.Any())
+                {
+                    return NoContent();
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener la evolucion por producto: {Message}", ex.Message);
+                return StatusCode(500, "Ocurrió un error al obtener la evolucion por producto.");
+            }
+        }
+        #endregion
+
+        #region GetHighlightedProducts
+        [HttpGet("highlighted-product")]
+        public async Task<IActionResult> GetHighlightedProducts(DateTime startDate, DateTime endDate)
+        {
+            try
+            {
+                var result = await _productoRepository.GetHighlightedProducto(startDate, endDate);
+                if (result == null || !result.Any())
+                {
+                    return NoContent();
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener los productos destacados", ex.Message);
+                return StatusCode(500, "Ocurrió un error al obtener los productos destacados.");
             }
         }
         #endregion
