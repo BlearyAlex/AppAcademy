@@ -9,6 +9,8 @@ namespace AppAcademy.Application.ViewModel.Categoria
     public class SalesEvolutionByCategory
     {
         public string Categoria { get; set; }
+        public DateTime Fecha { get; set; }
         public decimal Total { get; set; }
+        public string Color { get; set; }
     }
 }

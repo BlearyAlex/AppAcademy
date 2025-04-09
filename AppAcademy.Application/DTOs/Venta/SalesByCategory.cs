@@ -10,5 +10,6 @@ namespace AppAcademy.Application.DTOs.Venta
     {
         public string Categoria { get; set; }
         public decimal Total { get; set; }
+        public string Color { get; set; }
     }
 }
