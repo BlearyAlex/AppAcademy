@@ -146,28 +146,6 @@ namespace AppAcademy.Controllers.ControlVentasController
         }
         #endregion
 
-        #region SalesByCategory
-        [HttpGet("ventas-por-categoria")]
-        public async Task<IActionResult> SalesByCategory(DateTime startDate, DateTime endDate)
-        {
-            try
-            {
-                var salesByCategory = await _ventaRepository.GetSalesByCategory(startDate, endDate);
-                if (salesByCategory == null || !salesByCategory.Any())
-                {
-                    return NoContent();
-                }
-
-                return Ok(salesByCategory);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error al obtener las ventas por categoria: {Message}", ex.Message);
-                return StatusCode(500, "Ocurrió un error al obtener las ventas por categoria.");
-            }
-        }
-        #endregion
-
         #region TopSellingProducts
         [HttpGet("top-productos")]
         public async Task<IActionResult> TopSellingProducts(DateTime startDate, DateTime endDate)

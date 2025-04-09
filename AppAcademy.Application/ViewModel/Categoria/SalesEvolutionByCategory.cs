@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AppAcademy.Application.ViewModel
+namespace AppAcademy.Application.ViewModel.Categoria
 {
     public class SalesEvolutionByCategory
     {
