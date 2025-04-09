@@ -141,9 +141,9 @@ namespace AppAcademy.Controllers.ControlVentasController
         }
         #endregion
 
-        #region SalesByCategory
+        #region GetSalesByCategory
         [HttpGet("sales-per-category")]
-        public async Task<IActionResult> SalesByCategory(DateTime startDate, DateTime endDate)
+        public async Task<IActionResult> GetSalesByCategory(DateTime startDate, DateTime endDate)
         {
             try
             {

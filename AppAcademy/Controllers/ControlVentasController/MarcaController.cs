@@ -4,6 +4,7 @@ using AppAcademy.Application.Features.Marcas.Command.DeleteMarca;
 using AppAcademy.Application.Features.Marcas.Command.UpdateMarca;
 using AppAcademy.Application.Features.Marcas.Queries.GetAllMarcas;
 using AppAcademy.Application.Features.Marcas.Queries.GetMarca;
+using AppAcademy.Infrastucture.Repositories;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,11 +16,13 @@ namespace AppAcademy.Controllers.ControlVentasController
     {
         private readonly IMediator _mediator;
         private readonly IMarcaRepository _marcaRepository;
+        private readonly ILogger<MarcaController> _logger;
 
-        public MarcaController(IMediator mediator, IMarcaRepository marcaRepository)
+        public MarcaController(IMediator mediator, IMarcaRepository marcaRepository, ILogger<MarcaController> logger)
         {
             _mediator = mediator;
             _marcaRepository = marcaRepository;
+            _logger = logger;
         }
 
         #region GetAll
@@ -129,6 +132,72 @@ namespace AppAcademy.Controllers.ControlVentasController
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        #endregion
+
+        #region GetSalesByMarca
+        [HttpGet("sales-per-marca")]
+        public async Task<IActionResult> GetSalesByMarca(DateTime startDate, DateTime endDate)
+        {
+            try
+            {
+                var salesByCategory = await _marcaRepository.GetSalesByMarca(startDate, endDate);
+                if (salesByCategory == null || !salesByCategory.Any())
+                {
+                    return NoContent();
+                }
+
+                return Ok(salesByCategory);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener las ventas por marca: {Message}", ex.Message);
+                return StatusCode(500, "Ocurrió un error al obtener las ventas por marca.");
+            }
+        }
+        #endregion
+
+        #region GetSalesEvolutionByMarca
+        [HttpGet("evolution-marca")]
+        public async Task<IActionResult> GetSalesEvolutionByMarca(DateTime startDate, DateTime endDate)
+        {
+            try
+            {
+                var result = await _marcaRepository.GetSalesEvolutionByMarca(startDate, endDate);
+                if (result == null || !result.Any())
+                {
+                    return NoContent();
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener la evolucion por marca: {Message}", ex.Message);
+                return StatusCode(500, "Ocurrió un error al obtener la evolucion por marca.");
+            }
+        }
+        #endregion
+
+        #region GetHighlightedMarcas
+        [HttpGet("highlighted-marca")]
+        public async Task<IActionResult> GetHighlightedMarcas(DateTime startDate, DateTime endDate)
+        {
+            try
+            {
+                var result = await _marcaRepository.GetHighlightedMarcas(startDate, endDate);
+                if (result == null || !result.Any())
+                {
+                    return NoContent();
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener las marcas destacadas", ex.Message);
+                return StatusCode(500, "Ocurrió un error al obtener las marcas destacadas.");
             }
         }
         #endregion
