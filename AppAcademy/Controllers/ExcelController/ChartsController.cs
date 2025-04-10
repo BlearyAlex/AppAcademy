@@ -1,4 +1,5 @@
 ﻿using AppAcademy.Application.Contracts.Persistence;
+using AppAcademy.Domain.PuntoDeVenta;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
@@ -22,10 +23,29 @@ namespace AppAcademy.Controllers.ExcelController
         [HttpGet("export-excel")]
         public async Task<IActionResult> ExportExcel(DateTime startDate, DateTime endDate)
         {
-            var salesData = await _categoryRepository.GetSalesEvolutionByCategory(startDate, endDate);
+            using var package = new ExcelPackage();
 
-            if (!salesData.Any())
-                return NoContent();
+            var sheet1 = package.Workbook.Worksheets.Add("Evolucion por Categoria");
+            await EvolutionPerCategoryAndDate(sheet1, startDate, endDate);
+
+            var sheet2 = package.Workbook.Worksheets.Add("Evolucion por Categoria y Fechas");
+            await EvolutionPerCategoryAndPerDate(sheet2, startDate, endDate);
+       
+            var sheet3 = package.Workbook.Worksheets.Add("Ventas por Categoria");
+            await SalesByCategory(sheet3, startDate, endDate);
+
+            var sheet4 = package.Workbook.Worksheets.Add("Categoria mas Destacadas");
+            await HighlightedCategories(sheet4, startDate, endDate);
+
+            var fileBytes = package.GetAsByteArray();
+            return File(fileBytes, 
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                "ReporteVentas.xlsx");
+        }
+
+        private async Task EvolutionPerCategoryAndDate(ExcelWorksheet sheet, DateTime startDate, DateTime endDate)
+        {
+            var salesData = await _categoryRepository.GetSalesEvolutionByCategory(startDate, endDate);
 
             // 1. Agrupar datos
             var fechas = salesData
@@ -45,9 +65,6 @@ namespace AppAcademy.Controllers.ExcelController
                     g => (fecha: g.Key.Date, categoria: g.Key.Categoria),
                     g => g.Sum(x => x.Total)
                 );
-
-            using var package = new ExcelPackage();
-            var sheet = package.Workbook.Worksheets.Add("Ventas por Categoría");
 
             // 2. Encabezados
             sheet.Cells[1, 1].Value = "Fecha";
@@ -84,12 +101,89 @@ namespace AppAcademy.Controllers.ExcelController
                 var serie = chart.Series.Add(valores, fechasRange);
                 serie.Header = categorias[c];
             }
-
-            var fileBytes = package.GetAsByteArray();
-            return File(fileBytes,
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                "ReporteVentasPorCategoria.xlsx");
         }
 
+        private async Task EvolutionPerCategoryAndPerDate(ExcelWorksheet sheet, DateTime startDate, DateTime endDate)
+        {
+            var salesData = await _categoryRepository.GetSalesEvolutionByCategory(startDate, endDate);
+            var fechas = salesData.Select(d => d.Fecha.Date).Distinct().OrderBy(d => d).ToList();
+            var totalVentas = salesData
+                .GroupBy(d => d.Fecha.Date)
+                .Select(g => new { Fecha = g.Key, TotalVentas = g.Sum(x => x.Total) })
+                .OrderBy(d => d.Fecha)
+                .ToList();
+
+            sheet.Cells[1, 1].Value = "Fecha";
+            sheet.Cells[1, 2].Value = "Total Ventas";
+
+            for (int i = 0; i < totalVentas.Count; i++)
+            {
+                sheet.Cells[i + 2, 1].Value = totalVentas[i].Fecha.ToString("dd/MM/yyyy");
+                sheet.Cells[i + 2, 2].Value = totalVentas[i].TotalVentas;
+            }
+
+            var chart = sheet.Drawings.AddChart("EvolucionTotalChart", eChartType.Line);
+            chart.Title.Text = "Evolución Total de Ventas";
+            chart.SetPosition(1, 0, 2, 0);
+            chart.SetSize(800, 400);
+
+            string valores = sheet.Cells[2, 2, totalVentas.Count + 1, 2].Address;
+            string fechasRange = sheet.Cells[2, 1, totalVentas.Count + 1, 1].Address;
+            var serie = chart.Series.Add(valores, fechasRange);
+            serie.Header = "Total Ventas";
+        }
+
+        private async Task SalesByCategory(ExcelWorksheet sheet, DateTime startDate, DateTime endDate)
+        {
+            var salesData = await _categoryRepository.GetSalesByCategory(startDate, endDate);
+            var categorias = salesData
+                .GroupBy(d => d.Categoria)
+                .Select(g => new { Categoria = g.Key, TotalVentas = g.Sum(x => x.Total) })
+                .ToList();
+
+            sheet.Cells[1, 1].Value = "Categoría";
+            sheet.Cells[1, 2].Value = "Total Ventas";
+
+            for (int i = 0; i < categorias.Count; i++)
+            {
+                sheet.Cells[i + 2, 1].Value = categorias[i].Categoria;
+                sheet.Cells[i + 2, 2].Value = categorias[i].TotalVentas;
+            }
+
+            var chart = sheet.Drawings.AddChart("DistribucionPorCategoriaChart", eChartType.Doughnut);
+            chart.Title.Text = "Distribución de Ventas por Categoría";
+            chart.SetPosition(1, 0, 2, 0);
+            chart.SetSize(600, 400);
+
+            string valores = sheet.Cells[2, 2, categorias.Count + 1, 2].Address;
+            var serie = chart.Series.Add(valores, sheet.Cells[2, 1, categorias.Count + 1, 1].Address);
+            serie.Header = "Categorías";
+        }
+
+        private async Task HighlightedCategories(ExcelWorksheet sheet, DateTime startDate, DateTime endDate)
+        {
+            var salesData = await _categoryRepository.GetHighlightedCategories(startDate, endDate);
+
+            sheet.Cells[1, 1].Value = "Categoría";
+            sheet.Cells[1, 2].Value = "Total Ventas";
+
+            for (int i = 0; i < salesData.Count; i++)
+            {
+                sheet.Cells[i + 2, 1].Value = salesData[i].Categoria;
+                sheet.Cells[i + 2, 2].Value = salesData[i].Total;
+            }
+
+            var chart = sheet.Drawings.AddChart("CategoriasDestacadasChart", eChartType.BarClustered);
+            chart.Title.Text = "Categorías Más Destacadas";
+            chart.SetPosition(1, 0, 3, 0);  // Posicionar el gráfico en la hoja
+            chart.SetSize(800, 400);
+
+            string valores = sheet.Cells[2, 2, salesData.Count + 1, 2].Address;
+
+            string categoriasRange = sheet.Cells[2, 1, salesData.Count + 1, 1].Address;
+
+            var serie = chart.Series.Add(valores, categoriasRange);
+            serie.Header = "Total Ventas";  // Título de la serie (Total Ventas)
+        }
     }
 }
