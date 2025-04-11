@@ -1,23 +1,21 @@
 ﻿using AppAcademy.Application.Contracts.Persistence;
-using AppAcademy.Domain.PuntoDeVenta;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using OfficeOpenXml;
 using OfficeOpenXml.Drawing.Chart;
 using OfficeOpenXml.Style;
+using OfficeOpenXml;
 
 namespace AppAcademy.Controllers.ExcelController
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class ChartsController : ControllerBase
+    public class ExcelMarcaController : ControllerBase
     {
-        private readonly ICategoriaRepository _categoryRepository;
-        private readonly ILogger<ChartsController> _logger;
+        private readonly IMarcaRepository _marcaRepository;
+        private readonly ILogger<ExcelMarcaController> _logger;
 
-        public ChartsController(ICategoriaRepository categoryRepository, ILogger<ChartsController> logger)
+        public ExcelMarcaController(IMarcaRepository marcaRepository, ILogger<ExcelMarcaController> logger)
         {
-            _categoryRepository = categoryRepository;
+            _marcaRepository = marcaRepository;
             _logger = logger;
         }
 
@@ -27,13 +25,13 @@ namespace AppAcademy.Controllers.ExcelController
             using var package = new ExcelPackage();
 
             // 1. Primero creamos las hojas que serán referenciadas
-            var sheet1 = package.Workbook.Worksheets.Add("Evolución por Categoría y Fechas");
-            await EvolutionPerCategoryAndPerDate(sheet1, startDate, endDate);
+            var sheet1 = package.Workbook.Worksheets.Add("Evolución por Marca y Fechas");
+            await EvolutionPerMarcaAndPerDate(sheet1, startDate, endDate);
 
-            var sheet2 = package.Workbook.Worksheets.Add("Ventas por Categoría");
-            await SalesByCategory(sheet2, startDate, endDate);
+            var sheet2 = package.Workbook.Worksheets.Add("Ventas por Marca");
+            await SalesByMarca(sheet2, startDate, endDate);
 
-            var sheet3 = package.Workbook.Worksheets.Add("Categorías más Destacadas");
+            var sheet3 = package.Workbook.Worksheets.Add("Marcas más Destacadas");
             await HighlightedCategories(sheet3, startDate, endDate);
 
             // 2. Luego generamos la portada y ya existen las hojas
@@ -51,10 +49,10 @@ namespace AppAcademy.Controllers.ExcelController
                 "ReporteVentas.xlsx");
         }
 
-        private async Task EvolutionPerCategoryAndPerDate(ExcelWorksheet sheet, DateTime startDate, DateTime endDate)
+        private async Task EvolutionPerMarcaAndPerDate(ExcelWorksheet sheet, DateTime startDate, DateTime endDate)
         {
             // ENCABEZADO GENERAL (filas 1 a 3)
-            sheet.Cells[1, 1].Value = "Reporte de Categorías";
+            sheet.Cells[1, 1].Value = "Reporte de Marcas";
             sheet.Cells[2, 1].Value = $"Desde: {startDate:dd/MM/yyyy}";
             sheet.Cells[3, 1].Value = $"Hasta: {endDate:dd/MM/yyyy}";
 
@@ -95,7 +93,7 @@ namespace AppAcademy.Controllers.ExcelController
                 range.Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
             }
 
-            var salesData = await _categoryRepository.GetSalesEvolutionByCategory(startDate, endDate);
+            var salesData = await _marcaRepository.GetSalesEvolutionByMarca(startDate, endDate);
             var totalVentas = salesData
                 .GroupBy(d => d.Fecha.Date)
                 .Select(g => new { Fecha = g.Key, TotalVentas = g.Sum(x => x.Total) })
@@ -127,10 +125,10 @@ namespace AppAcademy.Controllers.ExcelController
         }
 
 
-        private async Task SalesByCategory(ExcelWorksheet sheet, DateTime startDate, DateTime endDate)
+        private async Task SalesByMarca(ExcelWorksheet sheet, DateTime startDate, DateTime endDate)
         {
             // ENCABEZADO GENERAL
-            sheet.Cells[1, 1].Value = "Reporte de Categorías";
+            sheet.Cells[1, 1].Value = "Reporte de Marcas";
             sheet.Cells[2, 1].Value = $"Desde: {startDate:dd/MM/yyyy}";
             sheet.Cells[3, 1].Value = $"Hasta: {endDate:dd/MM/yyyy}";
 
@@ -157,14 +155,14 @@ namespace AppAcademy.Controllers.ExcelController
             sheet.Cells[3, 1].Style.Font.Bold = true; // Negrita
 
 
-            var salesData = await _categoryRepository.GetSalesByCategory(startDate, endDate);
+            var salesData = await _marcaRepository.GetSalesByMarca(startDate, endDate);
             var categorias = salesData
-                .GroupBy(d => d.Categoria)
-                .Select(g => new { Categoria = g.Key, TotalVentas = g.Sum(x => x.Total) })
+                .GroupBy(d => d.Marca)
+                .Select(g => new { Marca = g.Key, TotalVentas = g.Sum(x => x.Total) })
                 .ToList();
 
             // ENCABEZADO DE TABLA
-            sheet.Cells[5, 1].Value = "Categoría";
+            sheet.Cells[5, 1].Value = "Marca";
             sheet.Cells[5, 2].Value = "Total Ventas";
 
             using (var range = sheet.Cells[5, 1, 5, 2])
@@ -179,7 +177,7 @@ namespace AppAcademy.Controllers.ExcelController
 
             for (int i = 0; i < categorias.Count; i++)
             {
-                sheet.Cells[i + 6, 1].Value = categorias[i].Categoria;
+                sheet.Cells[i + 6, 1].Value = categorias[i].Marca;
                 sheet.Cells[i + 6, 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
 
                 sheet.Cells[i + 6, 2].Value = categorias[i].TotalVentas;
@@ -191,19 +189,19 @@ namespace AppAcademy.Controllers.ExcelController
             sheet.Column(2).Width = 20;
 
             var chart = sheet.Drawings.AddChart("DistribucionPorCategoriaChart", eChartType.Doughnut);
-            chart.Title.Text = "Distribución de Ventas por Categoría";
+            chart.Title.Text = "Distribución de Ventas por Marca";
             chart.SetPosition(1, 0, 3, 0);
             chart.SetSize(600, 400);
 
             string valores = sheet.Cells[6, 2, categorias.Count + 5, 2].Address;
             var serie = chart.Series.Add(valores, sheet.Cells[6, 1, categorias.Count + 5, 1].Address);
-            serie.Header = "Categorías";
+            serie.Header = "Marcas";
         }
 
         private async Task HighlightedCategories(ExcelWorksheet sheet, DateTime startDate, DateTime endDate)
         {
             // ENCABEZADO GENERAL
-            sheet.Cells[1, 1].Value = "Reporte de Categorías";
+            sheet.Cells[1, 1].Value = "Reporte de Marcas";
             sheet.Cells[2, 1].Value = $"Desde: {startDate:dd/MM/yyyy}";
             sheet.Cells[3, 1].Value = $"Hasta: {endDate:dd/MM/yyyy}";
 
@@ -229,10 +227,10 @@ namespace AppAcademy.Controllers.ExcelController
             sheet.Cells[3, 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
             sheet.Cells[3, 1].Style.Font.Bold = true; // Negrita
 
-            var salesData = await _categoryRepository.GetHighlightedCategories(startDate, endDate);
+            var salesData = await _marcaRepository.GetHighlightedMarcas(startDate, endDate);
 
             // ENCABEZADO DE TABLA
-            sheet.Cells[5, 1].Value = "Categoría";
+            sheet.Cells[5, 1].Value = "Marca";
             sheet.Cells[5, 2].Value = "Total Ventas";
 
             using (var range = sheet.Cells[5, 1, 5, 2])
@@ -247,7 +245,7 @@ namespace AppAcademy.Controllers.ExcelController
 
             for (int i = 0; i < salesData.Count; i++)
             {
-                sheet.Cells[i + 6, 1].Value = salesData[i].Categoria;
+                sheet.Cells[i + 6, 1].Value = salesData[i].Marca;
                 sheet.Cells[i + 6, 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
 
                 sheet.Cells[i + 6, 2].Value = salesData[i].Total;
@@ -259,7 +257,7 @@ namespace AppAcademy.Controllers.ExcelController
             sheet.Column(2).Width = 20;
 
             var chart = sheet.Drawings.AddChart("CategoriasDestacadasChart", eChartType.BarClustered);
-            chart.Title.Text = "Categorías Más Destacadas";
+            chart.Title.Text = "Marcas Más Destacadas";
             chart.SetPosition(1, 0, 3, 0);
             chart.SetSize(800, 400);
 
@@ -275,7 +273,7 @@ namespace AppAcademy.Controllers.ExcelController
             sheet.Cells.Style.Font.Name = "Calibri";
             sheet.Cells.Style.Font.Size = 12;
 
-            sheet.Cells[2, 2].Value = "📊 Reporte de Categorías";
+            sheet.Cells[2, 2].Value = "📊 Reporte de Marcas";
             sheet.Cells[2, 2].Style.Font.Size = 20;
             sheet.Cells[2, 2].Style.Font.Bold = true;
 
@@ -291,9 +289,9 @@ namespace AppAcademy.Controllers.ExcelController
             sheet.Cells[9, 2].Value = "Ir a las secciones:";
 
             // ✅ 1. Usamos los nombres reales del workbook
-            sheet.Cells[10, 2].Hyperlink = new ExcelHyperLink($"'{workbook.Worksheets[0].Name}'!A1", "📈 Evolución por Categoría y Fechas");
-            sheet.Cells[11, 2].Hyperlink = new ExcelHyperLink($"'{workbook.Worksheets[1].Name}'!A1", "📊 Ventas por Categoría");
-            sheet.Cells[12, 2].Hyperlink = new ExcelHyperLink($"'{workbook.Worksheets[2].Name}'!A1", "⭐ Categorías más Destacadas");
+            sheet.Cells[10, 2].Hyperlink = new ExcelHyperLink($"'{workbook.Worksheets[0].Name}'!A1", "📈 Evolución por Marca y Fechas");
+            sheet.Cells[11, 2].Hyperlink = new ExcelHyperLink($"'{workbook.Worksheets[1].Name}'!A1", "📊 Ventas por Marca");
+            sheet.Cells[12, 2].Hyperlink = new ExcelHyperLink($"'{workbook.Worksheets[2].Name}'!A1", "⭐ Marcas más Destacadas");
 
             // Estilo
             sheet.Cells[2, 2, 2, 5].Merge = true;
@@ -302,7 +300,6 @@ namespace AppAcademy.Controllers.ExcelController
             sheet.Column(2).Width = 40;
             sheet.View.ShowGridLines = false;
         }
-
 
     }
 }
