@@ -9,7 +9,8 @@ namespace AppAcademy.Application.Contracts.Persistence
 {
     public interface IAbonoRepository : IAsyncRepository<Abono>
     {
-        Task<bool> CreateAbono(string ventaId, decimal montoAbonado, string userName);
+        Task<int> CreateAbono(string ventaId, decimal montoAbonado, string userName);
         Task<bool> DeleteAbono(int abonoId, string userName);
+        Task<Abono> GeneratePdf(int abonoId);
     }
 }

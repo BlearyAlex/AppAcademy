@@ -107,5 +107,9 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
             return mesesDisponibles;
         }
 
+        public async Task<bool> AcademicCycleTieneEstudiantes(int cycleId)
+        {
+            return await _dbContext.Students.AnyAsync(s => s.AcademicCycleId == cycleId);
+        }
     }
 }

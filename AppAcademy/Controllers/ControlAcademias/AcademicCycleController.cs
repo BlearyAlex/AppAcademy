@@ -1,4 +1,5 @@
-﻿using AppAcademy.Application.Features.AcademicCycles.Commands.CreateCycle;
+﻿using AppAcademy.Application.Contracts.Persistence.IControlAcademia;
+using AppAcademy.Application.Features.AcademicCycles.Commands.CreateCycle;
 using AppAcademy.Application.Features.AcademicCycles.Commands.DeleteCycle;
 using AppAcademy.Application.Features.AcademicCycles.Commands.UpdateCycle;
 using AppAcademy.Application.Features.AcademicCycles.Queries.GetAllCycles;
@@ -9,6 +10,7 @@ using AppAcademy.Application.Features.Careers.Commands.DeleteCareer;
 using AppAcademy.Application.Features.Careers.Commands.UpdateCareer;
 using AppAcademy.Application.Features.Careers.Queries.GetAllCareers;
 using AppAcademy.Application.Features.Careers.Queries.GetCareer;
+using AppAcademy.Infrastucture.Repositories.ControlAcademia;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,12 +22,13 @@ namespace AppAcademy.Controllers.ControlAcademias
     public class AcademicCycleController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IAcademicCycleRepository _academicCycleRepository;
 
-        public AcademicCycleController(IMediator mediator)
+        public AcademicCycleController(IMediator mediator, IAcademicCycleRepository academicCycleRepository)
         {
             _mediator = mediator;
+            _academicCycleRepository = academicCycleRepository;
         }
-
 
         #region Create
         [HttpPost("Create")]
@@ -67,6 +70,11 @@ namespace AppAcademy.Controllers.ControlAcademias
         {
             try
             {
+                if (await _academicCycleRepository.AcademicCycleTieneEstudiantes(id))
+                {
+                    return Conflict(new { message = "No se puede eliminar el ciclo academico porque tiene estudiantes asociados." });
+                }
+
                 var command = new DeleteCycleCommand
                 {
                     AcademicCycleId = id

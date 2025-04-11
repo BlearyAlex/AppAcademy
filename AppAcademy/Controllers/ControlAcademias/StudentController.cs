@@ -1,4 +1,5 @@
-﻿using AppAcademy.Application.Exceptions;
+﻿using AppAcademy.Application.Contracts.Persistence.IControlAcademia;
+using AppAcademy.Application.Exceptions;
 using AppAcademy.Application.Features.Categorias.Commands.DeleteCategoria;
 using AppAcademy.Application.Features.Categorias.Commands.UpdateCategoria;
 using AppAcademy.Application.Features.Categorias.Queries.GetAllCategoria;
@@ -22,10 +23,12 @@ namespace AppAcademy.Controllers.ControlAcademias
     public class StudentController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IStudentRepository _studentRepository;
 
-        public StudentController(IMediator mediator)
+        public StudentController(IMediator mediator, IStudentRepository studentRepository)
         {
             _mediator = mediator;
+            _studentRepository = studentRepository;
         }
 
         #region Create
@@ -81,6 +84,11 @@ namespace AppAcademy.Controllers.ControlAcademias
         {
             try
             {
+                if (await _studentRepository.StudentTienePagosActivos(id))
+                {
+                    return Conflict(new { message = "No se puede eliminar el estudiante porque tiene pagos asociados." });
+                }
+
                 var userName = User.Identity?.Name;
                 if (string.IsNullOrEmpty(userName))
                 {

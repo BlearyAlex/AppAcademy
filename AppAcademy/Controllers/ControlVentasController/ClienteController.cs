@@ -1,4 +1,5 @@
-﻿using AppAcademy.Application.Features.Clientes.Commands.CreateCliente;
+﻿using AppAcademy.Application.Contracts.Persistence;
+using AppAcademy.Application.Features.Clientes.Commands.CreateCliente;
 using AppAcademy.Application.Features.Clientes.Commands.DeleteCliente;
 using AppAcademy.Application.Features.Clientes.Commands.UpdateCliente;
 using AppAcademy.Application.Features.Clientes.Queries.GetAllCliente;
@@ -13,10 +14,12 @@ namespace AppAcademy.Controllers.ControlVentasController
     public class ClienteController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IClienteRepository _clienteRepository;
 
-        public ClienteController(IMediator mediator)
+        public ClienteController(IMediator mediator, IClienteRepository clienteRepository)
         {
             _mediator = mediator;
+            _clienteRepository = clienteRepository;
         }
 
         #region GetAll
@@ -110,6 +113,11 @@ namespace AppAcademy.Controllers.ControlVentasController
         {
             try
             {
+                if (await _clienteRepository.ClienteTieneVentasActivas(id))
+                {
+                    return Conflict(new { message = "No se puede eliminar el cliente porque tiene ventas asociadas." });
+                }
+
                 var command = new DeleteClienteCommand
                 {
                     ClienteId = id

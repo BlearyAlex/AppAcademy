@@ -5,6 +5,7 @@ using AppAcademy.Infrastucture.Persistence;
 using AppAcademy.Infrastucture.Repositories;
 using AppAcademy.Infrastucture.Repositories.Auth;
 using AppAcademy.Infrastucture.Repositories.ControlAcademia;
+using AppAcademy.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -73,6 +74,8 @@ namespace AppAcademy.Infrastucture
             #region Auth
             services.AddScoped<RefreshTokenService>();
             #endregion
+
+            services.AddScoped<IReciboAbonoPdfService, ReciboAbonoPdfService>();
 
             return services;
         }

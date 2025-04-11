@@ -1,6 +1,7 @@
 ﻿using AppAcademy.Application.Contracts.Persistence.IControlAcademia;
 using AppAcademy.Domain.ControlAcademia;
 using AppAcademy.Infrastucture.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
 {
@@ -8,6 +9,11 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
     {
         public CareerRepository(AppAcademyDbContext dbContext) : base(dbContext)
         {
+        }
+
+        public async Task<bool> CareerTienePagosActivos(int careerId)
+        {
+            return await _dbContext.Payments.AnyAsync(s => s.CareerId== careerId);
         }
     }
 }

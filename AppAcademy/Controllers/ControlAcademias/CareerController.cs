@@ -1,8 +1,10 @@
-﻿using AppAcademy.Application.Features.Careers.Commands.CreateCareer;
+﻿using AppAcademy.Application.Contracts.Persistence.IControlAcademia;
+using AppAcademy.Application.Features.Careers.Commands.CreateCareer;
 using AppAcademy.Application.Features.Careers.Commands.DeleteCareer;
 using AppAcademy.Application.Features.Careers.Commands.UpdateCareer;
 using AppAcademy.Application.Features.Careers.Queries.GetAllCareers;
 using AppAcademy.Application.Features.Careers.Queries.GetCareer;
+using AppAcademy.Infrastucture.Repositories.ControlAcademia;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +16,14 @@ namespace AppAcademy.Controllers.ControlAcademias
     public class CareerController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly ICareerRepository _careerRepository;
 
-        public CareerController(IMediator mediator)
+        public CareerController(IMediator mediator, ICareerRepository careerRepository)
         {
             _mediator = mediator;
+            _careerRepository = careerRepository;
         }
+
 
         #region Create
         [HttpPost("Create")]
@@ -60,6 +65,11 @@ namespace AppAcademy.Controllers.ControlAcademias
         {
             try
             {
+                if (await _careerRepository.CareerTienePagosActivos(id))
+                {
+                    return Conflict(new { message = "No se puede eliminar la carrera porque tiene pagos asociados y activos." });
+                }
+
                 var command = new DeleteCareerCommand
                 {
                     CareerId = id

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace AppAcademy.Application.Features.Abonos.Command.CreateAbono
 {
-    public class CreateAbonoCommandHandler : IRequestHandler<CreateAbonoCommand, bool>
+    public class CreateAbonoCommandHandler : IRequestHandler<CreateAbonoCommand, int>
     {
         private readonly IVentaRepository _ventaRepository;
         private readonly IAbonoRepository _abonoRepository;
@@ -24,9 +24,10 @@ namespace AppAcademy.Application.Features.Abonos.Command.CreateAbono
             _logger = logger;
         }
 
-        public async Task<bool> Handle(CreateAbonoCommand request, CancellationToken cancellationToken)
+        public async Task<int> Handle(CreateAbonoCommand request, CancellationToken cancellationToken)
         {
-            return await _abonoRepository.CreateAbono(request.VentaId, request.MontoAbonado, request.UserName);
+            var abonoId = await _abonoRepository.CreateAbono(request.VentaId, request.MontoAbonado, request.UserName);
+            return abonoId;
         }
     }
 }

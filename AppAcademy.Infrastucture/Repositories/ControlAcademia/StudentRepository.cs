@@ -236,6 +236,11 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
             return true;
         }
 
+        public async Task<bool> StudentTienePagosActivos(int studentId)
+        {
+            return await _dbContext.Payments.AnyAsync(s => s.StudentId == studentId);
+        }
+
         #region Metodos Privados
         private List<PaymentMonthDto> GetPaymentsInMonths(List<Payment> payments, List<AcademicCycle> academicCycles, int? academicCycleId)
         {

@@ -61,7 +61,7 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
                     {
                         UsuarioId = usuario.Id,
                         Fecha = DateTime.UtcNow,
-                        Descripcion = $"Se registró un nuevo abono del estudiante {student.Nombre} por un total de: {abono.Monto}",
+                        Descripcion = $"Se registró un nuevo abono del estudiante {student.Nombre} por un total de: {abono.Monto} correspondiente al mes: {payment.MesPagado}.",
                         ReferenciaId = abono.AbonoAcademyId.ToString(),
                         TipoReferencia = "Payment"
                     };

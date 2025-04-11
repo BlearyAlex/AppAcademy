@@ -20,16 +20,16 @@ namespace AppAcademy.Infrastucture.Repositories
             _bitacoraRepository = bitacoraRepository;
         }
 
-        public async Task<bool> CreateAbono(string ventaId, decimal montoAbonado, string userName)
+        public async Task<int> CreateAbono(string ventaId, decimal montoAbonado, string userName)
         {
-            if (montoAbonado <= 0) return false;
+            if (montoAbonado <= 0) throw new ArgumentException("El monto abonado debe ser mayor que cero.");
 
             using (var transaction = await _dbContext.Database.BeginTransactionAsync())
             {
                 try
                 {
                     var venta = await _dbContext.Ventas.FindAsync(ventaId);
-                    if (venta == null) return false;
+                    if (venta == null) throw new Exception("Venta no encontrada.");
 
                     var abono = new Abono
                     {
@@ -70,7 +70,7 @@ namespace AppAcademy.Infrastucture.Repositories
                     await _dbContext.SaveChangesAsync();
                     await transaction.CommitAsync();
 
-                    return true;
+                    return abono.AbonoId;
 
                 }
                 catch (Exception)
@@ -133,6 +133,22 @@ namespace AppAcademy.Infrastucture.Repositories
 
                 throw;
             }
+        }
+
+        public async Task<Abono> GeneratePdf(int abonoId)
+        {
+            var abono = await _dbContext.Abono
+                .Include(a => a.Venta)
+                    .ThenInclude(v => v.Cliente)
+                .Include(a => a.Venta)
+                    .ThenInclude(v => v.DetalleVentas)
+                        .ThenInclude(d => d.Producto)
+                .FirstOrDefaultAsync(a => a.AbonoId == abonoId);
+
+            if (abono == null)
+                throw new Exception("Abono no encontrado");
+
+            return abono;
         }
     }
 }

@@ -19,11 +19,13 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly ILogger<PaymentRepository> _logger;
+        private readonly IAbonoAcademyRepository _abonoAcademyRepository;
 
-        public PaymentRepository(AppAcademyDbContext dbContext, UserManager<AppUser> userManager, ILogger<PaymentRepository> logger) : base(dbContext)
+        public PaymentRepository(AppAcademyDbContext dbContext, UserManager<AppUser> userManager, ILogger<PaymentRepository> logger, IAbonoAcademyRepository abonoAcademyRepository) : base(dbContext)
         {
             _userManager = userManager;
             _logger = logger;
+            _abonoAcademyRepository = abonoAcademyRepository;
         }
 
         public async Task<Payment> CreatePayment(Payment payment, string userName)
@@ -226,12 +228,19 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
 
         public async Task<bool> DeletePayment(DeletePaymentCommand payment, string userName)
         {
-            var findPayment = await _dbContext.Payments.FindAsync(payment.PaymentId);
+            var findPayment = await _dbContext.Payments
+                .Include(p => p.AbonosAcademy)
+                .FirstOrDefaultAsync(p => p.PaymentId == payment.PaymentId);
 
             if (findPayment == null)
             {
                 _logger.LogError($"{payment.PaymentId} pago no existe en el sistema");
                 throw new NotFoundException(nameof(findPayment), payment.PaymentId);
+            }
+
+            foreach (var abono in findPayment.AbonosAcademy.ToList())
+            {
+                _dbContext.AbonoAcademy.Remove(abono);
             }
 
             // Obtener datos del estudiante
@@ -243,11 +252,20 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
             var usuario = await _userManager.FindByNameAsync(userName);
             if (usuario == null) throw new Exception("Usuario no encontrado");
 
+            // Mensaje dinámico para bitácora
+            string mensajeBitacora = $"Se eliminó el pago del mes: {findPayment.MesPagado} del estudiante {student.Nombre} {student.Apellido} por el usuario {usuario.UserName}.";
+
+            if (findPayment.AbonosAcademy.Any())
+            {
+                decimal totalAbonado = findPayment.AbonosAcademy.Sum(a => a.Monto);
+                mensajeBitacora += $" El pago tenía {findPayment.AbonosAcademy.Count} abonos por un total de ${totalAbonado}.";
+            }
+
             var bitacora = new Bitacora
             {
                 UsuarioId = usuario.Id,
                 Fecha = DateTime.UtcNow,
-                Descripcion = $"Se elimino el registro del pago del mes: {findPayment.MesPagado} para el estudiante {student.Nombre + " " + student.Apellido} por el usuario {usuario.UserName}",
+                Descripcion = mensajeBitacora,
                 ReferenciaId = findPayment.PaymentId.ToString(),
                 TipoReferencia = "Payment"
             };

@@ -14,5 +14,6 @@ namespace AppAcademy.Application.Contracts.Persistence.IControlAcademia
         Task<List<GetAllStudentsVm>> GetAllStudentsWithCareers();
         Task<GetStudentVm> GetStudentsByIdWithCareer(int studentId);
         Task<List<GetStudentCardVm>> GetStudentCard();
+        Task<bool> StudentTienePagosActivos(int studentId);
     }
 }
