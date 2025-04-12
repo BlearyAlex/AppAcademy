@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using QuestPDF.Infrastructure;
 using System.Security.Claims;
 using System.Text;
 
@@ -21,6 +22,8 @@ namespace AppAcademy.Infrastucture
     {
         public static IServiceCollection AddInfrastuctureServices(this IServiceCollection services, IConfiguration configuration)
         {
+            QuestPDF.Settings.License = LicenseType.Community;
+
             services.AddDbContext<AppAcademyDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("SqlConnection")));
 
@@ -76,6 +79,7 @@ namespace AppAcademy.Infrastucture
             #endregion
 
             services.AddScoped<IReciboAbonoPdfService, ReciboAbonoPdfService>();
+            services.AddScoped<IFileStorageService, FileStorageService>();
 
             return services;
         }

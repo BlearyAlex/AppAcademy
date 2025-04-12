@@ -5,6 +5,6 @@ namespace AppAcademy.Application.Contracts.Persistence
 {
     public interface IReciboAbonoPdfService
     {
-        byte[] GenerarReciboAbonoPDF(Venta venta, Abono abono);
+        byte[] GenerarReciboAbonoPDF(Venta venta, Abono abono, decimal cambio);
     }
 }

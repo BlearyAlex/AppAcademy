@@ -194,6 +194,13 @@ namespace AppAcademy.Controllers.AuthControllers
         [HttpDelete("delete-user/{userId}")]
         public async Task<IActionResult> DeleteUser(string userId)
         {
+            var currentUserId = _userManager.GetUserId(User);
+
+            if (userId == currentUserId)
+            {
+                return BadRequest("No puedes eliminar tu propio usuario.");
+            }
+
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {

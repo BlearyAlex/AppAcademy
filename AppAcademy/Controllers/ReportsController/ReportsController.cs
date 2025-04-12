@@ -19,22 +19,22 @@ namespace AppAcademy.Controllers.ReportsController
             _reciboPdfService = reciboPdfService;
         }
 
-        [HttpGet("recibo-abono/{abonoId}")]
-        public async Task<IActionResult> DescargarReciboAbono(int abonoId)
-        {
-            try
-            {
-                var abono = await _abonoRepository.GeneratePdf(abonoId);
+        //[HttpGet("recibo-abono/{abonoId}")]
+        //public async Task<IActionResult> DescargarReciboAbono(int abonoId)
+        //{
+        //    try
+        //    {
+        //        var abono = await _abonoRepository.GeneratePdf(abonoId);
 
-                var pdf = _reciboPdfService.GenerarReciboAbonoPDF(abono.Venta, abono);
+        //        var pdf = _reciboPdfService.GenerarReciboAbonoPDF(abono.Venta, abono);
 
-                return File(pdf, "application/pdf", $"Recibo-Abono-{abonoId}.pdf");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error generando recibo de abono {abonoId}");
-                return BadRequest("No se pudo generar el recibo.");
-            }
-        }
+        //        return File(pdf, "application/pdf", $"Recibo-Abono-{abonoId}.pdf");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, $"Error generando recibo de abono {abonoId}");
+        //        return BadRequest("No se pudo generar el recibo.");
+        //    }
+        //}
     }
 }

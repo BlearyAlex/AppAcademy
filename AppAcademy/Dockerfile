@@ -25,5 +25,13 @@ RUN dotnet publish "./AppAcademy.csproj" -c $BUILD_CONFIGURATION -o /app/publish
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
 WORKDIR /app
+
+# ? Instalar fuentes necesarias para emojis en PDFs (QuestPDF)
+USER root
+RUN apt-get update && \
+    apt-get install -y fonts-noto-color-emoji && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "AppAcademy.dll"]

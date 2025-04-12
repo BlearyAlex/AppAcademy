@@ -1,4 +1,5 @@
 ﻿using AppAcademy.Application.Contracts.Persistence;
+using AppAcademy.Application.Features.Abonos.Command.CreateAbono;
 using AppAcademy.Domain.ControlVentas;
 using AppAcademy.Domain.Enum;
 using AppAcademy.Domain.Logs;
@@ -13,14 +14,16 @@ namespace AppAcademy.Infrastucture.Repositories
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly IBitacoraRepository _bitacoraRepository;
+        private readonly IReciboAbonoPdfService _reciboPdfService;
 
-        public AbonoRepository(AppAcademyDbContext dbContext, UserManager<AppUser> userManager, IBitacoraRepository bitacoraRepository) : base(dbContext)
+        public AbonoRepository(AppAcademyDbContext dbContext, UserManager<AppUser> userManager, IBitacoraRepository bitacoraRepository, IReciboAbonoPdfService reciboAbonoPdfService) : base(dbContext)
         {
             _userManager = userManager;
             _bitacoraRepository = bitacoraRepository;
+            _reciboPdfService = reciboAbonoPdfService;
         }
 
-        public async Task<int> CreateAbono(string ventaId, decimal montoAbonado, string userName)
+        public async Task<CreateAbonoResult> CreateAbono(string ventaId, decimal montoAbonado, string userName)
         {
             if (montoAbonado <= 0) throw new ArgumentException("El monto abonado debe ser mayor que cero.");
 
@@ -28,14 +31,26 @@ namespace AppAcademy.Infrastucture.Repositories
             {
                 try
                 {
-                    var venta = await _dbContext.Ventas.FindAsync(ventaId);
+                    var venta = await _dbContext.Ventas
+                        .Include(v => v.Cliente)
+                        .Include(v => v.DetalleVentas)
+                            .ThenInclude(d => d.Producto)
+                        .FirstOrDefaultAsync(v => v.VentaId == ventaId);
+
                     if (venta == null) throw new Exception("Venta no encontrada.");
+
+                    // Calcular cambio antes de modificar el saldo
+                    decimal cambio = 0;
+                    if (montoAbonado > venta.SaldoPendiente)
+                    {
+                        cambio = montoAbonado - venta.SaldoPendiente;
+                    }
 
                     var abono = new Abono
                     {
                         VentaId = ventaId,
                         Monto = montoAbonado,
-                        Fecha = DateTime.Now
+                        Fecha = DateTime.UtcNow
                     };
 
                     await _dbContext.Abono.AddAsync(abono);
@@ -70,7 +85,13 @@ namespace AppAcademy.Infrastucture.Repositories
                     await _dbContext.SaveChangesAsync();
                     await transaction.CommitAsync();
 
-                    return abono.AbonoId;
+                    var pdfBytes = _reciboPdfService.GenerarReciboAbonoPDF(venta, abono, cambio);
+
+                    return new CreateAbonoResult
+                    {
+                        AbonoId = abono.AbonoId,
+                        PdfBlob = pdfBytes
+                    };
 
                 }
                 catch (Exception)

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AppAcademy.Application.Features.Abonos.Command.CreateAbono
 {
-    public class CreateAbonoCommand : IRequest<int>
+    public class CreateAbonoCommand : IRequest<CreateAbonoResult>
     {
         public int AbonoId { get; set; }
         public string VentaId { get; set; }

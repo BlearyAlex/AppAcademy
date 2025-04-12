@@ -9,8 +9,11 @@ namespace AppAcademy.Services
 {
     public class ReciboAbonoPdfService : IReciboAbonoPdfService
     {
-        public byte[] GenerarReciboAbonoPDF(Venta venta, Abono abono)
+        public byte[] GenerarReciboAbonoPDF(Venta venta, Abono abono, decimal cambio)
         {
+            var fechaUtc = DateTime.SpecifyKind(abono.Fecha, DateTimeKind.Utc);
+            var fechaLocal = fechaUtc.ToLocalTime();
+
             var pdf = Document.Create(container =>
             {
                 container.Page(page =>
@@ -18,64 +21,98 @@ namespace AppAcademy.Services
                     page.Size(PageSizes.A5);
                     page.Margin(30);
                     page.PageColor(Colors.White);
-                    page.DefaultTextStyle(x => x.FontSize(12).FontFamily("Arial"));
+                    page.DefaultTextStyle(x => x.FontSize(11).FontFamily("Arial"));
 
+                    // Encabezado con logo y datos
                     page.Header().Row(row =>
                     {
-                        row.RelativeColumn().Column(col =>
+                        row.ConstantColumn(60).Height(60).Image("wwwroot/logo.png", ImageScaling.FitArea);
+
+                        row.RelativeColumn().PaddingLeft(10).AlignMiddle().Column(col =>
                         {
-                            col.Item().Text("Nombre del Negocio").Bold().FontSize(16);
-                            col.Item().Text("Dirección del negocio");
-                            col.Item().Text("Tel: 555-123-4567");
+                            col.Item().Text("Academia Astrid").Bold().FontSize(16);
+                            col.Item().Text("Dirección del negocio").FontSize(10);
+                            col.Item().Text("Tel: 555-123-4567").FontSize(10);
+                            col.Item().Text("academia@gmail.com").FontSize(10);
                         });
 
-                        row.ConstantColumn(100).Height(50).AlignRight().Image("wwwroot/logo.png", ImageScaling.FitArea); // Opcional
+                        row.ConstantColumn(120).AlignRight().Column(col =>
+                        {
+                            col.Item().Border(1).Padding(5).Column(innerCol =>
+                            {
+                                innerCol.Item().Text("RUC 12345678900").FontSize(10).AlignCenter();
+                                innerCol.Item().Text("Recibo de Abono").Bold().FontSize(12).AlignCenter().FontColor(Colors.Blue.Medium);
+                                innerCol.Item().Text($"N° {abono.AbonoId}").FontSize(10).AlignCenter();
+                            });
+                        });
                     });
 
                     page.Content().Column(col =>
                     {
-                        col.Spacing(10);
+                        col.Spacing(5);
 
-                        col.Item().Text($"📅 Fecha: {abono.Fecha.ToString("dd/MM/yyyy")}").Bold();
-                        col.Item().Text($"👤 Cliente: {venta.Cliente?.Nombre + venta.Cliente.Apellido ?? "Sin nombre"}");
-                        col.Item().Text($"📞 Teléfono: {venta.Cliente?.Telefono ?? "Sin teléfono"}");
+                        // Información del cliente
+                        col.Item().Text($"Fecha: {fechaLocal:dd/MM/yyyy}");
+                        col.Item().Text($"Cliente: {venta.Cliente?.Nombre + " " + venta.Cliente?.Apellido ?? "Cliente Generico"}");
+                        col.Item().Text($"Teléfono: {venta.Cliente?.Telefono ?? "Sin teléfono"}");
 
-                        col.Item().Text("🛒 Productos:").Bold();
-                        col.Item().Table(table =>
+                        // Tabla de productos
+                        col.Item().PaddingTop(10).Table(table =>
                         {
                             table.ColumnsDefinition(columns =>
                             {
-                                columns.RelativeColumn();
-                                columns.ConstantColumn(60);
-                                columns.ConstantColumn(80);
+                                columns.ConstantColumn(40); // Cantidad
+                                columns.RelativeColumn();   // Producto
+                                columns.ConstantColumn(70); // P. Unitario
+                                columns.ConstantColumn(70); // Total
                             });
 
+                            // Encabezado con fondo de color
                             table.Header(header =>
                             {
-                                header.Cell().Text("Producto").Bold();
-                                header.Cell().Text("Cantidad").Bold();
-                                header.Cell().Text("Precio").Bold();
+                                header.Cell().Background(Colors.Grey.Lighten2).Text("CANT.").Bold();
+                                header.Cell().Background(Colors.Grey.Lighten2).Text("PRODUCTO").Bold();
+                                header.Cell().Background(Colors.Grey.Lighten2).AlignRight().Text("P.UNITARIO").Bold();
+                                header.Cell().Background(Colors.Grey.Lighten2).AlignRight().Text("TOTAL").Bold();
                             });
 
                             foreach (var detalle in venta.DetalleVentas)
                             {
-                                table.Cell().Text(detalle.Producto.Nombre);
-                                table.Cell().Text(detalle.Cantidad.ToString());
-                                table.Cell().Text($"{detalle.PrecioUnitario:C}");
+                                table.Cell().Element(CellStyle).Text(detalle.Cantidad.ToString());
+                                table.Cell().Element(CellStyle).Text(detalle.Producto.Nombre);
+                                table.Cell().Element(CellStyle).AlignRight().Text($"${detalle.PrecioUnitario}");
+                                var totalProducto = detalle.Cantidad * detalle.PrecioUnitario;
+                                table.Cell().Element(CellStyle).AlignRight().Text($"${totalProducto}");
                             }
                         });
 
-                        col.Item().Text($"💰 Total: {venta.Total:C}");
-                        col.Item().Text($"💵 Abono recibido: {abono.Monto:C}");
-                        col.Item().Text($"💳 Saldo pendiente: {venta.SaldoPendiente:C}");
-                        col.Item().Text($"📌 Estado: {venta.EstadoVenta}").Bold();
+                        col.Item().AlignRight().Column(rightCol =>
+                        {
+                            rightCol.Item().Text($"Total: ${venta.Total}").Bold();
+                            rightCol.Item().Text($"Descuento: %{venta.Descuento}");
+                            rightCol.Item().Text($"Impuesto: %{venta.Impuesto}");
+                            rightCol.Item().Text($"Su Pago: ${abono.Monto}");
+                            rightCol.Item().Text($"Cambio: ${cambio:0.00}").FontColor(Colors.Green.Medium).Bold();
+                            rightCol.Item().Text($"Saldo pendiente: ${venta.SaldoPendiente}");
+                            rightCol.Item().Text($"Estado: {venta.EstadoVenta}").Bold();
+                        });
+
+                        // Nota adicional
+                        col.Item().PaddingTop(15).Border(1).Background(Colors.Grey.Lighten3).Padding(5)
+                            .Text("Nota Adicional").Bold();
                     });
 
-                    page.Footer().AlignCenter().Text("Gracias por su pago ❤️").FontSize(10).Italic();
+                    // Pie de página
+                    page.Footer().AlignCenter().Text("Gracias por su pago").FontSize(10).Italic();
                 });
             });
 
             return pdf.GeneratePdf();
+
+            IContainer CellStyle(IContainer container)
+            {
+                return container.BorderBottom(1).PaddingVertical(5).PaddingHorizontal(2);
+            }
         }
     }
 }

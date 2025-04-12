@@ -275,7 +275,9 @@ namespace AppAcademy.Infrastucture.Repositories
                         Apellido = a.Cliente.Apellido,
                         Telefono = a.Cliente.Telefono,
                     } : null
-                }).ToList();
+                })
+                    .OrderByDescending(x => x.Fecha)
+                    .ToList();
 
                 return result;
             }

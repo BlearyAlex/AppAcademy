@@ -12,12 +12,14 @@ namespace AppAcademy.Application.Features.Productos.Commands.CreateProducto
         private readonly IProductoRepository _productoRepository;
         private readonly IMapper _mapper;
         private readonly ILogger<CreateProductoCommandHandler> _logger;
+        private readonly IFileStorageService _fileStorageService;
 
-        public CreateProductoCommandHandler(IProductoRepository productoRepository, IMapper mapper, ILogger<CreateProductoCommandHandler> logger)
+        public CreateProductoCommandHandler(IProductoRepository productoRepository, IMapper mapper, ILogger<CreateProductoCommandHandler> logger, IFileStorageService fileStorageService)
         {
             _productoRepository = productoRepository;
             _mapper = mapper;
             _logger = logger;
+            _fileStorageService = fileStorageService;
         }
 
         public async Task<string> Handle(CreateProductoCommand request, CancellationToken cancellationToken)
@@ -27,7 +29,7 @@ namespace AppAcademy.Application.Features.Productos.Commands.CreateProducto
                 try
                 {
                     // Guardar la imagen y obtener la url
-                    var imageUrl = await SaveImageAndGetUrl(request.ImageFile);
+                    var imageUrl = await _fileStorageService.SaveImageAndGetUrl(request.ImageFile);
                     request.Imagen = imageUrl; // Almacenar la Url de la imagen en el modelo 
                 }
                 catch (Exception ex)
@@ -63,39 +65,6 @@ namespace AppAcademy.Application.Features.Productos.Commands.CreateProducto
 
             // Retornar el ID del nuevo producto
             return newProducto.ProductoId;
-        }
-
-        private async Task<string> SaveImageAndGetUrl(IFormFile imageFile)
-        {
-            try
-            {
-                // Generar un nombre único para la imagen
-                var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(imageFile.FileName)}";
-
-                // Crear directorio si no existe
-                var directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
-
-                if (!Directory.Exists(directoryPath))
-                {
-                    Directory.CreateDirectory(directoryPath);
-                }
-
-                var filePath = Path.Combine(directoryPath, fileName);
-
-                // Guardar la imagen en el servidor
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await imageFile.CopyToAsync(fileStream);
-                }
-
-                // Devolver la URL de la imagen
-                return $"/images/{fileName}";
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error al guardar la imagen: {ex.Message}");
-                throw new ApplicationException("Error al guardar la imagen del producto");
-            }
         }
     }
 }

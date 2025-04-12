@@ -9,6 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\products\**" />
+    <Content Remove="wwwroot\products\**" />
+    <EmbeddedResource Remove="wwwroot\products\**" />
+    <None Remove="wwwroot\products\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="EPPlus" Version="4.5.3.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.8">
       <PrivateAssets>all</PrivateAssets>
@@ -27,7 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\products\images\" />
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
 </Project>
