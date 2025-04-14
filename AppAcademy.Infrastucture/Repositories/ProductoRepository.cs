@@ -1,8 +1,6 @@
 ﻿using AppAcademy.Application.Contracts.Persistence;
-using AppAcademy.Application.DTOs.Venta;
 using AppAcademy.Application.Features.Productos.Queries.GetAllProductos;
 using AppAcademy.Application.Features.Productos.Queries.GetProductById;
-using AppAcademy.Application.ViewModel.Categoria;
 using AppAcademy.Application.ViewModel.Producto;
 using AppAcademy.Domain.Enum;
 using AppAcademy.Domain.PuntoDeVenta;
@@ -254,6 +252,30 @@ namespace AppAcademy.Infrastucture.Repositories
             catch (Exception)
             {
                 return false;
+                throw;
+            }
+        }
+        public async Task<bool> CleanImageProductAsync(string imageName)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(imageName)) return false;
+
+                var producto = await _dbContext.Productos
+                    .FirstOrDefaultAsync(p => p.Imagen != null && p.Imagen.EndsWith(imageName));
+
+                if (producto == null)
+                    return false;
+
+                producto.Imagen = null;
+                _dbContext.Productos.Update(producto);
+                await _dbContext.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al limpiar el registro de la tabla");
                 throw;
             }
         }

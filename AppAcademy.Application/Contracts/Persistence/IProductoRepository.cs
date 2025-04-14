@@ -21,5 +21,6 @@ namespace AppAcademy.Application.Contracts.Persistence
         // Metodo auxiliares
         Task<bool> DescontarStock(string productoId, int cantidad);
         Task<bool> AgregarStock(string productoId, int cantidad);
+        Task<bool> CleanImageProductAsync(string imageName);
     }
 }

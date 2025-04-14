@@ -1,4 +1,5 @@
-﻿using AppAcademy.Application.Contracts.Persistence.IControlAcademia;
+﻿using AppAcademy.Application.Contracts.Persistence;
+using AppAcademy.Application.Contracts.Persistence.IControlAcademia;
 using AppAcademy.Domain.ControlAcademia;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -10,11 +11,13 @@ namespace AppAcademy.Application.Features.Students.Commands.CreateStudent
     {
         private readonly IStudentRepository _studentRepository;
         private readonly ILogger<CreateStudentCommandHandler> _logger;
+        private readonly IFileStorageService _fileStorageService;
 
-        public CreateStudentCommandHandler(IStudentRepository studentRepository, ILogger<CreateStudentCommandHandler> logger)
+        public CreateStudentCommandHandler(IStudentRepository studentRepository, ILogger<CreateStudentCommandHandler> logger, IFileStorageService fileStorageService)
         {
             _studentRepository = studentRepository;
             _logger = logger;
+            _fileStorageService = fileStorageService;
         }
 
         public async Task<int> Handle(CreateStudentCommand request, CancellationToken cancellationToken)

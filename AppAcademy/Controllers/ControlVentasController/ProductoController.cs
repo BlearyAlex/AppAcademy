@@ -19,12 +19,14 @@ namespace AppAcademy.Controllers.ControlVentasController
         private readonly IMediator _mediator;
         private readonly IProductoRepository _productoRepository;
         private readonly ILogger<ProductoController> _logger;
+        private readonly IFileStorageService _fileStorageService;
 
-        public ProductoController(IMediator mediator, IProductoRepository productoRepository, ILogger<ProductoController> logger)
+        public ProductoController(IMediator mediator, IProductoRepository productoRepository, ILogger<ProductoController> logger, IFileStorageService fileStorageService)
         {
             _mediator = mediator;
             _productoRepository = productoRepository;
             _logger = logger;
+            _fileStorageService = fileStorageService;
         }
 
         #region GetAll
@@ -202,6 +204,34 @@ namespace AppAcademy.Controllers.ControlVentasController
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex}");
+            }
+        }
+        #endregion
+
+        #region DeleteImage
+        [HttpDelete("DeleteImage/{*imageUrl}")]
+        public async Task<IActionResult> DeleteImage(string imageUrl)
+        {
+            try
+            {
+                var imageName = Path.GetFileName(imageUrl);
+
+                var result = await _fileStorageService.DeleteImage(imageUrl);
+
+                if (!result)
+                    return BadRequest("No se pudo eliminar la imagen.");
+
+                var dbUpdate = await _productoRepository.CleanImageProductAsync(imageName);
+
+                if (!dbUpdate)
+                    return NotFound("Producto con esa imagen no encontrado.");
+
+                return Ok(new { message = "Imagen eliminada correctamente." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al eliminar la imagen}");
+                return StatusCode(500, $"Error interno: {ex.Message}");
             }
         }
         #endregion

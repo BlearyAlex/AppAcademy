@@ -11,12 +11,14 @@ namespace AppAcademy.Application.Features.Productos.Commands.UpdateProducto
         private readonly IProductoRepository _productoRepository;
         private readonly IMapper _mapper;
         private readonly ILogger<UpdateProductoCommandHandler> _logger;
+        private readonly IFileStorageService _fileStorageService;
 
-        public UpdateProductoCommandHandler(IProductoRepository productoRepository, IMapper mapper, ILogger<UpdateProductoCommandHandler> logger)
+        public UpdateProductoCommandHandler(IProductoRepository productoRepository, IMapper mapper, ILogger<UpdateProductoCommandHandler> logger, IFileStorageService fileStorageService)
         {
             _productoRepository = productoRepository;
             _mapper = mapper;
             _logger = logger;
+            _fileStorageService = fileStorageService;
         }
 
         public async Task Handle(UpdateProductoCommand request, CancellationToken cancellationToken)
@@ -30,13 +32,25 @@ namespace AppAcademy.Application.Features.Productos.Commands.UpdateProducto
             }
 
             // Si se proporciona una nueva imagen
-            if(request.ImageFile != null && request.ImageFile.Length > 0)
+            if (request.ImageFile != null && request.ImageFile.Length > 0)
             {
                 try
                 {
+                    var oldImageUrl = producto.Imagen;
+
                     // Guardar la nueva imagen y obtener la URL
-                    var imageUrl = await SaveImageAndGetUrl(request.ImageFile);
+                    var imageUrl = await _fileStorageService.SaveImageAndGetUrl(request.ImageFile);
                     producto.Imagen = imageUrl;
+
+                    if (!string.IsNullOrWhiteSpace(oldImageUrl))
+                    {
+                        // Puedes manejar el resultado o loguear si falla la eliminación
+                        var deleted = await _fileStorageService.DeleteImage(oldImageUrl);
+                        if (!deleted)
+                        {
+                            _logger.LogWarning($"No se pudo eliminar la imagen antigua: {oldImageUrl}");
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -62,39 +76,6 @@ namespace AppAcademy.Application.Features.Productos.Commands.UpdateProducto
 
             _logger.LogInformation($"Producto {producto.ProductoId} actualizado exitosamente");
 
-        }
-
-        private async Task<string> SaveImageAndGetUrl(IFormFile imageFile)
-        {
-            try
-            {
-                // Generar un nombre único para la imagen
-                var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(imageFile.FileName)}";
-
-                // Crear directorio si no existe
-                var directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
-
-                if (!Directory.Exists(directoryPath))
-                {
-                    Directory.CreateDirectory(directoryPath);
-                }
-
-                var filePath = Path.Combine(directoryPath, fileName);
-
-                // Guardar la imagen en el servidor
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await imageFile.CopyToAsync(fileStream);
-                }
-
-                // Devolver la URL de la imagen
-                return $"/images/{fileName}";
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error al guardar la imagen: {ex.Message}");
-                throw new ApplicationException("Error al guardar la imagen del producto");
-            }
         }
     }
 }

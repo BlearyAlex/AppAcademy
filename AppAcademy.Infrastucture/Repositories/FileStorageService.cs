@@ -45,5 +45,27 @@ namespace AppAcademy.Infrastucture.Repositories
                 throw new ApplicationException("Error al guardar la imagen", ex);
             }
         }
+
+        public async Task<bool> DeleteImage(string imageName)
+        {
+            if (string.IsNullOrWhiteSpace(imageName)) return false;
+
+            var normalizedImageName = imageName.TrimStart('/');
+
+            var actualImageName = Path.GetFileName(normalizedImageName);
+
+            var filePath = Path.Combine(_env.WebRootPath, normalizedImageName);
+
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+                return true;
+            }
+
+            await Task.CompletedTask;
+
+            return false;
+        }
+
     }
 }

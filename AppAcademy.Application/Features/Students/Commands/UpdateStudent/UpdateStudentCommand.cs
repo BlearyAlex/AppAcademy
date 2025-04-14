@@ -18,6 +18,6 @@ namespace AppAcademy.Application.Features.Students.Commands.UpdateStudent
         public EstudianteEstado EstadoEstudiante { get; set; }
 
         public int CareerId { get; set; }
-        public int AcademicCyleId { get; set; }
+        public int AcademicCycleId { get; set; }
     }
 }

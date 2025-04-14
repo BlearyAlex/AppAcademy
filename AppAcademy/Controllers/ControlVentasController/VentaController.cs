@@ -124,50 +124,6 @@ namespace AppAcademy.Controllers.ControlVentasController
         }
         #endregion
 
-        #region SalesByRank
-        [HttpGet("ventas-por-rango")]
-        public async Task<IActionResult> SalesPerDay(DateTime startDate, DateTime endDate)
-        {
-            try
-            {
-                var salesPerDay = await _ventaRepository.GetSalesByDateRange(startDate, endDate);
-                if (salesPerDay == null || !salesPerDay.Any())
-                {
-                    return NoContent();
-                }
-
-                return Ok(salesPerDay);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error al obtener las ventas por día: {Message}", ex.Message);
-                return StatusCode(500, "Ocurrió un error al obtener las ventas por día.");
-            }
-        }
-        #endregion
-
-        #region TopSellingProducts
-        [HttpGet("top-productos")]
-        public async Task<IActionResult> TopSellingProducts(DateTime startDate, DateTime endDate)
-        {
-            try
-            {
-                var topProducts = await _ventaRepository.TopSellingProducts(startDate, endDate);
-                if (topProducts == null || !topProducts.Any())
-                {
-                    return NoContent();
-                }
-
-                return Ok(topProducts);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error al obtener el top de productos mas vendidos: {Message}", ex.Message);
-                return StatusCode(500, "Ocurrio un error al obtener el top de productos");
-            }
-        }
-        #endregion
-
         #region SalesPerWeek
         [HttpGet("sales/week-summary")]
         public async Task<IActionResult> GetSalesPerWeek()

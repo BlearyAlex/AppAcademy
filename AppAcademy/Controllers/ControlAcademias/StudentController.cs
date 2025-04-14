@@ -1,9 +1,6 @@
-﻿using AppAcademy.Application.Contracts.Persistence.IControlAcademia;
+﻿using AppAcademy.Application.Contracts.Persistence;
+using AppAcademy.Application.Contracts.Persistence.IControlAcademia;
 using AppAcademy.Application.Exceptions;
-using AppAcademy.Application.Features.Categorias.Commands.DeleteCategoria;
-using AppAcademy.Application.Features.Categorias.Commands.UpdateCategoria;
-using AppAcademy.Application.Features.Categorias.Queries.GetAllCategoria;
-using AppAcademy.Application.Features.Categorias.Queries.GetCategoriaById;
 using AppAcademy.Application.Features.Students.Commands.CreateStudent;
 using AppAcademy.Application.Features.Students.Commands.DeleteStudent;
 using AppAcademy.Application.Features.Students.Commands.UpdateStudent;
@@ -11,8 +8,6 @@ using AppAcademy.Application.Features.Students.Queries.GetAllStudents;
 using AppAcademy.Application.Features.Students.Queries.GetGanttData;
 using AppAcademy.Application.Features.Students.Queries.GetStudent;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppAcademy.Controllers.ControlAcademias
@@ -24,11 +19,15 @@ namespace AppAcademy.Controllers.ControlAcademias
     {
         private readonly IMediator _mediator;
         private readonly IStudentRepository _studentRepository;
+        private readonly IFileStorageService _fileStorageService;
+        private readonly ILogger<StudentController> _logger;
 
-        public StudentController(IMediator mediator, IStudentRepository studentRepository)
+        public StudentController(IMediator mediator, IStudentRepository studentRepository, IFileStorageService fileStorageService, ILogger<StudentController> logger)
         {
             _mediator = mediator;
             _studentRepository = studentRepository;
+            _fileStorageService = fileStorageService;
+            _logger = logger;
         }
 
         #region Create
@@ -73,6 +72,7 @@ namespace AppAcademy.Controllers.ControlAcademias
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error al actualizar el estudiante");
                 return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.Message}");
             }
         }
@@ -192,6 +192,34 @@ namespace AppAcademy.Controllers.ControlAcademias
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        #endregion
+
+        #region DeleteImage
+        [HttpDelete("DeleteImage/{*imageUrl}")]
+        public async Task<IActionResult> DeleteImage(string imageUrl)
+        {
+            try
+            {
+                var imageName = Path.GetFileName(imageUrl);
+
+                var result = await _fileStorageService.DeleteImage(imageUrl);
+
+                if (!result)
+                    return BadRequest("No se pudo eliminar la imagen.");
+
+                var dbUpdate = await _studentRepository.CleanImageStudentAsync(imageName);
+
+                if (!dbUpdate)
+                    return NotFound("Student con esa imagen no encontrado.");
+
+                return Ok(new { message = "Imagen eliminada correctamente." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al eliminar la imagen}");
+                return StatusCode(500, $"Error interno: {ex.Message}");
             }
         }
         #endregion

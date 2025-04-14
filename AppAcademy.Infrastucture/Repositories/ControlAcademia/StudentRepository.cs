@@ -1,4 +1,5 @@
-﻿using AppAcademy.Application.Contracts.Persistence.IControlAcademia;
+﻿using AppAcademy.Application.Contracts.Persistence;
+using AppAcademy.Application.Contracts.Persistence.IControlAcademia;
 using AppAcademy.Application.Exceptions;
 using AppAcademy.Application.Features.Students.Commands.CreateStudent;
 using AppAcademy.Application.Features.Students.Commands.DeleteStudent;
@@ -20,11 +21,13 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly ILogger<StudentRepository> _logger;
+        private readonly IFileStorageService _fileStorageService;
 
-        public StudentRepository(AppAcademyDbContext dbContext, UserManager<AppUser> userManager, ILogger<StudentRepository> logger) : base(dbContext)
+        public StudentRepository(AppAcademyDbContext dbContext, UserManager<AppUser> userManager, ILogger<StudentRepository> logger, IFileStorageService fileStorageService) : base(dbContext)
         {
             _userManager = userManager;
             _logger = logger;
+            _fileStorageService = fileStorageService;
         }
 
         public async Task<List<GetAllStudentsVm>> GetAllStudentsWithCareers()
@@ -137,7 +140,7 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
                 try
                 {
                     // Guardar la imagen y obtener la url
-                    var imageUrl = await SaveImageAndGetUrl(student.ImageFile);
+                    var imageUrl = await _fileStorageService.SaveImageAndGetUrl(student.ImageFile);
                     student.ImageUrl = imageUrl; // Almacenar la Url de la imagen en el modelo 
                 }
                 catch (Exception ex)
@@ -239,6 +242,31 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
         public async Task<bool> StudentTienePagosActivos(int studentId)
         {
             return await _dbContext.Payments.AnyAsync(s => s.StudentId == studentId);
+        }
+
+        public async Task<bool> CleanImageStudentAsync(string imageName)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(imageName)) return false;
+
+                var student= await _dbContext.Students
+                    .FirstOrDefaultAsync(p => p.ImageUrl != null && p.ImageUrl.EndsWith(imageName));
+
+                if (student == null)
+                    return false;
+
+                student.ImageUrl= null;
+                _dbContext.Students.Update(student);
+                await _dbContext.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al limpiar el registro de la tabla");
+                throw;
+            }
         }
 
         #region Metodos Privados

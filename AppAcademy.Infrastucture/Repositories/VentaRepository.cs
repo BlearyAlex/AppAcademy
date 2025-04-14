@@ -291,43 +291,6 @@ namespace AppAcademy.Infrastucture.Repositories
         }
 
         #region DirectMethods
-        public async Task<List<TopSellingProducts>> TopSellingProducts(DateTime startDate, DateTime endDate)
-        {
-            var topProducts = await _dbContext.VentaDetalle
-                .Where(vd => vd.Venta!.Fecha >= startDate && vd.Venta.Fecha <= endDate)
-                .Where(vd => vd.Venta.EstadoVenta != VentaEstado.Cancelado)
-                .Include(vd => vd.Producto)
-                .GroupBy(vd => new { vd.ProductoId, vd.Producto!.Nombre })
-                .Select(g => new TopSellingProducts
-                {
-                    Producto = g.Key.Nombre,
-                    CantidadVendida = g.Sum(vd => vd.Cantidad)
-                })
-                .OrderByDescending(x => x.CantidadVendida)
-                .Take(5)
-                .ToListAsync();
-
-            if (topProducts == null || !topProducts.Any())
-                return new List<TopSellingProducts> { };
-
-            return topProducts;
-        }
-
-        public async Task<List<SalesByRank>> GetSalesByDateRange(DateTime startDate, DateTime endDate)
-        {
-            var sales = await _dbContext.Ventas
-                .Where(v => v.Fecha >= startDate && v.Fecha <= endDate && (v.EstadoVenta != VentaEstado.Cancelado || v.EstadoVenta == null))
-                .Select(v => new SalesByRank
-                {
-                    VentaId = v.VentaId,
-                    Fecha = v.Fecha,
-                    Total = v.TotalFinal,
-                })
-                .ToListAsync();
-
-            return sales;
-        }
-
         public async Task<List<SalesPerWeekViewModel>> GetSalesPerWeek(DateTime currentDate)
         {
             // Rango por defecto: mes actual

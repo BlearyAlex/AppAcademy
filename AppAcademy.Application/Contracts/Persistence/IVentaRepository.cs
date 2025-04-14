@@ -14,8 +14,6 @@ namespace AppAcademy.Application.Contracts.Persistence
         Task<List<GetAllVentasVm>> GetAllVentas();
 
         #region DirectMethods
-        Task<List<TopSellingProducts>> TopSellingProducts(DateTime startDate, DateTime endDate);
-        Task<List<SalesByRank>> GetSalesByDateRange(DateTime startDate, DateTime endDate);
         Task<List<SalesPerWeekViewModel>> GetSalesPerWeek(DateTime currentDate);
         Task<List<SalesPerMonthViewModel>> GetSalesPerMonth();
         #endregion

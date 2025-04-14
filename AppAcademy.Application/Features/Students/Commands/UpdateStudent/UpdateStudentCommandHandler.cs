@@ -1,9 +1,8 @@
-﻿using AppAcademy.Application.Contracts.Persistence.IControlAcademia;
+﻿using AppAcademy.Application.Contracts.Persistence;
+using AppAcademy.Application.Contracts.Persistence.IControlAcademia;
 using AppAcademy.Application.Exceptions;
 using AppAcademy.Domain.ControlAcademia;
-using AppAcademy.Domain.PuntoDeVenta;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace AppAcademy.Application.Features.Students.Commands.UpdateStudent
@@ -12,11 +11,13 @@ namespace AppAcademy.Application.Features.Students.Commands.UpdateStudent
     {
         private readonly IStudentRepository _studentRepository;
         private readonly ILogger<UpdateStudentCommandHandler> _logger;
+        private readonly IFileStorageService _fileStorageService;
 
-        public UpdateStudentCommandHandler(IStudentRepository studentRepository, ILogger<UpdateStudentCommandHandler> logger)
+        public UpdateStudentCommandHandler(IStudentRepository studentRepository, ILogger<UpdateStudentCommandHandler> logger, IFileStorageService fileStorageService)
         {
             _studentRepository = studentRepository;
             _logger = logger;
+            _fileStorageService = fileStorageService;
         }
 
         public async Task Handle(UpdateStudentCommand request, CancellationToken cancellationToken)
@@ -35,7 +36,7 @@ namespace AppAcademy.Application.Features.Students.Commands.UpdateStudent
                 try
                 {
                     // Guardar la nueva imagen y obtener la URL
-                    var imageUrl = await SaveImageAndGetUrl(request.ImageFile);
+                    var imageUrl = await _fileStorageService.SaveImageAndGetUrl(request.ImageFile);
                     findStudent.ImageUrl= imageUrl;
                 }
                 catch (Exception ex)
@@ -52,44 +53,11 @@ namespace AppAcademy.Application.Features.Students.Commands.UpdateStudent
             findStudent.Direccion = request.Direccion;
             findStudent.EstadoEstudiante = request.EstadoEstudiante;
             findStudent.CareerId = request.CareerId;
-            findStudent.AcademicCycleId = request.AcademicCyleId;
+            findStudent.AcademicCycleId = request.AcademicCycleId; 
 
             await _studentRepository.UpdateAsync(findStudent);
 
             _logger.LogInformation($"La operacion fue exitosa {request.StudentId}");
-        }
-
-        private async Task<string> SaveImageAndGetUrl(IFormFile imageFile)
-        {
-            try
-            {
-                // Generar un nombre único para la imagen
-                var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(imageFile.FileName)}";
-
-                // Crear directorio si no existe
-                var directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
-
-                if (!Directory.Exists(directoryPath))
-                {
-                    Directory.CreateDirectory(directoryPath);
-                }
-
-                var filePath = Path.Combine(directoryPath, fileName);
-
-                // Guardar la imagen en el servidor
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await imageFile.CopyToAsync(fileStream);
-                }
-
-                // Devolver la URL de la imagen
-                return $"/images/{fileName}";
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error al guardar la imagen: {ex.Message}");
-                throw new ApplicationException("Error al guardar la imagen del producto");
-            }
         }
     }
 }
