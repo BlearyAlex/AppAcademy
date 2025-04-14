@@ -22,7 +22,7 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
                .Select(a => new GetAllCyclesVm
                {
                    AcademicCycleId = a.AcademicCycleId,
-                   NumeroCiclo = a.NumeroCiclo,
+                   CicloAcademico = a.CicloAcademico,
                    Color = a.Color,
                    FechaInicio = a.FechaInicio,
                    FechaFin = a.FechaFin,
@@ -53,7 +53,7 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
                     .Select(a => new GetCycleVm
                     {
                         AcademicCycleId = a.AcademicCycleId,
-                        NumeroCiclo = a.NumeroCiclo,
+                        CicloAcademico = a.CicloAcademico,
                         Color = a.Color,
                         FechaInicio = a.FechaInicio,
                         FechaFin = a.FechaFin,

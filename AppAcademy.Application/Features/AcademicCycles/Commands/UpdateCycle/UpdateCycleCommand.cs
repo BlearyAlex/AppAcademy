@@ -5,7 +5,7 @@ namespace AppAcademy.Application.Features.AcademicCycles.Commands.UpdateCycle
     public class UpdateCycleCommand : IRequest<int>
     {
         public int AcademicCycleId { get; set; }
-        public int NumeroCiclo { get; set; }
+        public string CicloAcademico { get; set; }
         public string Color { get; set; }
         public DateTime FechaInicio { get; set; }
         public DateTime FechaFin { get; set; }

@@ -1,5 +1,4 @@
 ﻿using AppAcademy.Application.Contracts.Persistence;
-using AppAcademy.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppAcademy.Controllers.ReportsController

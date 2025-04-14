@@ -5,7 +5,6 @@ using AppAcademy.Application.Features.Productos.Commands.UpdateProducto;
 using AppAcademy.Application.Features.Productos.Queries.GetAllProductos;
 using AppAcademy.Application.Features.Productos.Queries.GetProductById;
 using AppAcademy.Application.Features.Productos.Queries.GetProductsByName;
-using AppAcademy.Infrastucture.Repositories;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

@@ -20,7 +20,7 @@ namespace AppAcademy.Application.Features.AcademicCycles.Commands.CreateCycle
         {
             var cycle = new AcademicCycle
             {
-                NumeroCiclo = request.NumeroCiclo,
+                CicloAcademico = request.CicloAcademico,
                 FechaInicio = request.FechaInicio,
                 Color = request.Color,
                 FechaFin = request.FechaFin,

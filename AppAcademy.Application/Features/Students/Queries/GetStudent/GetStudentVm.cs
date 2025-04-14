@@ -13,14 +13,21 @@ namespace AppAcademy.Application.Features.Students.Queries.GetStudent
         public string? ImageUrl { get; set; }
         public DateTime FechaIngreso { get; set; }
         public EstudianteEstado EstadoEstudiante { get; set; }
-        public int AcademicCycleId { get; set; }
-        public GetCareerById Career { get; set; }
+        public GetCycleStudentById AcademicCycle { get; set; }
+        public GetCareerStudentById Career { get; set; }
     }
 
-    public class GetCareerById
+    public class GetCareerStudentById
     {
         public int CareerId { get; set; }
         public string Nombre { get; set; }
+        public string Color { get; set; }
+    }
+
+    public class GetCycleStudentById
+    {
+        public int AcademicCycleId { get; set; }
+        public string CicloAcademico { get; set; }
         public string Color { get; set; }
     }
 }

@@ -1,7 +1,6 @@
 using AppAcademy.Infrastucture;
 using AppAcademy.Application;
 using AppAcademy.Middleware;
-using Microsoft.AspNetCore.Identity;
 using AppAcademy.Infrastucture.Identity;
 
 var builder = WebApplication.CreateBuilder(args);

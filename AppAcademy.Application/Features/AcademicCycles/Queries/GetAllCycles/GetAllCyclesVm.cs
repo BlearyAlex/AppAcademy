@@ -3,7 +3,7 @@
     public class GetAllCyclesVm
     {
         public int AcademicCycleId { get; set; }
-        public int NumeroCiclo { get; set; }
+        public string CicloAcademico { get; set; }
         public string Color { get; set; }
         public DateTime FechaInicio { get; set; }
         public DateTime FechaFin { get; set; }

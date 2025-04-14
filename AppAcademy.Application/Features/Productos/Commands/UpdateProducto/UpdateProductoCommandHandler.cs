@@ -1,7 +1,6 @@
 ﻿using AppAcademy.Application.Contracts.Persistence;
 using AutoMapper;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace AppAcademy.Application.Features.Productos.Commands.UpdateProducto

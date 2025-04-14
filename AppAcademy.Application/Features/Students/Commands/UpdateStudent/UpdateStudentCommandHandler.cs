@@ -35,9 +35,21 @@ namespace AppAcademy.Application.Features.Students.Commands.UpdateStudent
             {
                 try
                 {
+                    var oldImageUrl = findStudent.ImageUrl;
+
                     // Guardar la nueva imagen y obtener la URL
                     var imageUrl = await _fileStorageService.SaveImageAndGetUrl(request.ImageFile);
                     findStudent.ImageUrl= imageUrl;
+
+                    if (!string.IsNullOrWhiteSpace(oldImageUrl))
+                    {
+                        // Puedes manejar el resultado o loguear si falla la eliminación
+                        var deleted = await _fileStorageService.DeleteImage(oldImageUrl);
+                        if (!deleted)
+                        {
+                            _logger.LogWarning($"No se pudo eliminar la imagen antigua: {oldImageUrl}");
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {

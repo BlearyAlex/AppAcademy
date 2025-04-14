@@ -47,10 +47,16 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
                         Direccion = s.Direccion,
                         ImageUrl = s.ImageUrl,
                         FechaIngreso = s.FechaIngreso,
-                        AcademicCycleId = s.AcademicCycleId ?? 0,
+                        AcademicCycle = s.AcademicCycle != null 
+                        ? new GetAllCyclesStudentsVm
+                        {
+                            AcademicCycleId = s.AcademicCycle.AcademicCycleId,
+                            CicloAcademico = s.AcademicCycle.CicloAcademico,
+                            Color = s.AcademicCycle.Color,
+                        } : null,
                         EstadoEstudiante = s.EstadoEstudiante.ToString(),
                         Career = s.Career != null 
-                            ? new GetAllCareerVm
+                            ? new GetAllCareerStudentsVm
                             {
                                 CareerId = s.Career.CareerId,
                                 Nombre = s.Career.Nombre,
@@ -82,9 +88,14 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
                     Direccion = s.Direccion,
                     ImageUrl = s.ImageUrl,
                     FechaIngreso = s.FechaIngreso,
-                    AcademicCycleId = s.AcademicCycleId ?? 0,
+                    AcademicCycle = new GetCycleStudentById
+                    {
+                        AcademicCycleId = s.AcademicCycle.AcademicCycleId,
+                        CicloAcademico = s.AcademicCycle.CicloAcademico,
+                        Color = s.AcademicCycle.Color,
+                    },
                     EstadoEstudiante = s.EstadoEstudiante,
-                    Career = new GetCareerById
+                    Career = new GetCareerStudentById
                     {
                         CareerId = s.Career.CareerId,
                         Nombre = s.Career.Nombre,

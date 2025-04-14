@@ -27,7 +27,7 @@ namespace AppAcademy.Application.Features.AcademicCycles.Commands.UpdateCycle
                 throw new NotFoundException(nameof(AcademicCycle), request.AcademicCycleId);
             }
 
-            findCycle.NumeroCiclo = request.NumeroCiclo;
+            findCycle.CicloAcademico = request.CicloAcademico;
             findCycle.FechaInicio = request.FechaInicio;
             findCycle.Color = request.Color;
             findCycle.FechaFin = request.FechaFin;
