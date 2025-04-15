@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppAcademy.Infrastucture.Migrations
 {
     [DbContext(typeof(AppAcademyDbContext))]
-    [Migration("20250318213836_ModelBitacoraAdded")]
-    partial class ModelBitacoraAdded
+    [Migration("20250415025235_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -65,6 +65,10 @@ namespace AppAcademy.Infrastucture.Migrations
                     b.Property<int?>("CareerId")
                         .HasColumnType("int");
 
+                    b.Property<string>("CicloAcademico")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Color")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -74,9 +78,6 @@ namespace AppAcademy.Infrastucture.Migrations
 
                     b.Property<DateTime>("FechaInicio")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("NumeroCiclo")
-                        .HasColumnType("int");
 
                     b.HasKey("AcademicCycleId");
 
@@ -312,6 +313,34 @@ namespace AppAcademy.Infrastucture.Migrations
                     b.HasIndex("VentaId");
 
                     b.ToTable("Abono");
+                });
+
+            modelBuilder.Entity("AppAcademy.Domain.Logs.Bitacora", b =>
+                {
+                    b.Property<string>("BitacoraId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ReferenciaId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TipoReferencia")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UsuarioId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("BitacoraId");
+
+                    b.ToTable("Bitacora");
                 });
 
             modelBuilder.Entity("AppAcademy.Domain.PuntoDeVenta.Categoria", b =>
@@ -682,36 +711,6 @@ namespace AppAcademy.Infrastucture.Migrations
                     b.HasIndex("VentaId");
 
                     b.ToTable("VentaDetalle");
-                });
-
-            modelBuilder.Entity("AppAcademy.Infrastucture.Historicos.Bitacora", b =>
-                {
-                    b.Property<string>("BitacoraId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Descripcion")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Fecha")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ReferenciaId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TipoReferencia")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UsuarioId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("BitacoraId");
-
-                    b.HasIndex("UsuarioId");
-
-                    b.ToTable("Bitacora");
                 });
 
             modelBuilder.Entity("AppAcademy.Infrastucture.Identity.AppUser", b =>
@@ -1119,17 +1118,6 @@ namespace AppAcademy.Infrastucture.Migrations
                     b.Navigation("Producto");
 
                     b.Navigation("Venta");
-                });
-
-            modelBuilder.Entity("AppAcademy.Infrastucture.Historicos.Bitacora", b =>
-                {
-                    b.HasOne("AppAcademy.Infrastucture.Identity.AppUser", "Usuario")
-                        .WithMany()
-                        .HasForeignKey("UsuarioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("AppAcademy.Infrastucture.Identity.RefreshToken", b =>

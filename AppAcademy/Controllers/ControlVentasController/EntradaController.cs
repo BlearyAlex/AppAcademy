@@ -7,12 +7,14 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using FluentValidation;
 using AppAcademy.Application.Features.Entradas.Queries.GetEntradasForMonth;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace AppAcademy.Controllers.ControlVentasController
 {
     [Route("api/v1/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin, User, Ventas")]
     public class EntradaController : ControllerBase
     {
         private readonly IMediator _mediator;

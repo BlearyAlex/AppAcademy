@@ -5,12 +5,14 @@ using AppAcademy.Application.Features.Proveedores.Commands.UpdateProveedor;
 using AppAcademy.Application.Features.Proveedores.Queries.GetAllProveedor;
 using AppAcademy.Application.Features.Proveedores.Queries.GetProveedorById;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppAcademy.Controllers.ControlVentasController
 {
     [Route("api/v1/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin, User, Ventas")]
     public class ProveedorController : ControllerBase
     {
         private readonly IMediator _mediator;

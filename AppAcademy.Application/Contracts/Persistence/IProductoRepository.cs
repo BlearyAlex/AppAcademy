@@ -1,4 +1,5 @@
 ﻿using AppAcademy.Application.Features.Productos.Queries.GetAllProductos;
+using AppAcademy.Application.Features.Productos.Queries.GetAllProductosFilter;
 using AppAcademy.Application.Features.Productos.Queries.GetProductById;
 using AppAcademy.Application.ViewModel.Producto;
 using AppAcademy.Domain.PuntoDeVenta;
@@ -8,6 +9,7 @@ namespace AppAcademy.Application.Contracts.Persistence
     public interface IProductoRepository : IAsyncRepository<Producto>
     {
         Task<List<GetAllProductosVm>> GetAllProductos();
+        Task<List<GetAllProductosFilterVm>> GetAllProductosWithFilter();
         Task<List<Producto>> GetProductsByCategoria(string categoria);
         Task<GetProductByIdVm> GetProductById(string productoId);
         Task<List<Producto>> GetProductsByName(string producto);

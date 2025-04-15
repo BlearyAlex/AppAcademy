@@ -29,6 +29,7 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     await IdentityInitializer.InitializeRoles(services);
+    await IdentityInitializer.InitializeAdminUser(services);
 }
 
 // Configure the HTTP request pipeline.

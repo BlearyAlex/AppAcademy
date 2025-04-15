@@ -1,21 +1,17 @@
-﻿using AppAcademy.Application.Features.Careers.Commands.CreateCareer;
-using AppAcademy.Application.Features.Careers.Commands.DeleteCareer;
-using AppAcademy.Application.Features.Careers.Commands.UpdateCareer;
-using AppAcademy.Application.Features.Careers.Queries.GetAllCareers;
-using AppAcademy.Application.Features.Careers.Queries.GetCareer;
-using AppAcademy.Application.Features.StudentPermissions.Commands.CreateStudentPermission;
+﻿using AppAcademy.Application.Features.StudentPermissions.Commands.CreateStudentPermission;
 using AppAcademy.Application.Features.StudentPermissions.Commands.DeleteStudentPermission;
 using AppAcademy.Application.Features.StudentPermissions.Commands.UpdateStudentPermission;
 using AppAcademy.Application.Features.StudentPermissions.Queries.GetAllStudentPermissions;
 using AppAcademy.Application.Features.StudentPermissions.Queries.GetStudentPermission;
 using MediatR;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppAcademy.Controllers.ControlAcademias
 {
     [Route("api/v1[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin, User, Academia")]
     public class StudentPermissionController : ControllerBase
     {
         private readonly IMediator _mediator;

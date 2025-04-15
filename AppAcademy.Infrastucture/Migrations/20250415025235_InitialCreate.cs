@@ -52,6 +52,22 @@ namespace AppAcademy.Infrastucture.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Bitacora",
+                columns: table => new
+                {
+                    BitacoraId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UsuarioId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Descripcion = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ReferenciaId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TipoReferencia = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Bitacora", x => x.BitacoraId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Careers",
                 columns: table => new
                 {
@@ -309,7 +325,7 @@ namespace AppAcademy.Infrastucture.Migrations
                 {
                     AcademicCycleId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    NumeroCiclo = table.Column<int>(type: "int", nullable: false),
+                    CicloAcademico = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Color = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FechaInicio = table.Column<DateTime>(type: "datetime2", nullable: false),
                     FechaFin = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -326,32 +342,6 @@ namespace AppAcademy.Infrastucture.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Students",
-                columns: table => new
-                {
-                    StudentId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Apellido = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Telefono = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Direccion = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FechaIngreso = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EstadoEstudiante = table.Column<int>(type: "int", nullable: false),
-                    CareerId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Students", x => x.StudentId);
-                    table.ForeignKey(
-                        name: "FK_Students_Careers_CareerId",
-                        column: x => x.CareerId,
-                        principalTable: "Careers",
-                        principalColumn: "CareerId");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Ventas",
                 columns: table => new
                 {
@@ -362,6 +352,7 @@ namespace AppAcademy.Infrastucture.Migrations
                     SaldoPendiente = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Descuento = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Impuesto = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Folio = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     EstadoVenta = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -435,76 +426,35 @@ namespace AppAcademy.Infrastucture.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Payments",
+                name: "Students",
                 columns: table => new
                 {
-                    PaymentId = table.Column<int>(type: "int", nullable: false)
+                    StudentId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    FechaPago = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MesPagado = table.Column<int>(type: "int", nullable: false),
-                    AnioPagado = table.Column<int>(type: "int", nullable: false),
-                    Total = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    SaldoPendiente = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Descuento = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    EstadoVenta = table.Column<int>(type: "int", nullable: false),
-                    StudentId = table.Column<int>(type: "int", nullable: true),
-                    CareerId = table.Column<int>(type: "int", nullable: true)
+                    Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Apellido = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Telefono = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Direccion = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FechaIngreso = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EstadoEstudiante = table.Column<int>(type: "int", nullable: false),
+                    CareerId = table.Column<int>(type: "int", nullable: true),
+                    AcademicCycleId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Payments", x => x.PaymentId);
+                    table.PrimaryKey("PK_Students", x => x.StudentId);
                     table.ForeignKey(
-                        name: "FK_Payments_Careers_CareerId",
+                        name: "FK_Students_AcademicCycles_AcademicCycleId",
+                        column: x => x.AcademicCycleId,
+                        principalTable: "AcademicCycles",
+                        principalColumn: "AcademicCycleId");
+                    table.ForeignKey(
+                        name: "FK_Students_Careers_CareerId",
                         column: x => x.CareerId,
                         principalTable: "Careers",
                         principalColumn: "CareerId");
-                    table.ForeignKey(
-                        name: "FK_Payments_Students_StudentId",
-                        column: x => x.StudentId,
-                        principalTable: "Students",
-                        principalColumn: "StudentId");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Permissions",
-                columns: table => new
-                {
-                    PermissionId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Descripcion = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Activo = table.Column<bool>(type: "bit", nullable: false),
-                    StudentId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Permissions", x => x.PermissionId);
-                    table.ForeignKey(
-                        name: "FK_Permissions_Students_StudentId",
-                        column: x => x.StudentId,
-                        principalTable: "Students",
-                        principalColumn: "StudentId");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "StudentPaymentStatuses",
-                columns: table => new
-                {
-                    StudentPaymentStatusId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Mes = table.Column<int>(type: "int", nullable: false),
-                    Año = table.Column<int>(type: "int", nullable: false),
-                    Pagado = table.Column<bool>(type: "bit", nullable: false),
-                    StudentId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_StudentPaymentStatuses", x => x.StudentPaymentStatusId);
-                    table.ForeignKey(
-                        name: "FK_StudentPaymentStatuses_Students_StudentId",
-                        column: x => x.StudentId,
-                        principalTable: "Students",
-                        principalColumn: "StudentId");
                 });
 
             migrationBuilder.CreateTable(
@@ -601,6 +551,79 @@ namespace AppAcademy.Infrastucture.Migrations
                         principalTable: "Ventas",
                         principalColumn: "VentaId",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Payments",
+                columns: table => new
+                {
+                    PaymentId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FechaPago = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    MesPagado = table.Column<int>(type: "int", nullable: false),
+                    AnioPagado = table.Column<int>(type: "int", nullable: false),
+                    Total = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    SaldoPendiente = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Descuento = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    EstadoVenta = table.Column<int>(type: "int", nullable: false),
+                    StudentId = table.Column<int>(type: "int", nullable: true),
+                    CareerId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Payments", x => x.PaymentId);
+                    table.ForeignKey(
+                        name: "FK_Payments_Careers_CareerId",
+                        column: x => x.CareerId,
+                        principalTable: "Careers",
+                        principalColumn: "CareerId");
+                    table.ForeignKey(
+                        name: "FK_Payments_Students_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Students",
+                        principalColumn: "StudentId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Permissions",
+                columns: table => new
+                {
+                    PermissionId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Descripcion = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Activo = table.Column<bool>(type: "bit", nullable: false),
+                    StudentId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Permissions", x => x.PermissionId);
+                    table.ForeignKey(
+                        name: "FK_Permissions_Students_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Students",
+                        principalColumn: "StudentId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "StudentPaymentStatuses",
+                columns: table => new
+                {
+                    StudentPaymentStatusId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Mes = table.Column<int>(type: "int", nullable: false),
+                    Año = table.Column<int>(type: "int", nullable: false),
+                    Pagado = table.Column<bool>(type: "bit", nullable: false),
+                    StudentId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StudentPaymentStatuses", x => x.StudentPaymentStatusId);
+                    table.ForeignKey(
+                        name: "FK_StudentPaymentStatuses_Students_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Students",
+                        principalColumn: "StudentId");
                 });
 
             migrationBuilder.CreateTable(
@@ -785,6 +808,11 @@ namespace AppAcademy.Infrastucture.Migrations
                 column: "StudentId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Students_AcademicCycleId",
+                table: "Students",
+                column: "AcademicCycleId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Students_CareerId",
                 table: "Students",
                 column: "CareerId");
@@ -815,9 +843,6 @@ namespace AppAcademy.Infrastucture.Migrations
                 name: "AbonoAcademy");
 
             migrationBuilder.DropTable(
-                name: "AcademicCycles");
-
-            migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
             migrationBuilder.DropTable(
@@ -831,6 +856,9 @@ namespace AppAcademy.Infrastucture.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "Bitacora");
 
             migrationBuilder.DropTable(
                 name: "DetalleCortes");
@@ -894,6 +922,9 @@ namespace AppAcademy.Infrastucture.Migrations
 
             migrationBuilder.DropTable(
                 name: "Clientes");
+
+            migrationBuilder.DropTable(
+                name: "AcademicCycles");
 
             migrationBuilder.DropTable(
                 name: "Careers");

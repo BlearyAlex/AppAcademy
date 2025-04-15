@@ -12,6 +12,7 @@ namespace AppAcademy.Controllers.ControlVentasController
     [Authorize]
     [Route("api/v1/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin, User, Ventas")]
     public class VentaController : ControllerBase
     {
         private readonly IMediator _mediator;

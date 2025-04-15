@@ -3,16 +3,18 @@ using AppAcademy.Application.Features.Productos.Commands.CreateProducto;
 using AppAcademy.Application.Features.Productos.Commands.DeleteProducto;
 using AppAcademy.Application.Features.Productos.Commands.UpdateProducto;
 using AppAcademy.Application.Features.Productos.Queries.GetAllProductos;
+using AppAcademy.Application.Features.Productos.Queries.GetAllProductosFilter;
 using AppAcademy.Application.Features.Productos.Queries.GetProductById;
 using AppAcademy.Application.Features.Productos.Queries.GetProductsByName;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppAcademy.Controllers.ControlVentasController
 {
-    //[Authorize(Policy = "ManageProveedores")]
     [Route("api/v1/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin, User, Ventas")]
     public class ProductoController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -35,6 +37,29 @@ namespace AppAcademy.Controllers.ControlVentasController
             try
             {
                 var query = new GetAllProductosListQuery();
+                var products = await _mediator.Send(query);
+
+                if (products == null || !products.Any())
+                {
+                    return NotFound("No se encontraron productos.");
+                }
+
+                return Ok(products);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        #endregion
+
+        #region GetAll
+        [HttpGet("GetAllProductosFilter")]
+        public async Task<ActionResult<IEnumerable<GetAllProductosVm>>> GetAllProductsFilter()
+        {
+            try
+            {
+                var query = new GetAllProductosFilterListQuery();
                 var products = await _mediator.Send(query);
 
                 if (products == null || !products.Any())

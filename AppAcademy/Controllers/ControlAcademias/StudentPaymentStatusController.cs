@@ -4,13 +4,14 @@ using AppAcademy.Application.Features.StudentPaymentStatuses.Commands.UpdateStud
 using AppAcademy.Application.Features.StudentPaymentStatuses.Queries.GetAllStudentPaymentStatuses;
 using AppAcademy.Application.Features.StudentPaymentStatuses.Queries.GetStudentPaymentStatus;
 using MediatR;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppAcademy.Controllers.ControlAcademias
 {
     [Route("api/v1[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin, User, Academia")]
     public class StudentPaymentStatusController : ControllerBase
     {
         private readonly IMediator _mediator;

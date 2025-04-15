@@ -1,15 +1,14 @@
-﻿using AppAcademy.Application.Features.Abonos.Command.CreateAbono;
-using AppAcademy.Application.Features.Abonos.Command.DeleteAbono;
-using AppAcademy.Application.Features.AbonosAcademy.Commands.CreateAbonoAcademy;
+﻿using AppAcademy.Application.Features.AbonosAcademy.Commands.CreateAbonoAcademy;
 using AppAcademy.Application.Features.AbonosAcademy.Commands.DeleteAbonoAcademy;
 using MediatR;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppAcademy.Controllers.ControlAcademias
 {
     [Route("api/v1/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin, User, Academia")]
     public class AbonoAcademyController : ControllerBase
     {
         private readonly IMediator _mediator;

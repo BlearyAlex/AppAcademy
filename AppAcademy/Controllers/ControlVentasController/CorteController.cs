@@ -10,12 +10,14 @@ using AppAcademy.Application.Features.DetallesCortes.Command.UpdateDetalleCorte;
 using AppAcademy.Application.Features.DetallesCortes.Queries.GetAllDetallesCortes;
 using AppAcademy.Application.Features.DetallesCortes.Queries.GetDetalleCorte;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppAcademy.Controllers.ControlVentasController
 {
     [Route("api/v1/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin, User, Ventas")]
     public class CorteController : ControllerBase
     {
         private readonly IMediator _mediator;

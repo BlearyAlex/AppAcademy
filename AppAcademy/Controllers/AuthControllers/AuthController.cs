@@ -1,6 +1,7 @@
 ﻿using AppAcademy.Application.DTOs;
 using AppAcademy.Infrastucture.Identity;
 using AppAcademy.Infrastucture.Repositories.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +29,7 @@ namespace AppAcademy.Controllers.AuthControllers
             _refreshTokenService = refreshTokenService;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
@@ -83,7 +85,7 @@ namespace AppAcademy.Controllers.AuthControllers
                     // Crear el token JWT
                     var token = new JwtSecurityToken(
                         claims: claims,
-                        expires: DateTime.UtcNow.AddSeconds(10),
+                        expires: DateTime.UtcNow.AddHours(1),
                         signingCredentials: creds
                     );
 
@@ -109,6 +111,7 @@ namespace AppAcademy.Controllers.AuthControllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("users")]
         public async Task<IActionResult> GetUsers()
         {
@@ -191,6 +194,7 @@ namespace AppAcademy.Controllers.AuthControllers
             return Ok(userModel);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("delete-user/{userId}")]
         public async Task<IActionResult> DeleteUser(string userId)
         {
@@ -258,7 +262,7 @@ namespace AppAcademy.Controllers.AuthControllers
             // Crear el nuevo token JWT
             var token = new JwtSecurityToken(
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(1),
+                expires: DateTime.UtcNow.AddDays(7),
                 signingCredentials: creds
             );
 

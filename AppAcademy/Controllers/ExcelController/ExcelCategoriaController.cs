@@ -1,4 +1,5 @@
 ﻿using AppAcademy.Application.Contracts.Persistence;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
 using OfficeOpenXml.Drawing.Chart;
@@ -8,6 +9,7 @@ namespace AppAcademy.Controllers.ExcelController
 {
     [Route("api/v1/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin, User")]
     public class ExcelCategoriaController : ControllerBase
     {
         private readonly ICategoriaRepository _categoryRepository;

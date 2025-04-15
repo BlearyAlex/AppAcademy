@@ -6,12 +6,14 @@ using AppAcademy.Application.Features.Categorias.Queries.GetAllCategoria;
 using AppAcademy.Application.Features.Categorias.Queries.GetCategoriaById;
 using AppAcademy.Infrastucture.Repositories;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppAcademy.Controllers.ControlVentasController
 {
     [Route("api/v1/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin, User, Ventas")]
     public class CategoriaController : ControllerBase
     {
         private readonly IMediator _mediator;

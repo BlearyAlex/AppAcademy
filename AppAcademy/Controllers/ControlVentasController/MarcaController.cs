@@ -6,12 +6,14 @@ using AppAcademy.Application.Features.Marcas.Queries.GetAllMarcas;
 using AppAcademy.Application.Features.Marcas.Queries.GetMarca;
 using AppAcademy.Infrastucture.Repositories;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppAcademy.Controllers.ControlVentasController
 {
     [Route("api/v1/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin, User, Ventas")]
     public class MarcaController : ControllerBase
     {
         private readonly IMediator _mediator;

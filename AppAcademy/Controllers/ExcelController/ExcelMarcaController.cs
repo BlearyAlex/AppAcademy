@@ -3,11 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml.Drawing.Chart;
 using OfficeOpenXml.Style;
 using OfficeOpenXml;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AppAcademy.Controllers.ExcelController
 {
     [Route("api/v1/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin, User")]
     public class ExcelMarcaController : ControllerBase
     {
         private readonly IMarcaRepository _marcaRepository;

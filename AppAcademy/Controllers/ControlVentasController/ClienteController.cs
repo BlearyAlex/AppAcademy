@@ -5,12 +5,14 @@ using AppAcademy.Application.Features.Clientes.Commands.UpdateCliente;
 using AppAcademy.Application.Features.Clientes.Queries.GetAllCliente;
 using AppAcademy.Application.Features.Clientes.Queries.GetClienteById;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppAcademy.Controllers.ControlVentasController
 {
     [Route("api/v1/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin, User, Ventas")]
     public class ClienteController : ControllerBase
     {
         private readonly IMediator _mediator;

@@ -2,6 +2,7 @@
 using AppAcademy.Application.Features.Abonos.Command.DeleteAbono;
 using AppAcademy.Application.Features.Ventas.Command.DeleteVenta;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,6 +10,7 @@ namespace AppAcademy.Controllers.ControlVentasController
 {
     [Route("api/v1/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin, User, Ventas")]
     public class AbonoController : ControllerBase
     {
         private readonly IMediator _mediator;

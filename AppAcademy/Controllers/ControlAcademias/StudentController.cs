@@ -8,13 +8,14 @@ using AppAcademy.Application.Features.Students.Queries.GetAllStudents;
 using AppAcademy.Application.Features.Students.Queries.GetGanttData;
 using AppAcademy.Application.Features.Students.Queries.GetStudent;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppAcademy.Controllers.ControlAcademias
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    //[Authorize(Roles = "Admin, User")]
+    [Authorize(Roles = "Admin, User, Academia")]
     public class StudentController : ControllerBase
     {
         private readonly IMediator _mediator;

@@ -2,15 +2,15 @@
 using AppAcademy.Application.Features.Payments.Commands.DeletePayment;
 using AppAcademy.Application.Features.Payments.Queries.GetPayment;
 using AppAcademy.Application.Features.Payments.Queries.GetPayments;
-using AppAcademy.Domain.PuntoDeVenta;
 using MediatR;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppAcademy.Controllers.ControlAcademias
 {
     [Route("api/v1/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin, User, Academia")]
     public class PaymentController : ControllerBase
     {
         private readonly IMediator _mediator;

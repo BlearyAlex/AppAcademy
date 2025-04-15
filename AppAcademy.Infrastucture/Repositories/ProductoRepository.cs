@@ -1,5 +1,6 @@
 ﻿using AppAcademy.Application.Contracts.Persistence;
 using AppAcademy.Application.Features.Productos.Queries.GetAllProductos;
+using AppAcademy.Application.Features.Productos.Queries.GetAllProductosFilter;
 using AppAcademy.Application.Features.Productos.Queries.GetProductById;
 using AppAcademy.Application.ViewModel.Producto;
 using AppAcademy.Domain.Enum;
@@ -26,6 +27,50 @@ namespace AppAcademy.Infrastucture.Repositories
                 .Include(p => p.Marca)
                 .Include(p => p.Proveedor)
                 .Select(p => new GetAllProductosVm
+                {
+                    ProductoId = p.ProductoId,
+                    Nombre = p.Nombre,
+                    CodigoBarras = p.CodigoBarras,
+                    Descripcion = p.Descripcion,
+                    FechaRegistro = p.FechaRegistro,
+                    Imagen = p.Imagen,
+                    Costo = p.Costo,
+                    Utilidad = p.Utilidad,
+                    Precio = p.Precio,
+                    Color = p.Color,
+                    EstadoProducto = p.EstadoProducto.ToString(),
+                    Stock = p.Stock,
+                    Categoria = new GetAllCategoriaVm
+                    {
+                        CategoriaId = p.Categoria.CategoriaId,
+                        Nombre = p.Categoria.Nombre,
+                        Color = p.Categoria.Color,
+                    },
+                    Marca = new GetAllMarcaVm
+                    {
+                        MarcaId = p.Marca.MarcaId,
+                        Nombre = p.Marca.Nombre,
+                        Color = p.Marca.Color,
+                    },
+                    Proveedor = new GetAllProveedorVm
+                    {
+                        ProveedorId = p.Proveedor.ProveedorId,
+                        Nombre = p.Proveedor.Nombre,
+                        Color = p.Proveedor.Color
+                    }
+                }).ToListAsync();
+
+            return productos;
+        }
+
+        public async Task<List<GetAllProductosFilterVm>> GetAllProductosWithFilter()
+        {
+            var productos = await _dbContext.Productos
+                .Where(p => p.EstadoProducto == ProductoEstado.Alta)
+                .Include(p => p.Categoria)
+                .Include(p => p.Marca)
+                .Include(p => p.Proveedor)
+                .Select(p => new GetAllProductosFilterVm
                 {
                     ProductoId = p.ProductoId,
                     Nombre = p.Nombre,

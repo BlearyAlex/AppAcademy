@@ -4,13 +4,14 @@ using AppAcademy.Application.Features.Permissions.Commands.UpdatePermission;
 using AppAcademy.Application.Features.Permissions.Queries.GetAllPermissions;
 using AppAcademy.Application.Features.Permissions.Queries.GetPermission;
 using MediatR;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppAcademy.Controllers.ControlAcademias
 {
     [Route("api/v1/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin, User, Academia")]
     public class PermissionController : ControllerBase
     {
         private readonly IMediator _mediator;
