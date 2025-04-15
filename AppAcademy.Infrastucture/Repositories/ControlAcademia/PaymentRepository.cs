@@ -76,9 +76,9 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
                     {
                         UsuarioId = usuario.Id,
                         Fecha = DateTime.UtcNow,
-                        Descripcion = $"Se registró un nuevo pago por el usuario {usuario.UserName} para el estudiante {student.Nombre + " " + student.Apellido} por un total de: {payment.Total}",
+                        Descripcion = $"Se registró un nuevo pago para el estudiante {student.Nombre + " " + student.Apellido} por un total de: {payment.Total} por el Usuario: {usuario.UserName}",
                         ReferenciaId = payment.PaymentId.ToString(),
-                        TipoReferencia = "Payment"
+                        TipoReferencia = "Add"
                     };
 
                     await _dbContext.Bitacora.AddAsync(bitacora);
@@ -253,7 +253,7 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
             if (usuario == null) throw new Exception("Usuario no encontrado");
 
             // Mensaje dinámico para bitácora
-            string mensajeBitacora = $"Se eliminó el pago del mes: {findPayment.MesPagado} del estudiante {student.Nombre} {student.Apellido} por el usuario {usuario.UserName}.";
+            string mensajeBitacora = $"Se eliminó el pago del mes: {findPayment.MesPagado} del estudiante {student.Nombre} por el Total: {findPayment.Total} {student.Apellido} por el Usuario: {usuario.UserName}.";
 
             if (findPayment.AbonosAcademy.Any())
             {
@@ -267,7 +267,7 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
                 Fecha = DateTime.UtcNow,
                 Descripcion = mensajeBitacora,
                 ReferenciaId = findPayment.PaymentId.ToString(),
-                TipoReferencia = "Payment"
+                TipoReferencia = "Delete"
             };
 
             _dbContext.Bitacora.Add(bitacora);

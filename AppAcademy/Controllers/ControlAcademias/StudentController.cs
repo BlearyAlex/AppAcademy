@@ -5,6 +5,7 @@ using AppAcademy.Application.Features.Students.Commands.CreateStudent;
 using AppAcademy.Application.Features.Students.Commands.DeleteStudent;
 using AppAcademy.Application.Features.Students.Commands.UpdateStudent;
 using AppAcademy.Application.Features.Students.Queries.GetAllStudents;
+using AppAcademy.Application.Features.Students.Queries.GetAllStudentsFilter;
 using AppAcademy.Application.Features.Students.Queries.GetGanttData;
 using AppAcademy.Application.Features.Students.Queries.GetStudent;
 using MediatR;
@@ -129,6 +130,29 @@ namespace AppAcademy.Controllers.ControlAcademias
             try
             {
                 var query = new GetAllStudentsListQuery();
+                var students = await _mediator.Send(query);
+
+                if (students == null || !students.Any())
+                {
+                    return NotFound("No se encontraron estudiantes.");
+                }
+
+                return Ok(students);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        #endregion
+
+        #region GetAllFilter
+        [HttpGet("GetAllFilter")]
+        public async Task<ActionResult<IEnumerable<GetAllStudentsFilterVm>>> GetAllFilter()
+        {
+            try
+            {
+                var query = new GetAllStudentsFilterListQuery();
                 var students = await _mediator.Send(query);
 
                 if (students == null || !students.Any())

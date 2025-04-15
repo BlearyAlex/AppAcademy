@@ -1,6 +1,8 @@
-﻿namespace AppAcademy.Application.Features.Students.Queries.GetAllStudents
+﻿using AppAcademy.Application.Features.Students.Queries.GetAllStudents;
+
+namespace AppAcademy.Application.Features.Students.Queries.GetAllStudentsFilter
 {
-    public class GetAllStudentsVm
+    public class GetAllStudentsFilterVm
     {
         public int StudentId { get; set; }
         public string Nombre { get; set; }
@@ -13,19 +15,5 @@
         public string EstadoEstudiante { get; set; }
         public GetAllCyclesStudentsVm AcademicCycle { get; set; }
         public GetAllCareerStudentsVm Career { get; set; }
-    }
-
-    public class GetAllCareerStudentsVm
-    {
-        public int CareerId { get; set; }
-        public string Nombre { get; set; }
-        public string Color { get; set; }
-    }
-
-    public class GetAllCyclesStudentsVm
-    {
-        public int AcademicCycleId { get; set; }
-        public string CicloAcademico { get; set; }
-        public string Color { get; set; }
     }
 }

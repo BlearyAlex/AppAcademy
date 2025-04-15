@@ -4,9 +4,11 @@ using AppAcademy.Application.Exceptions;
 using AppAcademy.Application.Features.Students.Commands.CreateStudent;
 using AppAcademy.Application.Features.Students.Commands.DeleteStudent;
 using AppAcademy.Application.Features.Students.Queries.GetAllStudents;
+using AppAcademy.Application.Features.Students.Queries.GetAllStudentsFilter;
 using AppAcademy.Application.Features.Students.Queries.GetGanttData;
 using AppAcademy.Application.Features.Students.Queries.GetStudent;
 using AppAcademy.Domain.ControlAcademia;
+using AppAcademy.Domain.Enum;
 using AppAcademy.Domain.Logs;
 using AppAcademy.Infrastucture.Identity;
 using AppAcademy.Infrastucture.Persistence;
@@ -73,6 +75,50 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
             }
         }
 
+        public async Task<List<GetAllStudentsFilterVm>> GetAllStudentsFiltersWithCareers()
+        {
+            try
+            {
+                var students = await _dbContext.Students
+                    .Where(s => s.EstadoEstudiante == EstudianteEstado.Alta)
+                    .Include(s => s.Career)
+                    .Include(s => s.AcademicCycle)
+                    .Select(s => new GetAllStudentsFilterVm
+                    {
+                        StudentId = s.StudentId,
+                        Nombre = s.Nombre,
+                        Apellido = s.Apellido,
+                        Telefono = s.Telefono,
+                        Email = s.Email,
+                        Direccion = s.Direccion,
+                        ImageUrl = s.ImageUrl,
+                        FechaIngreso = s.FechaIngreso,
+                        AcademicCycle = s.AcademicCycle != null
+                        ? new GetAllCyclesStudentsVm
+                        {
+                            AcademicCycleId = s.AcademicCycle.AcademicCycleId,
+                            CicloAcademico = s.AcademicCycle.CicloAcademico,
+                            Color = s.AcademicCycle.Color,
+                        } : null,
+                        EstadoEstudiante = s.EstadoEstudiante.ToString(),
+                        Career = s.Career != null
+                            ? new GetAllCareerStudentsVm
+                            {
+                                CareerId = s.Career.CareerId,
+                                Nombre = s.Career.Nombre,
+                                Color = s.Career.Color
+                            } : null,
+                    }).ToListAsync();
+
+                return students;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
         public async Task<GetStudentVm> GetStudentsByIdWithCareer(int studentId)
         {
             var student = await _dbContext.Students
@@ -109,6 +155,7 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
         public async Task<List<GetStudentCardVm>> GetStudentCard()
         {
             var students = await _dbContext.Students
+                 .Where(s => s.EstadoEstudiante == EstudianteEstado.Alta)
                  .Include(s => s.Career)
                  .Include(s => s.Payments)
                  .Include(s => s.Career.AcademicCycles)
@@ -184,9 +231,9 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
             {
                 UsuarioId = usuario.Id,
                 Fecha = DateTime.UtcNow,
-                Descripcion = $"Se registró un nuevo estudiante: {newStudent.Nombre + " " + newStudent.Apellido} por el usuario {usuario.UserName}",
+                Descripcion = $"Se registró un nuevo estudiante: {newStudent.Nombre + " " + newStudent.Apellido} por el Usuario: {usuario.UserName}",
                 ReferenciaId = newStudent.StudentId.ToString(),
-                TipoReferencia = "Student"
+                TipoReferencia = "Add"
             };
 
             _dbContext.Bitacora.Add(bitacora);
@@ -238,9 +285,9 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
             {
                 UsuarioId = usuario.Id,
                 Fecha = DateTime.UtcNow,
-                Descripcion = $"Se elimino el estudiante: {findStudent.Nombre + " " + findStudent.Apellido} por el usuario {usuario.UserName}",
+                Descripcion = $"Se elimino el estudiante: {findStudent.Nombre + " " + findStudent.Apellido} por el Usuario: {usuario.UserName}",
                 ReferenciaId = findStudent.StudentId.ToString(),
-                TipoReferencia = "Student"
+                TipoReferencia = "Delete"
             };
 
             _dbContext.Bitacora.Add(bitacora);

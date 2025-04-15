@@ -11,6 +11,15 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
         {
         }
 
+        public async Task<List<Career>> GetAllCareerFilter()
+        {
+            var careers = await _dbContext.Careers
+                .Where(c => c.Activa == true)
+                .ToListAsync();
+
+            return careers;
+        }
+
         public async Task<bool> CareerTienePagosActivos(int careerId)
         {
             return await _dbContext.Payments.AnyAsync(s => s.CareerId== careerId);

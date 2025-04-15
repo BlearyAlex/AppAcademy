@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace AppAcademy.Application.Features.AbonosAcademy.Commands.CreateAbonoAcademy
 {
-    public class CreateAbonoAcademyCommandHandler : IRequestHandler<CreateAbonoAcademyCommand, bool>
+    public class CreateAbonoAcademyCommandHandler : IRequestHandler<CreateAbonoAcademyCommand, CreateAbonoAcademyResult>
     {
         private readonly IAbonoAcademyRepository _abonoAcademyRepository;
         private readonly ILogger<CreateAbonoAcademyCommandHandler> _logger;
@@ -19,7 +19,7 @@ namespace AppAcademy.Application.Features.AbonosAcademy.Commands.CreateAbonoAcad
             _paymentRepository = paymentRepository;
         }
 
-        public async Task<bool> Handle(CreateAbonoAcademyCommand request, CancellationToken cancellationToken)
+        public async Task<CreateAbonoAcademyResult> Handle(CreateAbonoAcademyCommand request, CancellationToken cancellationToken)
         {
             return await _abonoAcademyRepository.CreateAbonoAcademy(request.PaymentId, request.MontoAbonado, request.UserName);
         }

@@ -33,7 +33,7 @@ namespace AppAcademy.Controllers.ControlAcademias
 
                 var result = await _mediator.Send(command);
 
-                return Ok(new { message = "Abono creado con éxito", paymentId = result });
+                return File(result.PdfBlob, "application/pdf", $"Recibo-Abono-{result.AbonoAcademyId}.pdf");
             }
             catch (Exception ex)
             {

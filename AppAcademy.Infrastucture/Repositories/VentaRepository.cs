@@ -76,7 +76,7 @@ namespace AppAcademy.Infrastucture.Repositories
                         Fecha = DateTime.UtcNow,
                         Descripcion = $"Se registró un nueva venta con Folio: {venta.Folio} por un Total: ${venta.Total}.00 por el Usuario: {usuario.UserName}",
                         ReferenciaId = venta.VentaId.ToString(),
-                        TipoReferencia = "Venta Nueva"
+                        TipoReferencia = "Add"
                     };
 
                     _dbContext.Bitacora.Add(bitacora);
@@ -171,7 +171,7 @@ namespace AppAcademy.Infrastucture.Repositories
                         Fecha = DateTime.UtcNow,
                         Descripcion = mensajeBitacora,
                         ReferenciaId = venta.VentaId.ToString(),
-                        TipoReferencia = "Venta Eliminada"
+                        TipoReferencia = "Delete"
                     };
 
                     _dbContext.Bitacora.Add(bitacora);

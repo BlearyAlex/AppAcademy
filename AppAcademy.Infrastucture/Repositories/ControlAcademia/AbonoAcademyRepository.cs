@@ -1,4 +1,6 @@
-﻿using AppAcademy.Application.Contracts.Persistence.IControlAcademia;
+﻿using AppAcademy.Application.Contracts.Persistence;
+using AppAcademy.Application.Contracts.Persistence.IControlAcademia;
+using AppAcademy.Application.Features.AbonosAcademy.Commands.CreateAbonoAcademy;
 using AppAcademy.Domain.ControlAcademia;
 using AppAcademy.Domain.Enum;
 using AppAcademy.Domain.Logs;
@@ -12,22 +14,36 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
     public class AbonoAcademyRepository : AsyncRepository<AbonoAcademy>, IAbonoAcademyRepository
     {
         private readonly UserManager<AppUser> _userManager;
+        private readonly IReciboAbonoPdfService _reciboPdfService;
 
-        public AbonoAcademyRepository(AppAcademyDbContext dbContext, UserManager<AppUser> userManager) : base(dbContext)
+        public AbonoAcademyRepository(AppAcademyDbContext dbContext, UserManager<AppUser> userManager, IReciboAbonoPdfService reciboPdfService) : base(dbContext)
         {
             _userManager = userManager;
+            _reciboPdfService = reciboPdfService;
         }
 
-        public async Task<bool> CreateAbonoAcademy(int paymentId, decimal montoAbonado, string userName)
+        public async Task<CreateAbonoAcademyResult> CreateAbonoAcademy(int paymentId, decimal montoAbonado, string userName)
         {
-            if (montoAbonado <= 0) return false;
+            if (montoAbonado <= 0) throw new ArgumentException("El monto abonado debe ser mayor que cero.");
 
             using (var transaction = await _dbContext.Database.BeginTransactionAsync())
             {
                 try
                 {
-                    var payment = await _dbContext.Payments.FindAsync(paymentId);
-                    if (payment == null) return false;
+                    var payment = await _dbContext.Payments
+                        .Include(p => p.Student)
+                        .Include(p => p.Career)
+                            .ThenInclude(a => a.AcademicCycles)
+                        .Include(p => p.AbonosAcademy)
+                        .FirstOrDefaultAsync(p => p.PaymentId == paymentId);
+                    
+                    if (payment == null) throw new Exception("Pago no encontrada.");
+
+                    decimal cambio = 0;
+                    if (montoAbonado > payment.SaldoPendiente)
+                    {
+                        cambio = montoAbonado - payment.SaldoPendiente;
+                    }
 
                     var student = await _dbContext.Students.FindAsync(payment.StudentId);
                     if (student == null) throw new Exception("Estudiante no encontrado");
@@ -61,17 +77,23 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
                     {
                         UsuarioId = usuario.Id,
                         Fecha = DateTime.UtcNow,
-                        Descripcion = $"Se registró un nuevo abono del estudiante {student.Nombre} por un total de: {abono.Monto} correspondiente al mes: {payment.MesPagado}.",
+                        Descripcion = $"Se registró un nuevo abono para el estudiante {student.Nombre} por un total de: {abono.Monto} correspondiente al mes: {payment.MesPagado} por el Usuario: {usuario.UserName}.",
                         ReferenciaId = abono.AbonoAcademyId.ToString(),
-                        TipoReferencia = "Payment"
+                        TipoReferencia = "Add"
                     };
 
                     _dbContext.Bitacora.Add(bitacora);
 
                     await _dbContext.SaveChangesAsync();
-                    await transaction.CommitAsync(); // Confirmar transacción
+                    await transaction.CommitAsync();
 
-                    return true; 
+                    var pdfBytes = _reciboPdfService.GenerarReciboAbonoAcademyPDF(payment, abono, cambio);
+
+                    return new CreateAbonoAcademyResult
+                    {
+                        AbonoAcademyId = abono.AbonoAcademyId,
+                        PdfBlob = pdfBytes,
+                    };
                 }
                 catch (Exception ex)
                 {
@@ -125,9 +147,9 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
                     {
                         UsuarioId = usuario.Id,
                         Fecha = DateTime.UtcNow,
-                        Descripcion = $"Se elimino un abono del estudiante {student.Nombre} por un total de: {abono.Monto}",
+                        Descripcion = $"Se elimino un abono del estudiante {student.Nombre} por un total de: {abono.Monto} por el Usuario: {usuario.UserName}",
                         ReferenciaId = abono.AbonoAcademyId.ToString(),
-                        TipoReferencia = "Payment"
+                        TipoReferencia = "Delete"
                     };
 
                     _dbContext.Bitacora.Add(bitacora);

@@ -3,6 +3,7 @@ using AppAcademy.Application.Features.Careers.Commands.CreateCareer;
 using AppAcademy.Application.Features.Careers.Commands.DeleteCareer;
 using AppAcademy.Application.Features.Careers.Commands.UpdateCareer;
 using AppAcademy.Application.Features.Careers.Queries.GetAllCareers;
+using AppAcademy.Application.Features.Careers.Queries.GetAllCareersFilter;
 using AppAcademy.Application.Features.Careers.Queries.GetCareer;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -97,6 +98,29 @@ namespace AppAcademy.Controllers.ControlAcademias
             try
             {
                 var query = new GetAllCareerListQuery();
+                var careers = await _mediator.Send(query);
+
+                if (careers == null || !careers.Any())
+                {
+                    return NotFound("No se encontraron carreras.");
+                }
+
+                return Ok(careers);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        #endregion
+
+        #region GetAllFilter
+        [HttpGet("GetAllFilter")]
+        public async Task<ActionResult<IEnumerable<GetAllCareerFilterVm>>> GetAllFilter()
+        {
+            try
+            {
+                var query = new GetAllCareerFilterListQuery();
                 var careers = await _mediator.Send(query);
 
                 if (careers == null || !careers.Any())

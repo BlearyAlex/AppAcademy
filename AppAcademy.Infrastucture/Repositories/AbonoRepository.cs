@@ -70,14 +70,13 @@ namespace AppAcademy.Infrastucture.Repositories
                     var usuario = await _userManager.FindByNameAsync(userName);
                     if (usuario == null) throw new Exception("Usuario no encontrado");
 
-
                     var bitacora = new Bitacora
                     {
                         UsuarioId = usuario.Id,
                         Fecha = DateTime.UtcNow,
-                        Descripcion = $"Se registró un nuevo abono para la venta con Folio: {venta.Folio} por un total de {montoAbonado} por el usuario {usuario.UserName}",
+                        Descripcion = $"Se registró un nuevo abono para la venta con Folio: {venta.Folio} por un total de {montoAbonado} por el Usuario: {usuario.UserName}",
                         ReferenciaId = abono.AbonoId.ToString(),
-                        TipoReferencia = "Abono"
+                        TipoReferencia = "Add"
                     };
 
                     await _dbContext.Bitacora.AddAsync(bitacora);
@@ -94,10 +93,10 @@ namespace AppAcademy.Infrastucture.Repositories
                     };
 
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    throw;
+                    throw new Exception("Error al procesar el abono.", ex);
                 }
             }
         }
@@ -139,9 +138,9 @@ namespace AppAcademy.Infrastucture.Repositories
                 {
                     UsuarioId = usuario.Id,
                     Fecha = DateTime.UtcNow,
-                    Descripcion = $"Se eliminó un abono de {abono.Monto} para la venta con Folio: {venta.Folio} por el usuario {usuario.UserName}",
+                    Descripcion = $"Se eliminó un abono de {abono.Monto} para la venta con Folio: {venta.Folio} por el Usuario: {usuario.UserName}",
                     ReferenciaId = abono.AbonoId.ToString(),
-                    TipoReferencia = "Abono"
+                    TipoReferencia = "Delete"
                 };
 
                 await _dbContext.Bitacora.AddAsync(bitacora);

@@ -2,6 +2,7 @@
 using AppAcademy.Application.Features.AcademicCycles.Queries.GetCycle;
 using AppAcademy.Application.Features.Bitacora.Queries.GetBitacoras;
 using AppAcademy.Application.Features.Careers.Queries.GetAllCareers;
+using AppAcademy.Application.Features.Careers.Queries.GetAllCareersFilter;
 using AppAcademy.Application.Features.Careers.Queries.GetCareer;
 using AppAcademy.Application.Features.Categorias.Commands.CreateCategoria;
 using AppAcademy.Application.Features.Categorias.Commands.UpdateCategoria;
@@ -46,6 +47,7 @@ using AppAcademy.Application.Features.Salidas.Command.UpdateSalida;
 using AppAcademy.Application.Features.Salidas.Queries.GetAllSalidas;
 using AppAcademy.Application.Features.Salidas.Queries.GetSalida;
 using AppAcademy.Application.Features.Students.Queries.GetAllStudents;
+using AppAcademy.Application.Features.Students.Queries.GetAllStudentsFilter;
 using AppAcademy.Application.Features.Students.Queries.GetStudent;
 using AppAcademy.Application.Features.Ventas.Command.CreateVenta;
 using AppAcademy.Application.Features.Ventas.Queries.GetAllVentas;
@@ -200,6 +202,9 @@ namespace AppAcademy.Application.Mapping
             #region Students
             CreateMap<Student, GetAllStudentsVm>()
                 .ForMember(dest => dest.EstadoEstudiante, opt => opt.MapFrom(src => src.EstadoEstudiante.ToString()));
+            CreateMap<Student, GetAllStudentsFilterVm>()
+                .ForMember(dest => dest.EstadoEstudiante, opt => opt.MapFrom(src => src.EstadoEstudiante.ToString()));
+
             CreateMap<Student, GetStudentVm>()
                  .ForMember(dest => dest.EstadoEstudiante, opt => opt.MapFrom(src => src.EstadoEstudiante.ToString()))
                  .ForMember(dest => dest.EstadoEstudiante, opt => opt.MapFrom(src => src.EstadoEstudiante.ToString()));
@@ -207,6 +212,8 @@ namespace AppAcademy.Application.Mapping
 
             #region Career
             CreateMap<Career, GetAllCareersVm>()
+                .ForMember(dest => dest.Activa, opt => opt.MapFrom(src => src.Activa.ToString()));
+            CreateMap<Career, GetAllCareerFilterVm>()
                 .ForMember(dest => dest.Activa, opt => opt.MapFrom(src => src.Activa.ToString()));
             CreateMap<Career, GetCareerVm>()
                 .ForMember(dest => dest.Activa, opt => opt.MapFrom(src => src.Activa.ToString()));
