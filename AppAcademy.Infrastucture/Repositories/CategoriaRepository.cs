@@ -20,7 +20,7 @@ namespace AppAcademy.Infrastucture.Repositories
 
         public async Task<bool> CategoriaTieneProductosActivos(string categoriaId)
         {
-            return await _dbContext.Categorias.AnyAsync(c => c.CategoriaId == categoriaId);
+            return await _dbContext.Productos.AnyAsync(c => c.CategoriaId == categoriaId);
         }
 
         public async Task<List<SalesEvolutionByCategory>> GetSalesEvolutionByCategory(DateTime startDate, DateTime endDate)

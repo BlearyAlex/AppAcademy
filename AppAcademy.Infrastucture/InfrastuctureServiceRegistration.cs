@@ -26,8 +26,17 @@ namespace AppAcademy.Infrastucture
         {
             QuestPDF.Settings.License = LicenseType.Community;
 
+            var connectionStringEnv = Environment.GetEnvironmentVariable("CONNECTIONSTRINGS__SQLCONNECTION");
+            if (!string.IsNullOrEmpty(connectionStringEnv))
+            {
+                configuration["ConnectionStrings:SqlConnection"] = connectionStringEnv;
+            }
+
             services.AddDbContext<AppAcademyDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("SqlConnection")));
+                options.UseSqlServer(configuration.GetConnectionString("SqlConnection"),
+                sqlOptions => 
+                    sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null)
+                ));
 
             services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddRoles<IdentityRole>()

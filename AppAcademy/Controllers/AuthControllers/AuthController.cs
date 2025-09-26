@@ -115,18 +115,25 @@ namespace AppAcademy.Controllers.AuthControllers
         [HttpGet("users")]
         public async Task<IActionResult> GetUsers()
         {
-            var users = await _userManager.Users
-                .Select(user => new
+            var users = await _userManager.Users.ToListAsync();
+
+            var userList = new List<object>();
+
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+
+                userList.Add(new
                 {
                     user.Id,
                     user.UserName,
                     user.Email,
                     user.FullName,
-                    Rol = _userManager.GetRolesAsync(user).Result
-                })
-                .ToListAsync();
+                    Rol = roles
+                });
+            }
 
-            return Ok(users);
+            return Ok(userList);
         }
 
         [HttpPut("update-user/{userId}")]

@@ -1,5 +1,6 @@
 services:
   appacademy:
+    container_name: appacademy-api
     build:
       context: .
       dockerfile: AppAcademy/Dockerfile
@@ -9,7 +10,7 @@ services:
     environment:
       - ConnectionStrings__DefaultConnection=Server=${SQLSERVER_HOST},${SQLSERVER_PORT};Database=${SQLSERVER_DATABASE};User Id=${SQLSERVER_USER};Password=${SQLSERVER_PASSWORD};
     ports:
-    - "8080:8080"
+    - "8000:80"
     volumes:
     - ./wwwroot:/app/wwwroot
  

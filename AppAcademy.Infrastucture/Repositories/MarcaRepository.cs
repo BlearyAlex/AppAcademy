@@ -21,7 +21,7 @@ namespace AppAcademy.Infrastucture.Repositories
 
         public async Task<bool> MarcaTieneProductosActivos(string marcaId)
         {
-            return await _dbContext.Marca.AnyAsync(m => m.MarcaId == marcaId);
+            return await _dbContext.Productos.AnyAsync(m => m.MarcaId == marcaId);
         }
 
         public async Task<List<SalesEvolutionByMarca>> GetSalesEvolutionByMarca(DateTime startDate, DateTime endDate)

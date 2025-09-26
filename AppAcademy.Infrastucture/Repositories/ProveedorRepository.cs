@@ -13,7 +13,7 @@ namespace AppAcademy.Infrastucture.Repositories
 
         public async Task<bool> ProveedorTieneProductosActivos(string proveedorId)
         {
-           return await _dbContext.Proveedores.AnyAsync(p => p.ProveedorId  == proveedorId);
+           return await _dbContext.Productos.AnyAsync(p => p.ProveedorId  == proveedorId);
         }
     }
 }

@@ -29,70 +29,63 @@ namespace AppAcademy.Infrastucture.Repositories
 
         public async Task<Venta> CreateVenta(Venta venta, string userName)
         {
-            using (var transaction = await _dbContext.Database.BeginTransactionAsync())
+            try
             {
-                try
+                // Calcular el subtotal sumando el precio unitario por la cantidad de cada detalle.
+                decimal subtotal = venta.DetalleVentas.Sum(d => d.PrecioUnitario * d.Cantidad);
+
+                // Aplicar el descuento como porcentaje.
+                decimal descuentoCalculado = subtotal * (venta.Descuento / 100);
+                decimal totalConDescuento = subtotal - descuentoCalculado;
+
+                // Calcular el impuesto sobre el total después del descuento.
+                decimal impuestoCalculado = totalConDescuento * (venta.Impuesto / 100);
+
+                // Total final es la suma del total con descuento más el impuesto.
+                decimal totalFinal = totalConDescuento + impuestoCalculado;
+
+                // Asignar valores calculados a la venta
+                venta.Total = totalFinal;
+                venta.SaldoPendiente = totalFinal;
+                venta.EstadoVenta = VentaEstado.Pendiente;
+                venta.Fecha = DateTime.UtcNow;
+                venta.Folio = await GenerateFolioAsync();
+
+                // Descontar el stock de los productos
+                foreach (var detalle in venta.DetalleVentas)
                 {
-                    // Calcular el subtotal sumando el precio unitario por la cantidad de cada detalle.
-                    decimal subtotal = venta.DetalleVentas.Sum(d => d.PrecioUnitario * d.Cantidad);
-
-                    // Aplicar el descuento como porcentaje.
-                    decimal descuentoCalculado = subtotal * (venta.Descuento / 100);
-                    decimal totalConDescuento = subtotal - descuentoCalculado;
-
-                    // Calcular el impuesto sobre el total después del descuento.
-                    decimal impuestoCalculado = totalConDescuento * (venta.Impuesto / 100);
-
-                    // Total final es la suma del total con descuento más el impuesto.
-                    decimal totalFinal = totalConDescuento + impuestoCalculado;
-
-                    // Asignar valores calculados a la venta
-                    venta.Total = totalFinal;
-                    venta.SaldoPendiente = totalFinal;
-                    venta.EstadoVenta = VentaEstado.Pendiente;
-                    venta.Fecha = DateTime.UtcNow;
-                    venta.Folio = await GenerateFolioAsync();
-
-                    // Descontar el stock de los productos
-                    foreach (var detalle in venta.DetalleVentas)
+                    var producto = await _productoRepository.GetById(detalle.ProductoId);
+                    if (producto == null || producto.Stock < detalle.Cantidad)
                     {
-                        var producto = await _productoRepository.GetById(detalle.ProductoId);
-                        if (producto == null || producto.Stock < detalle.Cantidad)
-                        {
-                            throw new Exception($"Producto no disponible o stock insuficiente para el producto: {detalle.ProductoId}");
-                        }
-                        await _productoRepository.DescontarStock(detalle.ProductoId, detalle.Cantidad);
+                        throw new Exception($"Producto no disponible o stock insuficiente para el producto: {detalle.ProductoId}");
                     }
-
-                    // Agregar la venta a la base de datos
-                    await AddAsync(venta);
-
-                    var usuario = await _userManager.FindByNameAsync(userName);
-                    if (usuario == null) throw new Exception("Usuario no encontrado.");
-
-                    var bitacora = new Bitacora
-                    {
-                        UsuarioId = usuario.Id,
-                        Fecha = DateTime.UtcNow,
-                        Descripcion = $"Se registró un nueva venta con Folio: {venta.Folio} por un Total: ${venta.Total}.00 por el Usuario: {usuario.UserName}",
-                        ReferenciaId = venta.VentaId.ToString(),
-                        TipoReferencia = "Add"
-                    };
-
-                    _dbContext.Bitacora.Add(bitacora);
-                    await _dbContext.SaveChangesAsync(); 
-
-                    // Confirmar la transacción
-                    await transaction.CommitAsync();
-
-                    return venta;
+                    await _productoRepository.DescontarStock(detalle.ProductoId, detalle.Cantidad);
                 }
-                catch (Exception ex)
+
+                // Agregar la venta a la base de datos
+                await AddAsync(venta);
+
+                var usuario = await _userManager.FindByNameAsync(userName);
+                if (usuario == null) throw new Exception("Usuario no encontrado.");
+
+                var bitacora = new Bitacora
                 {
-                    // Si hay un error, revertimos la transacción
-                    await transaction.RollbackAsync();
-                    throw new Exception("Error al registrar la venta: " + ex.Message, ex);
-                }
+                    UsuarioId = usuario.Id,
+                    Fecha = DateTime.UtcNow,
+                    Descripcion = $"Se registró un nueva venta con Folio: {venta.Folio} por un Total: ${venta.Total}.00 por el Usuario: {usuario.UserName}",
+                    ReferenciaId = venta.VentaId.ToString(),
+                    TipoReferencia = "Add"
+                };
+
+                _dbContext.Bitacora.Add(bitacora);
+                await _dbContext.SaveChangesAsync(); 
+
+                return venta;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al registar la venta");
+                throw new Exception("Error al registrar la venta: " + ex.Message, ex);
             }
         }
 
@@ -123,77 +116,69 @@ namespace AppAcademy.Infrastucture.Repositories
 
         public async Task<bool> DeleteVenta(string ventaId, string userName)
         {
-            using (var transaction = await _dbContext.Database.BeginTransactionAsync())
+            try
             {
-                try
+                var venta = await _dbContext.Ventas
+                    .Include(v => v.DetalleVentas)
+                    .Include(v => v.Abonos)
+                    .FirstOrDefaultAsync(v => v.VentaId == ventaId);
+
+                if (venta == null)
                 {
-                    var venta = await _dbContext.Ventas
-                        .Include(v => v.DetalleVentas)
-                        .Include(v => v.Abonos)
-                        .FirstOrDefaultAsync(v => v.VentaId == ventaId);
-
-                    if (venta == null)
-                    {
-                        throw new Exception("Venta no encontrada");
-                    }
-
-                    // Revertir el stock de los productos vendidos
-                    foreach (var detalle in venta.DetalleVentas)
-                    {
-                        var producto = await _productoRepository.GetById(detalle.ProductoId);
-                        if (producto != null)
-                        {
-                            // Reponer el stock
-                            await _productoRepository.AgregarStock(detalle.ProductoId, detalle.Cantidad);
-                        }
-                    }
-
-                    // Eliminar los detalles de la venta
-                    _dbContext.VentaDetalle.RemoveRange(venta.DetalleVentas);
-
-                    // Eliminar la venta
-                    _dbContext.Ventas.Remove(venta);
-
-                    var usuario = await _userManager.FindByNameAsync(userName);
-                    if (usuario == null) throw new Exception("Usuario no encontrado.");
-
-                    // Mensaje dinamico de bitacora
-                    string mensajeBitacora = $"Se eliminó la venta con Folio: {venta.Folio} de un Total: ${venta.Total}.00 por el Usuario: {usuario.UserName}.";
-                    if (venta.Abonos.Any())
-                    {
-                        decimal totalAbonado = venta.Abonos.Sum(a => a.Monto);
-                        mensajeBitacora += $" La venta tenía {venta.Abonos.Count} abonos de un Total: ${totalAbonado}.";
-                    }
-
-                    var bitacora = new Bitacora
-                    {
-                        UsuarioId = usuario.Id,
-                        Fecha = DateTime.UtcNow,
-                        Descripcion = mensajeBitacora,
-                        ReferenciaId = venta.VentaId.ToString(),
-                        TipoReferencia = "Delete"
-                    };
-
-                    _dbContext.Bitacora.Add(bitacora);
-                    await _dbContext.SaveChangesAsync();
-
-                    // Confirmar la transacción
-                    await transaction.CommitAsync();
-
-                    return true;
-
+                    throw new Exception("Venta no encontrada");
                 }
-                catch (Exception ex)
+
+                // Revertir el stock de los productos vendidos
+                foreach (var detalle in venta.DetalleVentas)
                 {
-                    // Si ocurre un error, revertir la transacción
-                    await transaction.RollbackAsync();
-                    throw new Exception("Error al eliminar la venta: " + ex.Message, ex);
+                    var producto = await _productoRepository.GetById(detalle.ProductoId);
+                    if (producto != null)
+                    {
+                        // Reponer el stock
+                        await _productoRepository.AgregarStock(detalle.ProductoId, detalle.Cantidad);
+                    }
                 }
+
+                // Eliminar los detalles de la venta
+                _dbContext.VentaDetalle.RemoveRange(venta.DetalleVentas);
+
+                // Eliminar la venta
+                _dbContext.Ventas.Remove(venta);
+
+                var usuario = await _userManager.FindByNameAsync(userName);
+                if (usuario == null) throw new Exception("Usuario no encontrado.");
+
+                // Mensaje dinamico de bitacora
+                string mensajeBitacora = $"Se eliminó la venta con Folio: {venta.Folio} de un Total: ${venta.Total}.00 por el Usuario: {usuario.UserName}.";
+                if (venta.Abonos.Any())
+                {
+                    decimal totalAbonado = venta.Abonos.Sum(a => a.Monto);
+                    mensajeBitacora += $" La venta tenía {venta.Abonos.Count} abonos de un Total: ${totalAbonado}.";
+                }
+
+                var bitacora = new Bitacora
+                {
+                    UsuarioId = usuario.Id,
+                    Fecha = DateTime.UtcNow,
+                    Descripcion = mensajeBitacora,
+                    ReferenciaId = venta.VentaId.ToString(),
+                    TipoReferencia = "Delete"
+                };
+
+                _dbContext.Bitacora.Add(bitacora);
+                await _dbContext.SaveChangesAsync();
+
+                return true;
+
             }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error al eliminar la venta");
+                throw new Exception("Error al eliminar la venta: " + ex.Message, ex);
+            }            
         }
 
         public async Task<GetVentaVm> GetVentaById(string ventaId)
-
         {
             try
             {
@@ -243,9 +228,9 @@ namespace AppAcademy.Infrastucture.Repositories
                     }).ToList()
                 };
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                _logger.LogError(ex, "Error al obtener la venta por id");
                 throw;
             }
         }
@@ -281,9 +266,9 @@ namespace AppAcademy.Infrastucture.Repositories
 
                 return result;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                _logger.LogError(ex, "Error al obtener todas las ventas");
                 throw;
             }
 

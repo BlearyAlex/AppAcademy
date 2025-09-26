@@ -1,6 +1,5 @@
 ﻿using AppAcademy.Application.Contracts.Persistence.IControlAcademia;
 using AppAcademy.Application.Exceptions;
-using AppAcademy.Application.Features.Payments.Commands.CreatePayment;
 using AppAcademy.Application.Features.Payments.Commands.DeletePayment;
 using AppAcademy.Application.Features.Payments.Queries.GetPayment;
 using AppAcademy.Application.Features.Payments.Queries.GetPayments;
@@ -30,69 +29,64 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
 
         public async Task<Payment> CreatePayment(Payment payment, string userName)
         {
-            using (var transaction = await _dbContext.Database.BeginTransactionAsync())
+            try
             {
-                try
+                // Obtener el costo mensual de la carrera
+                var career = await _dbContext.Careers.FindAsync(payment.CareerId);
+                if (career == null)
                 {
-                    // Obtener el costo mensual de la carrera
-                    var career = await _dbContext.Careers.FindAsync(payment.CareerId);
-                    if (career == null)
-                    {
-                        throw new Exception("La carrera seleccionada no existe.");
-                    }
-
-                    // Verificar si el estudiante ya tiene un pago para ese mes/año
-                    var existingPayment = await _dbContext.Payments
-                        .FirstOrDefaultAsync(p => p.StudentId == payment.StudentId &&
-                                                  p.MesPagado == payment.MesPagado &&
-                                                  p.AnioPagado == payment.AnioPagado);
-
-                    if (existingPayment != null)
-                    {
-                        throw new Exception("Ya existe un pago registrado para este mes y año.");
-                    }
-
-                    // Obtener datos del estudiante
-                    var student = await _dbContext.Students.FindAsync(payment.StudentId);
-                    if (student == null) throw new Exception("Estudiante no encontrado");
-
-                    // Calcular total con descuento
-                    decimal descuentoCalculado = career.CostoMensual * (payment.Descuento / 100);
-                    decimal totalFinal = Math.Max(career.CostoMensual - descuentoCalculado, 0);
-
-                    // Asignar valores
-                    payment.Total = totalFinal;
-                    payment.SaldoPendiente = totalFinal; // Inicialmente, el saldo pendiente es el total
-                    payment.EstadoVenta = VentaEstado.Pendiente;
-                    payment.FechaPago = DateTime.Now;
-
-                    // Guardar el pago
-                    await _dbContext.Payments.AddAsync(payment);
-
-                    var usuario = await _userManager.FindByNameAsync(userName);
-                    if (usuario == null) throw new Exception("Usuario no encontrado");
-
-                    var bitacora = new Bitacora
-                    {
-                        UsuarioId = usuario.Id,
-                        Fecha = DateTime.UtcNow,
-                        Descripcion = $"Se registró un nuevo pago para el estudiante {student.Nombre + " " + student.Apellido} por un total de: {payment.Total} por el Usuario: {usuario.UserName}",
-                        ReferenciaId = payment.PaymentId.ToString(),
-                        TipoReferencia = "Add"
-                    };
-
-                    await _dbContext.Bitacora.AddAsync(bitacora);
-                    await _dbContext.SaveChangesAsync();
-
-                    await transaction.CommitAsync();
-                    return payment;
+                    throw new Exception("La carrera seleccionada no existe.");
                 }
-                catch (Exception ex)
+
+                // Verificar si el estudiante ya tiene un pago para ese mes/año
+                var existingPayment = await _dbContext.Payments
+                    .FirstOrDefaultAsync(p => p.StudentId == payment.StudentId &&
+                                                p.MesPagado == payment.MesPagado &&
+                                                p.AnioPagado == payment.AnioPagado);
+
+                if (existingPayment != null)
                 {
-                    _logger.LogError(ex, "Error al registrar el pago para el estudiante {StudentId}", payment.StudentId);
-                    await transaction.RollbackAsync();
-                    throw;
+                    throw new Exception("Ya existe un pago registrado para este mes y año.");
                 }
+
+                // Obtener datos del estudiante
+                var student = await _dbContext.Students.FindAsync(payment.StudentId);
+                if (student == null) throw new Exception("Estudiante no encontrado");
+
+                // Calcular total con descuento
+                decimal descuentoCalculado = career.CostoMensual * (payment.Descuento / 100);
+                decimal totalFinal = Math.Max(career.CostoMensual - descuentoCalculado, 0);
+
+                // Asignar valores
+                payment.Total = totalFinal;
+                payment.SaldoPendiente = totalFinal; // Inicialmente, el saldo pendiente es el total
+                payment.EstadoVenta = VentaEstado.Pendiente;
+                payment.FechaPago = DateTime.Now;
+
+                // Guardar el pago
+                await _dbContext.Payments.AddAsync(payment);
+
+                var usuario = await _userManager.FindByNameAsync(userName);
+                if (usuario == null) throw new Exception("Usuario no encontrado");
+
+                var bitacora = new Bitacora
+                {
+                    UsuarioId = usuario.Id,
+                    Fecha = DateTime.UtcNow,
+                    Descripcion = $"Se registró un nuevo pago para el estudiante {student.Nombre + " " + student.Apellido} por un total de: {payment.Total} por el Usuario: {usuario.UserName}",
+                    ReferenciaId = payment.PaymentId.ToString(),
+                    TipoReferencia = "Add"
+                };
+
+                await _dbContext.Bitacora.AddAsync(bitacora);
+                await _dbContext.SaveChangesAsync();
+
+                return payment;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al registrar el pago para el estudiante {StudentId}", payment.StudentId);
+                throw;
             }
         }
 

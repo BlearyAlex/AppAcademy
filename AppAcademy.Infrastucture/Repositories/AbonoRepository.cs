@@ -25,79 +25,73 @@ namespace AppAcademy.Infrastucture.Repositories
 
         public async Task<CreateAbonoResult> CreateAbono(string ventaId, decimal montoAbonado, string userName)
         {
-            if (montoAbonado <= 0) throw new ArgumentException("El monto abonado debe ser mayor que cero.");
-
-            using (var transaction = await _dbContext.Database.BeginTransactionAsync())
+            if (montoAbonado <= 0) throw new ArgumentException("El monto abonado debe ser mayor que cero.");           
+            try
             {
-                try
+                var venta = await _dbContext.Ventas
+                    .Include(v => v.Cliente)
+                    .Include(v => v.DetalleVentas)
+                        .ThenInclude(d => d.Producto)
+                    .FirstOrDefaultAsync(v => v.VentaId == ventaId);
+
+                if (venta == null) throw new Exception("Venta no encontrada.");
+
+                // Calcular cambio antes de modificar el saldo
+                decimal cambio = 0;
+                if (montoAbonado > venta.SaldoPendiente)
                 {
-                    var venta = await _dbContext.Ventas
-                        .Include(v => v.Cliente)
-                        .Include(v => v.DetalleVentas)
-                            .ThenInclude(d => d.Producto)
-                        .FirstOrDefaultAsync(v => v.VentaId == ventaId);
-
-                    if (venta == null) throw new Exception("Venta no encontrada.");
-
-                    // Calcular cambio antes de modificar el saldo
-                    decimal cambio = 0;
-                    if (montoAbonado > venta.SaldoPendiente)
-                    {
-                        cambio = montoAbonado - venta.SaldoPendiente;
-                    }
-
-                    var abono = new Abono
-                    {
-                        VentaId = ventaId,
-                        Monto = montoAbonado,
-                        Fecha = DateTime.UtcNow
-                    };
-
-                    await _dbContext.Abono.AddAsync(abono);
-                    await _dbContext.SaveChangesAsync();
-
-                    // Ajustar saldo pendiente
-                    if (montoAbonado >= venta.SaldoPendiente)
-                    {
-                        venta.SaldoPendiente = 0;
-                        venta.EstadoVenta = VentaEstado.Pagado;
-                    }
-                    else
-                    {
-                        venta.SaldoPendiente -= montoAbonado;
-                    }
-
-                    var usuario = await _userManager.FindByNameAsync(userName);
-                    if (usuario == null) throw new Exception("Usuario no encontrado");
-
-                    var bitacora = new Bitacora
-                    {
-                        UsuarioId = usuario.Id,
-                        Fecha = DateTime.UtcNow,
-                        Descripcion = $"Se registró un nuevo abono para la venta con Folio: {venta.Folio} por un total de {montoAbonado} por el Usuario: {usuario.UserName}",
-                        ReferenciaId = abono.AbonoId.ToString(),
-                        TipoReferencia = "Add"
-                    };
-
-                    await _dbContext.Bitacora.AddAsync(bitacora);
-
-                    await _dbContext.SaveChangesAsync();
-                    await transaction.CommitAsync();
-
-                    var pdfBytes = _reciboPdfService.GenerarReciboAbonoPDF(venta, abono, cambio);
-
-                    return new CreateAbonoResult
-                    {
-                        AbonoId = abono.AbonoId,
-                        PdfBlob = pdfBytes
-                    };
-
+                    cambio = montoAbonado - venta.SaldoPendiente;
                 }
-                catch (Exception ex)
+
+                var abono = new Abono
                 {
-                    await transaction.RollbackAsync();
-                    throw new Exception("Error al procesar el abono.", ex);
+                    VentaId = ventaId,
+                    Monto = montoAbonado,
+                    Fecha = DateTime.UtcNow
+                };
+
+                await _dbContext.Abono.AddAsync(abono);
+                await _dbContext.SaveChangesAsync();
+
+                // Ajustar saldo pendiente
+                if (montoAbonado >= venta.SaldoPendiente)
+                {
+                    venta.SaldoPendiente = 0;
+                    venta.EstadoVenta = VentaEstado.Pagado;
                 }
+                else
+                {
+                    venta.SaldoPendiente -= montoAbonado;
+                }
+
+                var usuario = await _userManager.FindByNameAsync(userName);
+                if (usuario == null) throw new Exception("Usuario no encontrado");
+
+                var bitacora = new Bitacora
+                {
+                    UsuarioId = usuario.Id,
+                    Fecha = DateTime.UtcNow,
+                    Descripcion = $"Se registró un nuevo abono para la venta con Folio: {venta.Folio} por un total de {montoAbonado} por el Usuario: {usuario.UserName}",
+                    ReferenciaId = abono.AbonoId.ToString(),
+                    TipoReferencia = "Add"
+                };
+
+                await _dbContext.Bitacora.AddAsync(bitacora);
+
+                await _dbContext.SaveChangesAsync();
+
+                var pdfBytes = _reciboPdfService.GenerarReciboAbonoPDF(venta, abono, cambio);
+
+                return new CreateAbonoResult
+                {
+                    AbonoId = abono.AbonoId,
+                    PdfBlob = pdfBytes
+                };
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al procesar el abono.", ex);
             }
         }
 

@@ -25,147 +25,135 @@ namespace AppAcademy.Infrastucture.Repositories.ControlAcademia
         public async Task<CreateAbonoAcademyResult> CreateAbonoAcademy(int paymentId, decimal montoAbonado, string userName)
         {
             if (montoAbonado <= 0) throw new ArgumentException("El monto abonado debe ser mayor que cero.");
-
-            using (var transaction = await _dbContext.Database.BeginTransactionAsync())
+            try
             {
-                try
-                {
-                    var payment = await _dbContext.Payments
-                        .Include(p => p.Student)
-                        .Include(p => p.Career)
-                            .ThenInclude(a => a.AcademicCycles)
-                        .Include(p => p.AbonosAcademy)
-                        .FirstOrDefaultAsync(p => p.PaymentId == paymentId);
+                var payment = await _dbContext.Payments
+                    .Include(p => p.Student)
+                    .Include(p => p.Career)
+                        .ThenInclude(a => a.AcademicCycles)
+                    .Include(p => p.AbonosAcademy)
+                    .FirstOrDefaultAsync(p => p.PaymentId == paymentId);
                     
-                    if (payment == null) throw new Exception("Pago no encontrada.");
+                if (payment == null) throw new Exception("Pago no encontrada.");
 
-                    decimal cambio = 0;
-                    if (montoAbonado > payment.SaldoPendiente)
-                    {
-                        cambio = montoAbonado - payment.SaldoPendiente;
-                    }
-
-                    var student = await _dbContext.Students.FindAsync(payment.StudentId);
-                    if (student == null) throw new Exception("Estudiante no encontrado");
-
-                    var abono = new AbonoAcademy
-                    {
-                        PaymentId = paymentId,
-                        Monto = montoAbonado,
-                        FechaAbono = DateTime.UtcNow,
-                        StudentId = payment.StudentId,
-                    };
-
-                    await _dbContext.AddAsync(abono);
-                    await _dbContext.SaveChangesAsync();
-
-                    // Ajustar el saldo pendiente
-                    if (montoAbonado >= payment.SaldoPendiente)
-                    {
-                        payment.SaldoPendiente = 0;
-                        payment.EstadoVenta = VentaEstado.Pagado;
-                    }
-                    else
-                    {
-                        payment.SaldoPendiente -= montoAbonado;
-                    }
-
-                    var usuario = await _userManager.FindByNameAsync(userName);
-                    if (usuario == null) throw new Exception("Usuario no encontrado");
-
-                    var bitacora = new Bitacora
-                    {
-                        UsuarioId = usuario.Id,
-                        Fecha = DateTime.UtcNow,
-                        Descripcion = $"Se registró un nuevo abono para el estudiante {student.Nombre} por un total de: {abono.Monto} correspondiente al mes: {payment.MesPagado} por el Usuario: {usuario.UserName}.",
-                        ReferenciaId = abono.AbonoAcademyId.ToString(),
-                        TipoReferencia = "Add"
-                    };
-
-                    _dbContext.Bitacora.Add(bitacora);
-
-                    await _dbContext.SaveChangesAsync();
-                    await transaction.CommitAsync();
-
-                    var pdfBytes = _reciboPdfService.GenerarReciboAbonoAcademyPDF(payment, abono, cambio);
-
-                    return new CreateAbonoAcademyResult
-                    {
-                        AbonoAcademyId = abono.AbonoAcademyId,
-                        PdfBlob = pdfBytes,
-                    };
-                }
-                catch (Exception ex)
+                decimal cambio = 0;
+                if (montoAbonado > payment.SaldoPendiente)
                 {
-                    await transaction.RollbackAsync(); // Revertir si hay error
-                    throw new Exception("Error al procesar el abono.", ex);
+                    cambio = montoAbonado - payment.SaldoPendiente;
                 }
+
+                var student = await _dbContext.Students.FindAsync(payment.StudentId);
+                if (student == null) throw new Exception("Estudiante no encontrado");
+
+                var abono = new AbonoAcademy
+                {
+                    PaymentId = paymentId,
+                    Monto = montoAbonado,
+                    FechaAbono = DateTime.UtcNow,
+                    StudentId = payment.StudentId,
+                };
+
+                await _dbContext.AddAsync(abono);
+                await _dbContext.SaveChangesAsync();
+
+                // Ajustar el saldo pendiente
+                if (montoAbonado >= payment.SaldoPendiente)
+                {
+                    payment.SaldoPendiente = 0;
+                    payment.EstadoVenta = VentaEstado.Pagado;
+                }
+                else
+                {
+                    payment.SaldoPendiente -= montoAbonado;
+                }
+
+                var usuario = await _userManager.FindByNameAsync(userName);
+                if (usuario == null) throw new Exception("Usuario no encontrado");
+
+                var bitacora = new Bitacora
+                {
+                    UsuarioId = usuario.Id,
+                    Fecha = DateTime.UtcNow,
+                    Descripcion = $"Se registró un nuevo abono para el estudiante {student.Nombre} por un total de: {abono.Monto} correspondiente al mes: {payment.MesPagado} por el Usuario: {usuario.UserName}.",
+                    ReferenciaId = abono.AbonoAcademyId.ToString(),
+                    TipoReferencia = "Add"
+                };
+
+                _dbContext.Bitacora.Add(bitacora);
+
+                await _dbContext.SaveChangesAsync();
+
+                var pdfBytes = _reciboPdfService.GenerarReciboAbonoAcademyPDF(payment, abono, cambio);
+
+                return new CreateAbonoAcademyResult
+                {
+                    AbonoAcademyId = abono.AbonoAcademyId,
+                    PdfBlob = pdfBytes,
+                };
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al procesar el abono.", ex);
             }
         }
 
         public async Task<bool> DeleteAbono(int abonoId, string userName)
         {
-            using (var transaction = await _dbContext.Database.BeginTransactionAsync())
+            try
             {
-                try
+                var abono = await _dbContext.AbonoAcademy
+                    .Include(a => a.Payment)
+                    .FirstOrDefaultAsync(a => a.AbonoAcademyId == abonoId);
+
+                if (abono == null)
+                    throw new Exception("Abono no encontrado");
+
+                // Obtener el student relacionado
+                var student = await _dbContext.Students.FindAsync(abono.StudentId);
+                if (student == null) throw new Exception("Estudiante no encontrado");
+
+                // Obtener la venta relacionada
+                var payment = abono.Payment;
+
+                // Eliminar el abono de la base de datos
+                _dbContext.AbonoAcademy.Remove(abono);
+                await _dbContext.SaveChangesAsync();
+
+                // Recalcular el saldo pendiente
+                var totalAbonos = await _dbContext.AbonoAcademy
+                    .Where(a => a.PaymentId == payment.PaymentId)
+                    .SumAsync(a => a.Monto);
+
+                payment.SaldoPendiente = payment.Total - totalAbonos;
+
+                // Actualizar el estado de la venta segun el nuevo saldo pendiente
+                payment.EstadoVenta = payment.SaldoPendiente > 0 ? VentaEstado.Pendiente : VentaEstado.Pagado;
+
+                _dbContext.Payments.Update(payment);
+
+                // Bitacora
+                var usuario = await _userManager.FindByNameAsync(userName);
+                if (usuario == null) throw new Exception("Usuario no encontrado");
+
+                var bitacora = new Bitacora
                 {
-                    var abono = await _dbContext.AbonoAcademy
-                        .Include(a => a.Payment)
-                        .FirstOrDefaultAsync(a => a.AbonoAcademyId == abonoId);
+                    UsuarioId = usuario.Id,
+                    Fecha = DateTime.UtcNow,
+                    Descripcion = $"Se elimino un abono del estudiante {student.Nombre} por un total de: {abono.Monto} por el Usuario: {usuario.UserName}",
+                    ReferenciaId = abono.AbonoAcademyId.ToString(),
+                    TipoReferencia = "Delete"
+                };
 
-                    if (abono == null)
-                        throw new Exception("Abono no encontrado");
+                _dbContext.Bitacora.Add(bitacora);
+                await _dbContext.SaveChangesAsync();
 
-                    // Obtener el student relacionado
-                    var student = await _dbContext.Students.FindAsync(abono.StudentId);
-                    if (student == null) throw new Exception("Estudiante no encontrado");
-
-                    // Obtener la venta relacionada
-                    var payment = abono.Payment;
-
-                    // Eliminar el abono de la base de datos
-                    _dbContext.AbonoAcademy.Remove(abono);
-                    await _dbContext.SaveChangesAsync();
-
-                    // Recalcular el saldo pendiente
-                    var totalAbonos = await _dbContext.AbonoAcademy
-                        .Where(a => a.PaymentId == payment.PaymentId)
-                        .SumAsync(a => a.Monto);
-
-                    payment.SaldoPendiente = payment.Total - totalAbonos;
-
-                    // Actualizar el estado de la venta segun el nuevo saldo pendiente
-                    payment.EstadoVenta = payment.SaldoPendiente > 0 ? VentaEstado.Pendiente : VentaEstado.Pagado;
-
-                    _dbContext.Payments.Update(payment);
-
-                    // Bitacora
-                    var usuario = await _userManager.FindByNameAsync(userName);
-                    if (usuario == null) throw new Exception("Usuario no encontrado");
-
-                    var bitacora = new Bitacora
-                    {
-                        UsuarioId = usuario.Id,
-                        Fecha = DateTime.UtcNow,
-                        Descripcion = $"Se elimino un abono del estudiante {student.Nombre} por un total de: {abono.Monto} por el Usuario: {usuario.UserName}",
-                        ReferenciaId = abono.AbonoAcademyId.ToString(),
-                        TipoReferencia = "Delete"
-                    };
-
-                    _dbContext.Bitacora.Add(bitacora);
-                    await _dbContext.SaveChangesAsync();
-
-                    await transaction.CommitAsync(); // Confirmar transacción
-
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    // Registrar el error si es necesario
-                    await transaction.RollbackAsync(); // Revertir si hay error
-                    throw new Exception("Error al eliminar el abono.", ex);  // Mejorar el mensaje de error
-                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al eliminar el abono.", ex);  // Mejorar el mensaje de error
+            }
             }
         }
     }
-}
+

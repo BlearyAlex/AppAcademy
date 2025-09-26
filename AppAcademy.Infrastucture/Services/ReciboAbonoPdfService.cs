@@ -32,16 +32,15 @@ namespace AppAcademy.Services
                         row.RelativeColumn().PaddingLeft(10).AlignMiddle().Column(col =>
                         {
                             col.Item().Text("Academia Astrid").Bold().FontSize(16);
-                            col.Item().Text("Dirección del negocio").FontSize(10);
-                            col.Item().Text("Tel: 555-123-4567").FontSize(10);
-                            col.Item().Text("academia@gmail.com").FontSize(10);
+                            col.Item().Text("Calle Santa Anita #39A").FontSize(10);
+                            col.Item().Text("Tel: 499-102-6219").FontSize(10);
+                            col.Item().Text("mayliale1406@gmail.com").FontSize(10);
                         });
 
                         row.ConstantColumn(120).AlignRight().Column(col =>
                         {
                             col.Item().Border(1).Padding(5).Column(innerCol =>
                             {
-                                innerCol.Item().Text("RUC 12345678900").FontSize(10).AlignCenter();
                                 innerCol.Item().Text("Recibo de Abono").Bold().FontSize(12).AlignCenter().FontColor(Colors.Blue.Medium);
                                 innerCol.Item().Text($"N° {abono.AbonoAcademyId}").FontSize(10).AlignCenter();
                             });
@@ -133,16 +132,16 @@ namespace AppAcademy.Services
                         row.RelativeColumn().PaddingLeft(10).AlignMiddle().Column(col =>
                         {
                             col.Item().Text("Academia Astrid").Bold().FontSize(16);
-                            col.Item().Text("Dirección del negocio").FontSize(10);
-                            col.Item().Text("Tel: 555-123-4567").FontSize(10);
-                            col.Item().Text("academia@gmail.com").FontSize(10);
+                            col.Item().Text("Calle Santa Anita #39A").FontSize(10);
+                            col.Item().Text("Tel: 499-102-6219").FontSize(10);
+                            col.Item().Text("mayliale1406@gmail.com").FontSize(10);
                         });
 
                         row.ConstantColumn(120).AlignRight().Column(col =>
                         {
                             col.Item().Border(1).Padding(5).Column(innerCol =>
                             {
-                                innerCol.Item().Text("RUC 12345678900").FontSize(10).AlignCenter();
+                                innerCol.Item().Text($"Folio {venta.Folio}").FontSize(10).AlignCenter();
                                 innerCol.Item().Text("Recibo de Abono").Bold().FontSize(12).AlignCenter().FontColor(Colors.Blue.Medium);
                                 innerCol.Item().Text($"N° {abono.AbonoId}").FontSize(10).AlignCenter();
                             });
